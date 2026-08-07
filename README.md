@@ -65,7 +65,10 @@ Most “cleaner” tools either hide what they do, or dump dozens of unsafe twea
 
 ## Screenshots
 
-> Add screenshots after the first public build — Dashboard · Gaming · Services · Presets · Settings.
+<img width="1166" height="713" alt="image" src="https://github.com/user-attachments/assets/80dea16b-8c3c-4641-a9e8-a4d5c78eea87" />
+<img width="1166" height="713" alt="image" src="https://github.com/user-attachments/assets/05cd80d0-168c-416b-abf3-2949dbeba41b" />
+<img width="1920" height="1032" alt="image" src="https://github.com/user-attachments/assets/a9ea7066-48dc-474b-98ff-66925575b96e" />
+<img width="1166" height="713" alt="image" src="https://github.com/user-attachments/assets/41856974-cf96-43bf-a5b8-e2d2d438918e" />
 
 ---
 
