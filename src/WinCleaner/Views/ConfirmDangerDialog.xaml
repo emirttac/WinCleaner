@@ -1,0 +1,26 @@
+<Window x:Class="WinCleaner.Views.ConfirmDangerDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Dangerous Action" Height="280" Width="460"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        Background="{StaticResource BgPanelBrush}"
+        Foreground="{StaticResource TextPrimaryBrush}">
+  <Grid Margin="20">
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <TextBlock x:Name="TitleText" Text="Dangerous Action" FontSize="18" FontWeight="Bold" Foreground="{StaticResource DangerBrush}"/>
+    <TextBlock x:Name="MessageText" Grid.Row="1" TextWrapping="Wrap" Margin="0,12,0,0"
+               Text="This change can affect system stability or security. Check the box and confirm to continue."
+               Foreground="{StaticResource TextSecondaryBrush}"/>
+    <CheckBox x:Name="AckCheck" Grid.Row="2" Content="I understand the risks" Margin="0,12,0,16"/>
+    <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
+      <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0" IsCancel="True" Click="Cancel_Click"/>
+      <Button x:Name="OkButton" Content="Confirm" Style="{StaticResource DangerButtonStyle}" IsEnabled="False" Click="Ok_Click"/>
+    </StackPanel>
+  </Grid>
+</Window>

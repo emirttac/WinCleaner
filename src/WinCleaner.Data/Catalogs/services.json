@@ -1,0 +1,254 @@
+[
+  {
+    "id": "svc-diagtrack",
+    "serviceName": "DiagTrack",
+    "displayNameKey": "svc.diagtrack.name",
+    "descriptionKey": "svc.diagtrack.desc",
+    "category": "Telemetry",
+    "risk": "Safe",
+    "recommendedStart": "Disabled"
+  },
+  {
+    "id": "svc-dmwappush",
+    "serviceName": "dmwappushservice",
+    "displayNameKey": "svc.dmwappush.name",
+    "descriptionKey": "svc.dmwappush.desc",
+    "category": "Telemetry",
+    "risk": "Safe",
+    "recommendedStart": "Disabled"
+  },
+  {
+    "id": "svc-wer",
+    "serviceName": "WerSvc",
+    "displayNameKey": "svc.wer.name",
+    "descriptionKey": "svc.wer.desc",
+    "category": "Telemetry",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-xblauth",
+    "serviceName": "XblAuthManager",
+    "displayNameKey": "svc.xblauth.name",
+    "descriptionKey": "svc.xblauth.desc",
+    "category": "Xbox",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-xblgame",
+    "serviceName": "XblGameSave",
+    "displayNameKey": "svc.xblgame.name",
+    "descriptionKey": "svc.xblgame.desc",
+    "category": "Xbox",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-xboxnet",
+    "serviceName": "XboxNetApiSvc",
+    "displayNameKey": "svc.xboxnet.name",
+    "descriptionKey": "svc.xboxnet.desc",
+    "category": "Xbox",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-xboxgip",
+    "serviceName": "XboxGipSvc",
+    "displayNameKey": "svc.xboxgip.name",
+    "descriptionKey": "svc.xboxgip.desc",
+    "category": "Xbox",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-spooler",
+    "serviceName": "Spooler",
+    "displayNameKey": "svc.spooler.name",
+    "descriptionKey": "svc.spooler.desc",
+    "category": "Printing",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-bthserv",
+    "serviceName": "bthserv",
+    "displayNameKey": "svc.bthserv.name",
+    "descriptionKey": "svc.bthserv.desc",
+    "category": "Bluetooth",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-onedrive",
+    "serviceName": "OneSyncSvc",
+    "displayNameKey": "svc.onesync.name",
+    "descriptionKey": "svc.onesync.desc",
+    "category": "Cloud",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-cdpsvc",
+    "serviceName": "CDPSvc",
+    "displayNameKey": "svc.cdp.name",
+    "descriptionKey": "svc.cdp.desc",
+    "category": "Cloud",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-diagsvc",
+    "serviceName": "diagsvc",
+    "displayNameKey": "svc.diagsvc.name",
+    "descriptionKey": "svc.diagsvc.desc",
+    "category": "Diagnostic",
+    "risk": "Safe",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-dwm",
+    "serviceName": "DusmSvc",
+    "displayNameKey": "svc.dusm.name",
+    "descriptionKey": "svc.dusm.desc",
+    "category": "Other",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-sysmain",
+    "serviceName": "SysMain",
+    "displayNameKey": "svc.sysmain.name",
+    "descriptionKey": "svc.sysmain.desc",
+    "category": "Other",
+    "risk": "Caution",
+    "recommendedStart": "Disabled"
+  },
+  {
+    "id": "svc-wsearch",
+    "serviceName": "WSearch",
+    "displayNameKey": "svc.wsearch.name",
+    "descriptionKey": "svc.wsearch.desc",
+    "category": "Other",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-rpcss",
+    "serviceName": "RpcSs",
+    "displayNameKey": "svc.rpcss.name",
+    "descriptionKey": "svc.rpcss.desc",
+    "category": "Other",
+    "risk": "Blocked",
+    "recommendedStart": "Automatic"
+  },
+  {
+    "id": "svc-dcom",
+    "serviceName": "DcomLaunch",
+    "displayNameKey": "svc.dcom.name",
+    "descriptionKey": "svc.dcom.desc",
+    "category": "Other",
+    "risk": "Blocked",
+    "recommendedStart": "Automatic"
+  },
+  {
+    "id": "svc-windefend",
+    "serviceName": "WinDefend",
+    "displayNameKey": "svc.windefend.name",
+    "descriptionKey": "svc.windefend.desc",
+    "category": "Other",
+    "risk": "Blocked",
+    "recommendedStart": "Automatic"
+  },
+  {
+    "id": "svc-wuauserv",
+    "serviceName": "wuauserv",
+    "displayNameKey": "svc.wuauserv.name",
+    "descriptionKey": "svc.wuauserv.desc",
+    "category": "Other",
+    "risk": "Dangerous",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-bits",
+    "serviceName": "BITS",
+    "displayNameKey": "svc.bits.name",
+    "descriptionKey": "svc.bits.desc",
+    "category": "Other",
+    "risk": "Dangerous",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-pcasvc",
+    "serviceName": "PcaSvc",
+    "displayNameKey": "svc.pcasvc.name",
+    "descriptionKey": "svc.pcasvc.desc",
+    "category": "Diagnostic",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-lfsvc",
+    "serviceName": "lfsvc",
+    "displayNameKey": "svc.lfsvc.name",
+    "descriptionKey": "svc.lfsvc.desc",
+    "category": "Privacy",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-remoteregistry",
+    "serviceName": "RemoteRegistry",
+    "displayNameKey": "svc.remoteregistry.name",
+    "descriptionKey": "svc.remoteregistry.desc",
+    "category": "Security",
+    "risk": "Safe",
+    "recommendedStart": "Disabled"
+  },
+  {
+    "id": "svc-ssdpsrv",
+    "serviceName": "SSDPSRV",
+    "displayNameKey": "svc.ssdpsrv.name",
+    "descriptionKey": "svc.ssdpsrv.desc",
+    "category": "Network",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-upnphost",
+    "serviceName": "upnphost",
+    "displayNameKey": "svc.upnphost.name",
+    "descriptionKey": "svc.upnphost.desc",
+    "category": "Network",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-retaildemo",
+    "serviceName": "RetailDemo",
+    "displayNameKey": "svc.retaildemo.name",
+    "descriptionKey": "svc.retaildemo.desc",
+    "category": "Other",
+    "risk": "Safe",
+    "recommendedStart": "Disabled"
+  },
+  {
+    "id": "svc-wmpnetwork",
+    "serviceName": "WMPNetworkSvc",
+    "displayNameKey": "svc.wmpnetwork.name",
+    "descriptionKey": "svc.wmpnetwork.desc",
+    "category": "Other",
+    "risk": "Safe",
+    "recommendedStart": "Manual"
+  },
+  {
+    "id": "svc-tabletinput",
+    "serviceName": "TabletInputService",
+    "displayNameKey": "svc.tabletinput.name",
+    "descriptionKey": "svc.tabletinput.desc",
+    "category": "Other",
+    "risk": "Caution",
+    "recommendedStart": "Manual"
+  }
+]

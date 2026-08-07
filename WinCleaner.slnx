@@ -1,0 +1,10 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/WinCleaner.Core/WinCleaner.Core.csproj" />
+    <Project Path="src/WinCleaner.Data/WinCleaner.Data.csproj" />
+    <Project Path="src/WinCleaner/WinCleaner.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/WinCleaner.Core.Tests/WinCleaner.Core.Tests.csproj" />
+  </Folder>
+</Solution>

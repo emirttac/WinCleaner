@@ -1,0 +1,237 @@
+[
+  {
+    "id": "app-3dviewer",
+    "packageName": "Microsoft.Microsoft3DViewer",
+    "displayNameKey": "app.3dviewer.name",
+    "descriptionKey": "app.3dviewer.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-mixedreality",
+    "packageName": "Microsoft.MixedReality.Portal",
+    "displayNameKey": "app.mixedreality.name",
+    "descriptionKey": "app.mixedreality.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-xboxapp",
+    "packageName": "Microsoft.XboxApp",
+    "displayNameKey": "app.xboxapp.name",
+    "descriptionKey": "app.xboxapp.desc",
+    "risk": "Caution",
+    "systemCritical": false
+  },
+  {
+    "id": "app-xboxgamingoverlay",
+    "packageName": "Microsoft.XboxGamingOverlay",
+    "displayNameKey": "app.xboxoverlay.name",
+    "descriptionKey": "app.xboxoverlay.desc",
+    "risk": "Caution",
+    "systemCritical": false
+  },
+  {
+    "id": "app-xboxidentity",
+    "packageName": "Microsoft.XboxIdentityProvider",
+    "displayNameKey": "app.xboxidentity.name",
+    "descriptionKey": "app.xboxidentity.desc",
+    "risk": "Caution",
+    "systemCritical": false
+  },
+  {
+    "id": "app-skype",
+    "packageName": "Microsoft.SkypeApp",
+    "displayNameKey": "app.skype.name",
+    "descriptionKey": "app.skype.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-solitaire",
+    "packageName": "Microsoft.MicrosoftSolitaireCollection",
+    "displayNameKey": "app.solitaire.name",
+    "descriptionKey": "app.solitaire.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-weather",
+    "packageName": "Microsoft.BingWeather",
+    "displayNameKey": "app.weather.name",
+    "descriptionKey": "app.weather.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-news",
+    "packageName": "Microsoft.BingNews",
+    "displayNameKey": "app.news.name",
+    "descriptionKey": "app.news.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-officehub",
+    "packageName": "Microsoft.MicrosoftOfficeHub",
+    "displayNameKey": "app.officehub.name",
+    "descriptionKey": "app.officehub.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-people",
+    "packageName": "Microsoft.People",
+    "displayNameKey": "app.people.name",
+    "descriptionKey": "app.people.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-feedback",
+    "packageName": "Microsoft.WindowsFeedbackHub",
+    "displayNameKey": "app.feedback.name",
+    "descriptionKey": "app.feedback.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-gethelp",
+    "packageName": "Microsoft.GetHelp",
+    "displayNameKey": "app.gethelp.name",
+    "descriptionKey": "app.gethelp.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-getstarted",
+    "packageName": "Microsoft.Getstarted",
+    "displayNameKey": "app.getstarted.name",
+    "descriptionKey": "app.getstarted.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-maps",
+    "packageName": "Microsoft.WindowsMaps",
+    "displayNameKey": "app.maps.name",
+    "descriptionKey": "app.maps.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-zunevideo",
+    "packageName": "Microsoft.ZuneVideo",
+    "displayNameKey": "app.zunevideo.name",
+    "descriptionKey": "app.zunevideo.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-zunemusic",
+    "packageName": "Microsoft.ZuneMusic",
+    "displayNameKey": "app.zunemusic.name",
+    "descriptionKey": "app.zunemusic.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-clipchamp",
+    "packageName": "Clipchamp.Clipchamp",
+    "displayNameKey": "app.clipchamp.name",
+    "descriptionKey": "app.clipchamp.desc",
+    "risk": "Safe",
+    "systemCritical": false,
+    "win11Only": true
+  },
+  {
+    "id": "app-teams",
+    "packageName": "MicrosoftTeams",
+    "displayNameKey": "app.teams.name",
+    "descriptionKey": "app.teams.desc",
+    "risk": "Caution",
+    "systemCritical": false,
+    "win11Only": true
+  },
+  {
+    "id": "app-store",
+    "packageName": "Microsoft.WindowsStore",
+    "displayNameKey": "app.store.name",
+    "descriptionKey": "app.store.desc",
+    "risk": "Dangerous",
+    "systemCritical": true
+  },
+  {
+    "id": "app-photos",
+    "packageName": "Microsoft.Windows.Photos",
+    "displayNameKey": "app.photos.name",
+    "descriptionKey": "app.photos.desc",
+    "risk": "Caution",
+    "systemCritical": false
+  },
+  {
+    "id": "app-calculator",
+    "packageName": "Microsoft.WindowsCalculator",
+    "displayNameKey": "app.calculator.name",
+    "descriptionKey": "app.calculator.desc",
+    "risk": "Caution",
+    "systemCritical": true
+  },
+  {
+    "id": "app-yourphone",
+    "packageName": "Microsoft.YourPhone",
+    "displayNameKey": "app.yourphone.name",
+    "descriptionKey": "app.yourphone.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-cortana",
+    "packageName": "Microsoft.549981C3F5F10",
+    "displayNameKey": "app.cortana.name",
+    "descriptionKey": "app.cortana.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-widgets",
+    "packageName": "MicrosoftWindows.Client.WebExperience",
+    "displayNameKey": "app.widgets.name",
+    "descriptionKey": "app.widgets.desc",
+    "risk": "Caution",
+    "systemCritical": false,
+    "win11Only": true
+  },
+  {
+    "id": "app-paint3d",
+    "packageName": "Microsoft.MSPaint",
+    "displayNameKey": "app.paint3d.name",
+    "descriptionKey": "app.paint3d.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-print3d",
+    "packageName": "Microsoft.Print3D",
+    "displayNameKey": "app.print3d.name",
+    "descriptionKey": "app.print3d.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-todo",
+    "packageName": "Microsoft.Todos",
+    "displayNameKey": "app.todo.name",
+    "descriptionKey": "app.todo.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-quickassist",
+    "packageName": "MicrosoftCorporationII.QuickAssist",
+    "displayNameKey": "app.quickassist.name",
+    "descriptionKey": "app.quickassist.desc",
+    "risk": "Caution",
+    "systemCritical": false
+  }
+]

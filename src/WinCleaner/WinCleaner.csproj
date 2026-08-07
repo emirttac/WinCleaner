@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationIcon>app.ico</ApplicationIcon>
+    <AssemblyName>WinCleaner</AssemblyName>
+    <RootNamespace>WinCleaner</RootNamespace>
+    <Version>1.0.0</Version>
+    <AssemblyTitle>WinCleaner</AssemblyTitle>
+    <Product>WinCleaner</Product>
+    <Company>emirttac</Company>
+    <Authors>emirttac</Authors>
+    <Copyright>Copyright (c) emirttac</Copyright>
+    <Description>Windows optimization and debloat utility for gamers.</Description>
+    <PackageProjectUrl>https://github.com/emirttac/WinCleaner</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/emirttac/WinCleaner</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinCleaner.Core\WinCleaner.Core.csproj" />
+    <ProjectReference Include="..\WinCleaner.Data\WinCleaner.Data.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="app.ico" Pack="false" />
+  </ItemGroup>
+
+</Project>
