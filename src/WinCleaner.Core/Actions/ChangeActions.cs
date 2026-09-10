@@ -558,7 +558,7 @@ public sealed class CommandChangeAction : IChangeAction
             if (!_spec.OneShot && HasDetectSpec() && IsApplied())
                 return Task.FromResult(ChangeResult.Ok("applied", "applied", "Already applied"));
 
-            var run = ElevatedCommandRunner.Run(_spec.FileName, _spec.Arguments);
+            var run = ElevatedCommandRunner.Run(_spec.FileName, _spec.Arguments, _spec.TimeoutMs ?? 30_000);
             if (!run.Success)
                 return Task.FromResult(ChangeResult.Fail(FormatFailure(run)));
 
@@ -584,7 +584,7 @@ public sealed class CommandChangeAction : IChangeAction
             if (HasDetectSpec() && !IsApplied())
                 return Task.FromResult(ChangeResult.Ok("not-applied", "not-applied", "Already reverted"));
 
-            var run = ElevatedCommandRunner.Run(_spec.FileName, _spec.RevertArguments);
+            var run = ElevatedCommandRunner.Run(_spec.FileName, _spec.RevertArguments, _spec.TimeoutMs ?? 30_000);
             if (!run.Success)
                 return Task.FromResult(ChangeResult.Fail(FormatFailure(run)));
 

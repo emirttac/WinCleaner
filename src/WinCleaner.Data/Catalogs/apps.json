@@ -240,6 +240,7 @@
   {
     "id": "app-copilot",
     "packageName": "Microsoft.Copilot",
+    "packageAliases": ["Microsoft.Windows.Ai.Copilot.Provider"],
     "displayNameKey": "app.copilot.name",
     "descriptionKey": "app.copilot.desc",
     "risk": "Caution",

@@ -172,13 +172,79 @@ function Stop-NamedProcesses([string[]]$names) {
 # --- 1. Stop and uninstall (never hang forever on OneDriveSetup) ---
 Stop-NamedProcesses @('OneDrive','OneDriveSetup','FileCoAuth')
 
-$onedrive = ""$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe""
-if (-not (Test-Path $onedrive)) { $onedrive = ""$env:SYSTEMROOT\System32\OneDriveSetup.exe"" }
-if (Test-Path $onedrive) {
-  $p = Start-Process -FilePath $onedrive -ArgumentList '/uninstall' -PassThru -WindowStyle Hidden
+# Prefer the registered uninstaller: modern OneDrive installs per-user under
+# %LOCALAPPDATA%\Microsoft\OneDrive\<version>\ or per-machine under Program Files.
+# The legacy System32/SysWOW64 stub no longer matches the installed version on Win11.
+function Get-OneDriveUninstallCommands {
+  $cmds = New-Object System.Collections.Generic.List[object]
+
+  $uninstallKeys = @(
+    'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe',
+    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe',
+    'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\OneDriveSetup.exe'
+  )
+  foreach ($k in $uninstallKeys) {
+    $v = Get-ItemProperty -Path $k -ErrorAction SilentlyContinue
+    if ($v -and $v.UninstallString) {
+      $raw = [string]$v.UninstallString
+      # Parse: ""C:\path\OneDriveSetup.exe"" /uninstall [/allusers]
+      if ($raw -match '^\s*""([^""]+)""\s*(.*)$') {
+        $exe = $Matches[1]; $argStr = $Matches[2].Trim()
+      } else {
+        $idx = $raw.IndexOf('.exe', [StringComparison]::OrdinalIgnoreCase)
+        if ($idx -ge 0) { $exe = $raw.Substring(0, $idx + 4).Trim('""'); $argStr = $raw.Substring($idx + 4).Trim() }
+        else { $exe = $raw; $argStr = '' }
+      }
+      if ($argStr -notmatch '/uninstall') { $argStr = ('/uninstall ' + $argStr).Trim() }
+      if ($exe -and (Test-Path -LiteralPath $exe)) {
+        $cmds.Add([pscustomobject]@{ Exe = $exe; Args = $argStr })
+      }
+    }
+  }
+
+  # Versioned setup binaries (per-user and per-machine layouts)
+  $globRoots = @(
+    @{ Root = ""$env:LOCALAPPDATA\Microsoft\OneDrive""; AllUsers = $false },
+    @{ Root = ""${env:ProgramFiles}\Microsoft OneDrive""; AllUsers = $true },
+    @{ Root = ""${env:ProgramFiles(x86)}\Microsoft OneDrive""; AllUsers = $true }
+  )
+  foreach ($g in $globRoots) {
+    if (-not (Test-Path -LiteralPath $g.Root)) { continue }
+    $setup = Get-ChildItem -LiteralPath $g.Root -Filter 'OneDriveSetup.exe' -Recurse -ErrorAction SilentlyContinue |
+      Sort-Object LastWriteTime -Descending | Select-Object -First 1
+    if ($setup) {
+      $argStr = if ($g.AllUsers) { '/uninstall /allusers' } else { '/uninstall' }
+      $cmds.Add([pscustomobject]@{ Exe = $setup.FullName; Args = $argStr })
+    }
+  }
+
+  # Legacy inbox stub as the last resort
+  foreach ($stub in @(""$env:SYSTEMROOT\SysWOW64\OneDriveSetup.exe"", ""$env:SYSTEMROOT\System32\OneDriveSetup.exe"")) {
+    if (Test-Path -LiteralPath $stub) {
+      $cmds.Add([pscustomobject]@{ Exe = $stub; Args = '/uninstall' })
+    }
+  }
+
+  return $cmds
+}
+
+function Test-OneDriveInstalled {
+  $probes = @(
+    ""$env:LOCALAPPDATA\Microsoft\OneDrive\OneDrive.exe"",
+    ""${env:ProgramFiles}\Microsoft OneDrive\OneDrive.exe"",
+    ""${env:ProgramFiles(x86)}\Microsoft OneDrive\OneDrive.exe""
+  )
+  foreach ($p in $probes) { if (Test-Path -LiteralPath $p) { return $true } }
+  return $false
+}
+
+foreach ($cmd in @(Get-OneDriveUninstallCommands)) {
+  if (-not (Test-OneDriveInstalled)) { break }
+  $p = Start-Process -FilePath $cmd.Exe -ArgumentList $cmd.Args -PassThru -WindowStyle Hidden
   if ($p -and -not $p.WaitForExit(120000)) {
     try { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue } catch {}
   }
+  Stop-NamedProcesses @('OneDrive','OneDriveSetup','FileCoAuth')
 }
 
 Stop-NamedProcesses @('OneDrive','OneDriveSetup','FileCoAuth')

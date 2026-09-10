@@ -385,6 +385,10 @@ public sealed class CommandSpec
     /// <summary>Expected value when detectMode is equals (case-insensitive; Yes/true/1 accepted for Yes).</summary>
     [JsonPropertyName("detectValue")]
     public string? DetectValue { get; set; }
+
+    /// <summary>Apply/revert timeout in milliseconds (default 30000). Long DISM ops need more.</summary>
+    [JsonPropertyName("timeoutMs")]
+    public int? TimeoutMs { get; set; }
 }
 
 public sealed class PresetCatalogEntry

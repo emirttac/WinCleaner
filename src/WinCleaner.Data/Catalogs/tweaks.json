@@ -675,29 +675,21 @@
     "descriptionKey": "tweak.recall.desc",
     "category": "Windows11UI",
     "risk": "Safe",
-    "type": "registry",
+    "type": "command",
     "win11Only": true,
     "minBuild": 26100,
-    "registries": [
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "name": "DisableAIDataAnalysis",
-        "valueKind": "DWord",
-        "enabledValue": "1",
-        "disabledValue": "0",
-        "applyMeansDisable": false
-      },
-      {
-        "hive": "HKLM",
-        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI",
-        "name": "AllowRecallEnablement",
-        "valueKind": "DWord",
-        "enabledValue": "0",
-        "disabledValue": "1",
-        "applyMeansDisable": false
-      }
-    ]
+    "requiresReboot": true,
+    "command": {
+      "fileName": "powershell",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; foreach ($p in @('HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI','HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsAI')) { New-Item -Path $p -Force | Out-Null; New-ItemProperty -Path $p -Name 'DisableAIDataAnalysis' -Value 1 -PropertyType DWord -Force | Out-Null }; New-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI' -Name 'AllowRecallEnablement' -Value 0 -PropertyType DWord -Force | Out-Null; try { $f = Get-WindowsOptionalFeature -Online -FeatureName 'Recall' -ErrorAction Stop; if ($f -and $f.State -eq 'Enabled') { Disable-WindowsOptionalFeature -Online -FeatureName 'Recall' -NoRestart -ErrorAction Stop | Out-Null } } catch { }\"",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI' -Name 'AllowRecallEnablement' -ErrorAction SilentlyContinue; Remove-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI' -Name 'DisableAIDataAnalysis' -ErrorAction SilentlyContinue; Remove-ItemProperty -Path 'HKCU:\\Software\\Policies\\Microsoft\\Windows\\WindowsAI' -Name 'DisableAIDataAnalysis' -ErrorAction SilentlyContinue; exit 0\"",
+      "requiresAdmin": true,
+      "timeoutMs": 300000,
+      "detectFileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $pol = Get-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI' -ErrorAction SilentlyContinue; $polOk = ($pol -and $pol.AllowRecallEnablement -eq 0 -and $pol.DisableAIDataAnalysis -eq 1); $featOff = $true; try { $f = Get-WindowsOptionalFeature -Online -FeatureName 'Recall' -ErrorAction Stop; if ($f -and $f.State -eq 'Enabled') { $featOff = $false } } catch { }; if ($polOk -and $featOff) { 'WC_RECALL_OFF' } else { 'WC_RECALL_ON' }\"",
+      "detectMode": "contains",
+      "detectValue": "WC_RECALL_OFF"
+    }
   },
   {
     "id": "tweak-start-iris",

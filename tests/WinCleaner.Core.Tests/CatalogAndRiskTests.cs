@@ -113,8 +113,15 @@ public class CatalogLoaderTests
         var recall = Assert.Single(tweaks, t => t.Id == "tweak-disable-recall");
         Assert.Equal(26100, recall.MinBuild);
         Assert.True(recall.Win11Only);
-        Assert.NotNull(recall.Registries);
-        Assert.True(recall.Registries!.Count >= 2);
+        Assert.Equal("command", recall.Type, ignoreCase: true);
+        Assert.NotNull(recall.Command);
+        // Apply must set both policies and disable the Recall optional feature.
+        Assert.Contains("DisableAIDataAnalysis", recall.Command!.Arguments);
+        Assert.Contains("AllowRecallEnablement", recall.Command.Arguments);
+        Assert.Contains("Disable-WindowsOptionalFeature", recall.Command.Arguments);
+        Assert.False(string.IsNullOrWhiteSpace(recall.Command.RevertArguments));
+        Assert.True(recall.Command.RequiresAdmin);
+        Assert.True(recall.RequiresReboot);
     }
 
     [Fact]
