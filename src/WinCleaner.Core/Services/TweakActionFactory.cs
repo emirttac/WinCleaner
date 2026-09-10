@@ -82,7 +82,6 @@ public sealed class TweakActionFactory
         if (match is null)
             return entry;
 
-        // Shallow clone with resolved single registry (variants take precedence).
         return new TweakCatalogEntry
         {
             Id = entry.Id,
@@ -95,8 +94,8 @@ public sealed class TweakActionFactory
             Win11Only = entry.Win11Only,
             RequiresAntiCheatConfirm = entry.RequiresAntiCheatConfirm,
             RequiresReboot = entry.RequiresReboot,
-            Registry = match.Registry,
-            Registries = entry.Registries,
+            Registry = match.Registries is { Count: > 0 } ? null : match.Registry ?? entry.Registry,
+            Registries = match.Registries is { Count: > 0 } ? match.Registries : entry.Registries,
             Service = entry.Service,
             Task = entry.Task,
             PowerPlan = entry.PowerPlan,
@@ -106,22 +105,23 @@ public sealed class TweakActionFactory
 
     public ServiceChangeAction CreateServiceAction(
         string id, string name, string desc, string category, RiskLevel risk,
-        string serviceName, string desiredStart)
+        string serviceName, string desiredStart, IEnumerable<string>? aliases = null)
     {
+        var resolved = _services.ResolveExistingName(serviceName, aliases);
         var target = desiredStart.ToLowerInvariant() switch
         {
             "automatic" or "auto" => ServiceStartModeTarget.Automatic,
             "manual" or "demand" => ServiceStartModeTarget.Manual,
             _ => ServiceStartModeTarget.Disabled
         };
-        return new ServiceChangeAction(id, name, desc, category, risk, serviceName, target, _services);
+        return new ServiceChangeAction(id, name, desc, category, risk, resolved, target, _services);
     }
 
     public AppxRemoveAction CreateAppxRemove(AppCatalogEntry entry) =>
         new(entry.Id, _localize(entry.DisplayNameKey), _localize(entry.DescriptionKey),
-            RiskParser.Parse(entry.Risk), entry.PackageName, _appx);
+            RiskParser.Parse(entry.Risk), entry.GetPackageNamePatterns(), _appx);
 
-    public OneDriveUninstallAction CreateOneDriveUninstall() => new(_appx);
+    public OneDriveUninstallAction CreateOneDriveUninstall() => new(_appx, _localize);
 }
 
 public sealed class PresetEngine
@@ -184,7 +184,8 @@ public sealed class PresetEngine
                     svc.Category,
                     risk,
                     svc.ServiceName,
-                    start));
+                    start,
+                    svc.ServiceAliases));
             }
         }
         else if (profile.ServiceIds is { Count: > 0 })
@@ -203,7 +204,8 @@ public sealed class PresetEngine
                     svc.Category,
                     risk,
                     svc.ServiceName,
-                    svc.RecommendedStart));
+                    svc.RecommendedStart,
+                    svc.ServiceAliases));
             }
         }
 
@@ -256,4 +258,8 @@ public sealed class AppServices
         ActionFactory = new TweakActionFactory(Registry, Services, PowerPlans, Appx, Tasks, localize, Os);
         Presets = new PresetEngine(ActionFactory, Executor, Os);
     }
+
+    /// <summary>Ensure a single session restore point exists before system-changing tools.</summary>
+    public Task EnsureSessionRestoreAsync(CancellationToken ct = default) =>
+        RestorePoints.EnsureSessionCheckpointAsync(Settings.AutoRestorePoint, warnIfMissing: true, ct);
 }

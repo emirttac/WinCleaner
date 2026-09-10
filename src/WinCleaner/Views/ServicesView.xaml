@@ -7,8 +7,8 @@
     <TextBlock Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
 
     <DockPanel Margin="0,0,0,12">
-      <Button DockPanel.Dock="Right" Content="Disable Category" Command="{Binding DisableCategoryCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
-      <Button DockPanel.Dock="Right" Content="Refresh" Command="{Binding ReloadCommand}" Style="{StaticResource SecondaryButtonStyle}"/>
+      <Button DockPanel.Dock="Right" Content="{DynamicResource common.disableAll}" Command="{Binding DisableCategoryCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="8,0,0,0"/>
+      <Button DockPanel.Dock="Right" Content="{DynamicResource common.refresh}" Command="{Binding ReloadCommand}" Style="{StaticResource SecondaryButtonStyle}"/>
       <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}" Width="200" HorizontalAlignment="Left"/>
     </DockPanel>
 
@@ -36,7 +36,7 @@
                            Text="{Binding StatusLine, Mode=OneWay}"/>
               </StackPanel>
               <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                <TextBlock Text="Disable" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
+                <TextBlock Text="{DynamicResource svc.disable}" FontSize="10" Foreground="{StaticResource TextMutedBrush}" HorizontalAlignment="Center"/>
                 <ToggleButton Style="{StaticResource SwitchToggleStyle}"
                               IsChecked="{Binding IsDisabled, Mode=OneWay}"
                               IsEnabled="{Binding IsEnabled}"

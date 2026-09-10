@@ -53,6 +53,7 @@
   <sys:String x:Key="dash.applyGamer">Apply Gamer Preset</sys:String>
   <sys:String x:Key="dash.flushDns">Flush DNS</sys:String>
   <sys:String x:Key="dash.cleanTemp">Clean Temp Files</sys:String>
+  <sys:String x:Key="dash.createRestore">Create Restore Point</sys:String>
   <sys:String x:Key="svc.title">Services</sys:String>
   <sys:String x:Key="svc.subtitle">Small programs Windows keeps running in the background. Turning off the ones you do not need lets your PC breathe easier. Toggle = Disabled.</sys:String>
   <sys:String x:Key="svc.startType">Start Type</sys:String>
@@ -113,6 +114,7 @@
   <sys:String x:Key="tools.takeOwn.desc">Adds &quot;Take Ownership&quot; to file and folder right-click menus (takeown + icacls). Requires Administrator. Turning off removes the menu keys.</sys:String>
   <sys:String x:Key="tools.takeOwn.menu">Take Ownership</sys:String>
   <sys:String x:Key="tools.tempFreed">Freed approximately {0}.</sys:String>
+  <sys:String x:Key="tools.tempWorking">Cleaning temporary files…</sys:String>
   <sys:String x:Key="tools.progress.done">Completed.</sys:String>
   <sys:String x:Key="tools.progress.failed">Finished with errors.</sys:String>
   <sys:String x:Key="tools.registrySafe">Safe Registry Tweaks</sys:String>
@@ -123,7 +125,15 @@
   <sys:String x:Key="set.title">Settings</sys:String>
   <sys:String x:Key="set.subtitle">Language, safety, and logs — manage how WinCleaner itself behaves from here</sys:String>
   <sys:String x:Key="set.language">Language</sys:String>
-  <sys:String x:Key="set.restore">Create System Restore Point before changes (recommended: leave this on)</sys:String>
+  <sys:String x:Key="set.restore">Warn and create a session restore point if you start without one (recommended). Does not create a point per setting.</sys:String>
+  <sys:String x:Key="restore.cardTitle">System Restore Point</sys:String>
+  <sys:String x:Key="restore.statusNone">No restore point in this session yet. Create one before making changes.</sys:String>
+  <sys:String x:Key="restore.statusOk">Restore point is ready for this session.</sys:String>
+  <sys:String x:Key="restore.created">Restore point created.</sys:String>
+  <sys:String x:Key="restore.failed">Could not create a restore point. System Restore may be turned off.</sys:String>
+  <sys:String x:Key="restore.warnTitle">No restore point yet</sys:String>
+  <sys:String x:Key="restore.warnBody">You have not created a restore point in this session. A restore point will be created automatically before continuing (this can take about a minute). One restore point is used for the whole session — not per setting.</sys:String>
+  <sys:String x:Key="restore.creating">Creating restore point…</sys:String>
   <sys:String x:Key="set.dangerous">Allow dangerous actions (only if you know what you are doing)</sys:String>
   <sys:String x:Key="set.logs">Log folder</sys:String>
   <sys:String x:Key="set.updates">Check for updates on startup (optional, requires internet)</sys:String>
@@ -201,8 +211,8 @@
   <sys:String x:Key="app.3dviewer.desc">What it is: An app for viewing 3D model files.&#x0a;If you remove it: You cannot open 3D files (most people never do anyway).&#x0a;How to get it back: Microsoft Store. Safe to remove.</sys:String>
   <sys:String x:Key="app.mixedreality.name">Mixed Reality Portal</sys:String>
   <sys:String x:Key="app.mixedreality.desc">What it is: Setup portal for VR / mixed reality headsets.&#x0a;If you do not have VR: It is just wasted space.&#x0a;Safe to remove. Can be reinstalled from the Store.</sys:String>
-  <sys:String x:Key="app.xboxapp.name">Xbox Console Companion</sys:String>
-  <sys:String x:Key="app.xboxapp.desc">What it is: The older / companion Xbox app.&#x0a;If you remove it: Game Pass and some Xbox social features may be affected.&#x0a;Think twice if you use Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxapp.name">Xbox app</sys:String>
+  <sys:String x:Key="app.xboxapp.desc">What it is: The Xbox / Game Pass app. Windows 11 ships Microsoft.GamingApp; older PCs have Microsoft.XboxApp. WinCleaner removes whichever is installed.&#x0a;If you remove it: Game Pass, friends, and some Xbox social features may be affected.&#x0a;Think twice if you use Game Pass.</sys:String>
   <sys:String x:Key="app.xboxoverlay.name">Xbox Game Bar</sys:String>
   <sys:String x:Key="app.xboxoverlay.desc">What it is: The Win+G overlay in games — recording, widgets, FPS counter.&#x0a;If you remove / disable it: Less background recording load → some PCs gain FPS.&#x0a;Popular choice for gamers. Can be reinstalled from the Store.</sys:String>
   <sys:String x:Key="app.xboxidentity.name">Xbox Identity Provider</sys:String>
@@ -255,6 +265,26 @@
   <sys:String x:Key="app.todo.desc">What it is: Task list app.&#x0a;If you use something else: Safe to remove.</sys:String>
   <sys:String x:Key="app.quickassist.name">Quick Assist</sys:String>
   <sys:String x:Key="app.quickassist.desc">What it is: Remote support app.&#x0a;Rarely used, but handy in some support scenarios — remove carefully.</sys:String>
+  <sys:String x:Key="app.copilot.name">Copilot</sys:String>
+  <sys:String x:Key="app.copilot.desc">What it is: The Windows Copilot chat app on the taskbar / Start.&#x0a;If you remove it: Copilot shortcuts disappear; you can reinstall from the Store.&#x0a;Remove carefully if you actually use Copilot.</sys:String>
+  <sys:String x:Key="app.bingsearch.name">Bing Search</sys:String>
+  <sys:String x:Key="app.bingsearch.desc">What it is: Bing / search-highlights package that injects web results into Windows Search.&#x0a;If you remove it: Local search still works; Bing extras go away.&#x0a;Safe to remove.</sys:String>
+  <sys:String x:Key="app.outlook.name">Outlook (new)</sys:String>
+  <sys:String x:Key="app.outlook.desc">What it is: The new Outlook for Windows app that replaces Mail / Calendar on many PCs.&#x0a;If you use classic Outlook or another mail client: Safe to remove.&#x0a;Do not remove if this is your daily mail app.</sys:String>
+  <sys:String x:Key="app.stickynotes.name">Sticky Notes</sys:String>
+  <sys:String x:Key="app.stickynotes.desc">What it is: Microsoft Sticky Notes.&#x0a;If you do not use it: It just sits in the background.&#x0a;Safe to remove. Notes can be restored from the Store / your Microsoft account.</sys:String>
+  <sys:String x:Key="app.powerautomate.name">Power Automate</sys:String>
+  <sys:String x:Key="app.powerautomate.desc">What it is: Desktop automation / flow app bundled with Windows.&#x0a;If you never built a flow: You do not need it.&#x0a;Safe to remove.</sys:String>
+  <sys:String x:Key="app.devhome.name">Dev Home</sys:String>
+  <sys:String x:Key="app.devhome.desc">What it is: Microsoft’s developer dashboard (widgets, machine setup).&#x0a;If you are not a developer using it: Safe to remove.&#x0a;Windows 11 only.</sys:String>
+  <sys:String x:Key="app.xboxtcui.name">Xbox TCUI</sys:String>
+  <sys:String x:Key="app.xboxtcui.desc">What it is: Xbox title-callable UI used by Game Bar / Game Pass popups.&#x0a;If you remove it: Some Xbox in-game prompts may break.&#x0a;Leave it if you keep Game Bar or Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxspeech.name">Xbox speech overlay</sys:String>
+  <sys:String x:Key="app.xboxspeech.desc">What it is: Xbox Game Bar speech-to-text overlay.&#x0a;If you do not use in-game voice captions: Safe to remove.&#x0a;Leave it if you use Xbox accessibility features.</sys:String>
+  <sys:String x:Key="app.family.name">Microsoft Family</sys:String>
+  <sys:String x:Key="app.family.desc">What it is: Family Safety / parental controls companion app.&#x0a;If you do not manage child accounts on this PC: Safe to remove.&#x0a;How to get it back: Microsoft Store.</sys:String>
+  <sys:String x:Key="app.startexperiences.name">Start experiences</sys:String>
+  <sys:String x:Key="app.startexperiences.desc">What it is: Start menu recommendations / suggested-app experiences on Windows 11.&#x0a;If you remove it: Some Start suggestions disappear.&#x0a;Remove carefully — Start still works, but recommendations change.</sys:String>
   <sys:String x:Key="tweak.gamemode.name">Enable Game Mode</sys:String>
   <sys:String x:Key="tweak.gamemode.desc">What it does: Tells Windows &quot;I am gaming now — give other tasks less priority&quot;.&#x0a;When enabled: Background updates, indexing, and similar work step back; the game gets a bit more focus.&#x0a;If you turn it off: Back to normal behavior.&#x0a;Can you undo it: Yes. No harm; recommended for gamers.</sys:String>
   <sys:String x:Key="tweak.gamebar.name">Disable Game Bar Capture</sys:String>
@@ -310,7 +340,7 @@
   <sys:String x:Key="tweak.qos.name">Remove QoS Bandwidth Reserve</sys:String>
   <sys:String x:Key="tweak.qos.desc">What it does: Clears Windows’s default reserve that keeps part of bandwidth &quot;just in case&quot; (often ~20%).&#x0a;Result: In theory all bandwidth is yours. Not everyone sees a big difference, but harmless to try.&#x0a;Can you undo it: Yes.</sys:String>
   <sys:String x:Key="tweak.tcpauto.name">TCP Autotuning Normal</sys:String>
-  <sys:String x:Key="tweak.tcpauto.desc">What it does: Sets Windows TCP window autotuning to &quot;normal&quot; level (netsh).&#x0a;When to use: Weird download speeds or odd network behavior.&#x0a;Think of it as a one-shot command. Undo is a similar command.</sys:String>
+  <sys:String x:Key="tweak.tcpauto.desc">What it does: Sets Windows TCP window autotuning to &quot;normal&quot; level (netsh).&#x0a;When to use: Weird download speeds or odd network behavior.&#x0a;Think of it as a one-shot command. There is nothing to undo.</sys:String>
   <sys:String x:Key="tweak.dnsflush.name">Flush DNS Cache</sys:String>
   <sys:String x:Key="tweak.dnsflush.desc">What it does: Clears the PC’s cached &quot;website address = IP&quot; notes.&#x0a;When to use: Site will not load, goes to the wrong place, or odd behavior after VPN.&#x0a;Harmless one-time cleanup. Nothing to undo.</sys:String>
   <sys:String x:Key="tweak.netbios.name">Disable NetBIOS over TCP/IP</sys:String>
@@ -358,7 +388,7 @@
   <sys:String x:Key="tweak.searchicon.name">Shrink Search Box to Icon</sys:String>
   <sys:String x:Key="tweak.searchicon.desc">What it does: Shrinks the wide taskbar search box to a small icon.&#x0a;Explorer restarts. Can you undo it: Yes.</sys:String>
   <sys:String x:Key="tweak.hidetaskview.name">Hide Task View Button</sys:String>
-  <sys:String x:Key="tweak.hidetaskview.desc">What it does: Removes the Task View button from the taskbar.&#x0a;Explorer restarts. Can you undo it: Yes.</sys:String>
+  <sys:String x:Key="tweak.hidetaskview.desc">What it does: Hides the Task View button on the taskbar (does not uninstall anything).&#x0a;Explorer restarts. Can you undo it: Yes.</sys:String>
   <sys:String x:Key="tweak.explorerthispc.name">Open Explorer to This PC</sys:String>
   <sys:String x:Key="tweak.explorerthispc.desc">What it does: File Explorer opens to This PC instead of Home.&#x0a;Can you undo it: Yes.</sys:String>
   <sys:String x:Key="tweak.netthrottle.name">Reset Network Throttling Index</sys:String>
@@ -492,5 +522,14 @@
   <sys:String x:Key="set.social.youtube">YouTube</sys:String>
   <sys:String x:Key="set.social.instagram">Instagram</sys:String>
   <sys:String x:Key="set.social.github">GitHub</sys:String>
+  <sys:String x:Key="common.loading">Loading...</sys:String>
+  <sys:String x:Key="blo.installed">Installed</sys:String>
+  <sys:String x:Key="blo.notInstalled">Not installed</sys:String>
+  <sys:String x:Key="svc.disable">Disable</sys:String>
+  <sys:String x:Key="preset.applyPreview">Apply / Preview</sys:String>
+  <sys:String x:Key="preset.custom">Custom Profile</sys:String>
+  <sys:String x:Key="tools.cleanTemp.confirm">Delete files in Windows and user Temp folders? Files in use are skipped. Continue?</sys:String>
+  <sys:String x:Key="danger.needSettings">Turn on “Allow dangerous actions” in Settings before this operation.</sys:String>
+  <sys:String x:Key="msg.oneShotOk">Command completed.</sys:String>
 
 </ResourceDictionary>

@@ -53,6 +53,7 @@
   <sys:String x:Key="dash.applyGamer">应用玩家预设</sys:String>
   <sys:String x:Key="dash.flushDns">刷新 DNS</sys:String>
   <sys:String x:Key="dash.cleanTemp">清理临时文件</sys:String>
+  <sys:String x:Key="dash.createRestore">创建还原点</sys:String>
   <sys:String x:Key="svc.title">服务</sys:String>
   <sys:String x:Key="svc.subtitle">Windows 在后台运行的小型程序。关闭不需要的服务可减轻系统负担。开关 = 已禁用。</sys:String>
   <sys:String x:Key="svc.startType">启动类型</sys:String>
@@ -113,6 +114,7 @@
   <sys:String x:Key="tools.takeOwn.desc">在文件与文件夹右键菜单中添加「取得所有权」（takeown + icacls）。需要管理员权限。关闭后将移除菜单项。</sys:String>
   <sys:String x:Key="tools.takeOwn.menu">取得所有权</sys:String>
   <sys:String x:Key="tools.tempFreed">约释放 {0}。</sys:String>
+  <sys:String x:Key="tools.tempWorking">正在清理临时文件…</sys:String>
   <sys:String x:Key="tools.progress.done">已完成。</sys:String>
   <sys:String x:Key="tools.progress.failed">已完成，但有错误。</sys:String>
   <sys:String x:Key="tools.registrySafe">安全注册表调整</sys:String>
@@ -123,7 +125,15 @@
   <sys:String x:Key="set.title">设置</sys:String>
   <sys:String x:Key="set.subtitle">语言、安全与日志——在此管理 WinCleaner 自身行为</sys:String>
   <sys:String x:Key="set.language">语言</sys:String>
-  <sys:String x:Key="set.restore">更改前创建系统还原点（建议保持开启）</sys:String>
+  <sys:String x:Key="set.restore">若未创建还原点就开始操作，则警告并自动创建（建议开启）。不会为每个设置单独创建还原点。</sys:String>
+  <sys:String x:Key="restore.cardTitle">系统还原点</sys:String>
+  <sys:String x:Key="restore.statusNone">本次会话尚未创建还原点。建议在更改前先创建。</sys:String>
+  <sys:String x:Key="restore.statusOk">本次会话的还原点已就绪。</sys:String>
+  <sys:String x:Key="restore.created">已创建还原点。</sys:String>
+  <sys:String x:Key="restore.failed">无法创建还原点。系统还原可能已关闭。</sys:String>
+  <sys:String x:Key="restore.warnTitle">尚无还原点</sys:String>
+  <sys:String x:Key="restore.warnBody">本次会话尚未创建还原点。继续之前将自动创建一个（大约需要一分钟）。整个会话共用一个还原点，不会按每个设置分别创建。</sys:String>
+  <sys:String x:Key="restore.creating">正在创建还原点…</sys:String>
   <sys:String x:Key="set.dangerous">允许危险操作（仅在您清楚后果时启用）</sys:String>
   <sys:String x:Key="set.logs">日志文件夹</sys:String>
   <sys:String x:Key="set.updates">启动时检查更新（可选，需要网络）</sys:String>
@@ -201,8 +211,8 @@
   <sys:String x:Key="app.3dviewer.desc">是什么：用于查看 3D 模型文件的应用。&#x0a;移除后：无法打开 3D 文件（大多数人本来也不用）。&#x0a;如何恢复：Microsoft Store。可安全移除。</sys:String>
   <sys:String x:Key="app.mixedreality.name">混合现实门户</sys:String>
   <sys:String x:Key="app.mixedreality.desc">是什么：VR / 混合现实头显的设置门户。&#x0a;若无 VR：只是浪费空间。&#x0a;可安全移除。可从 Store 重新安装。</sys:String>
-  <sys:String x:Key="app.xboxapp.name">Xbox 主机助手</sys:String>
-  <sys:String x:Key="app.xboxapp.desc">是什么：较旧的 / 配套 Xbox 应用。&#x0a;移除后：Game Pass 与部分 Xbox 社交功能可能受影响。&#x0a;若使用 Game Pass，请三思。</sys:String>
+  <sys:String x:Key="app.xboxapp.name">Xbox 应用</sys:String>
+  <sys:String x:Key="app.xboxapp.desc">是什么：Xbox / Game Pass 应用。Windows 11 为 Microsoft.GamingApp；旧电脑可能是 Microsoft.XboxApp。WinCleaner 会移除当前已安装的那个。&#x0a;移除后：Game Pass、好友及部分 Xbox 社交功能可能受影响。&#x0a;若使用 Game Pass，请三思。</sys:String>
   <sys:String x:Key="app.xboxoverlay.name">Xbox Game Bar</sys:String>
   <sys:String x:Key="app.xboxoverlay.desc">是什么：游戏中的 Win+G 叠加层——录制、小组件、FPS 计数器。&#x0a;移除 / 禁用后：后台录制负载减少 → 部分电脑 FPS 提升。&#x0a;玩家常见选择。可从 Store 重新安装。</sys:String>
   <sys:String x:Key="app.xboxidentity.name">Xbox Identity Provider</sys:String>
@@ -255,6 +265,26 @@
   <sys:String x:Key="app.todo.desc">是什么：待办列表应用。&#x0a;若使用其他工具：可安全移除。</sys:String>
   <sys:String x:Key="app.quickassist.name">快速助手</sys:String>
   <sys:String x:Key="app.quickassist.desc">是什么：远程协助应用。&#x0a;很少用，但在某些支持场景中很方便——请谨慎移除。</sys:String>
+  <sys:String x:Key="app.copilot.name">Copilot</sys:String>
+  <sys:String x:Key="app.copilot.desc">是什么：任务栏 / 开始菜单中的 Windows Copilot 聊天应用。&#x0a;移除后：Copilot 快捷方式消失；可从 Store 重装。&#x0a;若确实使用 Copilot，请谨慎移除。</sys:String>
+  <sys:String x:Key="app.bingsearch.name">Bing 搜索</sys:String>
+  <sys:String x:Key="app.bingsearch.desc">是什么：把网页结果 / 搜索亮点注入 Windows 搜索的 Bing 包。&#x0a;移除后：本地搜索仍可用；Bing 附加功能消失。&#x0a;可安全移除。</sys:String>
+  <sys:String x:Key="app.outlook.name">Outlook（新）</sys:String>
+  <sys:String x:Key="app.outlook.desc">是什么：在许多电脑上取代邮件 / 日历的新版 Outlook for Windows。&#x0a;若使用经典 Outlook 或其他客户端：可安全移除。&#x0a;若这是日常邮箱应用，请勿移除。</sys:String>
+  <sys:String x:Key="app.stickynotes.name">便笺</sys:String>
+  <sys:String x:Key="app.stickynotes.desc">是什么：Microsoft 便笺。&#x0a;若不用：只会在后台占用。&#x0a;可安全移除。可通过 Store / 微软账户恢复。</sys:String>
+  <sys:String x:Key="app.powerautomate.name">Power Automate</sys:String>
+  <sys:String x:Key="app.powerautomate.desc">是什么：随 Windows 附带的桌面自动化 / 流程应用。&#x0a;若从未创建流程：不需要。&#x0a;可安全移除。</sys:String>
+  <sys:String x:Key="app.devhome.name">Dev Home</sys:String>
+  <sys:String x:Key="app.devhome.desc">是什么：微软开发者仪表板（小组件、机器配置）。&#x0a;若不用：可安全移除。&#x0a;仅 Windows 11。</sys:String>
+  <sys:String x:Key="app.xboxtcui.name">Xbox TCUI</sys:String>
+  <sys:String x:Key="app.xboxtcui.desc">是什么：Game Bar / Game Pass 弹窗使用的 Xbox 界面组件。&#x0a;移除后：部分游戏内 Xbox 提示可能失效。&#x0a;若保留 Game Bar 或 Game Pass，请留下。</sys:String>
+  <sys:String x:Key="app.xboxspeech.name">Xbox 语音叠加层</sys:String>
+  <sys:String x:Key="app.xboxspeech.desc">是什么：Xbox Game Bar 语音转文字叠加层。&#x0a;若不用游戏内字幕：可安全移除。&#x0a;若使用 Xbox 辅助功能，请留下。</sys:String>
+  <sys:String x:Key="app.family.name">Microsoft 家庭</sys:String>
+  <sys:String x:Key="app.family.desc">是什么：家庭安全 / 家长控制应用。&#x0a;若本机不管理儿童账户：可安全移除。&#x0a;恢复方式：Microsoft Store。</sys:String>
+  <sys:String x:Key="app.startexperiences.name">开始体验</sys:String>
+  <sys:String x:Key="app.startexperiences.desc">是什么：Windows 11 开始菜单推荐 / 建议应用体验。&#x0a;移除后：部分开始建议会消失。&#x0a;请谨慎移除——开始菜单仍可用，推荐会变化。</sys:String>
   <sys:String x:Key="tweak.gamemode.name">启用 Game Mode</sys:String>
   <sys:String x:Key="tweak.gamemode.desc">作用：告诉 Windows「正在游戏——降低其他任务优先级」。&#x0a;启用后：后台更新、索引等让路；游戏获得更多焦点。&#x0a;关闭后：恢复正常行为。&#x0a;可否撤销：可以。无害；建议玩家开启。</sys:String>
   <sys:String x:Key="tweak.gamebar.name">禁用 Game Bar 捕获</sys:String>
@@ -310,7 +340,7 @@
   <sys:String x:Key="tweak.qos.name">移除 QoS 带宽预留</sys:String>
   <sys:String x:Key="tweak.qos.desc">作用：清除 Windows 默认「以防万一」预留的部分带宽（常约 20%）。&#x0a;结果：理论上全部带宽归你。并非人人有明显差异，但尝试无害。&#x0a;可否撤销：可以。</sys:String>
   <sys:String x:Key="tweak.tcpauto.name">TCP 自动调节正常</sys:String>
-  <sys:String x:Key="tweak.tcpauto.desc">作用：将 Windows TCP 窗口自动调节设为「正常」级别（netsh）。&#x0a;何时使用：下载速度异常或网络行为怪异时。&#x0a;可视为一次性命令。撤销为类似命令。</sys:String>
+  <sys:String x:Key="tweak.tcpauto.desc">作用：将 Windows TCP 窗口自动调节设为「正常」级别（netsh）。&#x0a;何时使用：下载速度异常或网络行为怪异时。&#x0a;可视为一次性命令。无需撤销。</sys:String>
   <sys:String x:Key="tweak.dnsflush.name">刷新 DNS 缓存</sys:String>
   <sys:String x:Key="tweak.dnsflush.desc">作用：清除电脑缓存的「网站地址 = IP」记录。&#x0a;何时使用：网站打不开、跳错地址，或 VPN 后异常时。&#x0a;无害的一次性清理。无需撤销。</sys:String>
   <sys:String x:Key="tweak.netbios.name">禁用 NetBIOS over TCP/IP</sys:String>
@@ -358,7 +388,7 @@
   <sys:String x:Key="tweak.searchicon.name">搜索框缩小为图标</sys:String>
   <sys:String x:Key="tweak.searchicon.desc">作用：将宽任务栏搜索框缩小为小图标。&#x0a;资源管理器会重启。可否撤销：可以。</sys:String>
   <sys:String x:Key="tweak.hidetaskview.name">隐藏任务视图按钮</sys:String>
-  <sys:String x:Key="tweak.hidetaskview.desc">作用：从任务栏移除任务视图按钮。&#x0a;资源管理器会重启。可否撤销：可以。</sys:String>
+  <sys:String x:Key="tweak.hidetaskview.desc">作用：在任务栏上隐藏任务视图按钮（不会卸载任何应用）。&#x0a;资源管理器会重启。可否撤销：可以。</sys:String>
   <sys:String x:Key="tweak.explorerthispc.name">资源管理器打开「此电脑」</sys:String>
   <sys:String x:Key="tweak.explorerthispc.desc">作用：文件资源管理器打开「此电脑」而非「主页」。&#x0a;可否撤销：可以。</sys:String>
   <sys:String x:Key="tweak.netthrottle.name">重置网络限制索引</sys:String>
@@ -492,5 +522,14 @@
   <sys:String x:Key="set.social.youtube">YouTube</sys:String>
   <sys:String x:Key="set.social.instagram">Instagram</sys:String>
   <sys:String x:Key="set.social.github">GitHub</sys:String>
+  <sys:String x:Key="common.loading">加载中…</sys:String>
+  <sys:String x:Key="blo.installed">已安装</sys:String>
+  <sys:String x:Key="blo.notInstalled">未安装</sys:String>
+  <sys:String x:Key="svc.disable">禁用</sys:String>
+  <sys:String x:Key="preset.applyPreview">应用 / 预览</sys:String>
+  <sys:String x:Key="preset.custom">自定义配置</sys:String>
+  <sys:String x:Key="tools.cleanTemp.confirm">删除 Windows 和用户 Temp 文件夹中的文件？正在使用的文件会跳过。继续？</sys:String>
+  <sys:String x:Key="danger.needSettings">请先在设置中开启“允许危险操作”。</sys:String>
+  <sys:String x:Key="msg.oneShotOk">命令已完成。</sys:String>
 
 </ResourceDictionary>

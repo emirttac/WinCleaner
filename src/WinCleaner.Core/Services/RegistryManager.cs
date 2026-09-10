@@ -9,7 +9,8 @@ public sealed class RegistryManager
         using var key = OpenKey(hive, path, writable: false);
         if (key is null) return null;
         // Empty name = default (unnamed) value
-        return key.GetValue(NormalizeValueName(name), defaultValue: null, RegistryValueOptions.DoNotExpandEnvironmentNames);
+        var valueName = string.IsNullOrEmpty(name) ? null : name;
+        return key.GetValue(valueName, defaultValue: null, RegistryValueOptions.DoNotExpandEnvironmentNames);
     }
 
     public string? GetValueAsString(string hive, string path, string name)
@@ -28,7 +29,64 @@ public sealed class RegistryManager
     {
         using var key = OpenKey(hive, path, writable: true, create: true)
             ?? throw new InvalidOperationException($"Cannot open/create registry key {hive}\\{path}");
-        key.SetValue(NormalizeValueName(name), value, kind);
+        // Default (unnamed) value: pass null so Win32 REG_SZ (Default) is set correctly.
+        // Empty-string name alone is unreliable for the classic-context-menu CLSID trick.
+        if (string.IsNullOrEmpty(name))
+            key.SetValue(null, value ?? "", kind);
+        else
+            key.SetValue(name, value, kind);
+    }
+
+    /// <summary>
+    /// Win11 classic context menu: CLSID InprocServer32 must exist with an empty REG_SZ (Default).
+    /// </summary>
+    public void EnableClassicContextMenu()
+    {
+        const string clsid = @"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}";
+        const string inproc = clsid + @"\InprocServer32";
+
+        // Clean any half-written key tree first.
+        DeleteKeyTree("HKCU", clsid);
+
+        using var key = Registry.CurrentUser.CreateSubKey(inproc, writable: true)
+            ?? throw new InvalidOperationException("Cannot create classic context menu CLSID key.");
+        key.SetValue(null, "", RegistryValueKind.String);
+
+        // Verify — key without an explicit (Default) value does not restore the classic menu.
+        if (!IsClassicContextMenuEnabled())
+            throw new InvalidOperationException("Classic context menu registry value was not written.");
+    }
+
+    public bool IsClassicContextMenuEnabled()
+    {
+        const string inproc = @"Software\Classes\CLSID\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}\InprocServer32";
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey(inproc, writable: false);
+            if (key is null)
+                return false;
+
+            // Default value must be present as REG_SZ (empty string is the required payload).
+            var kind = key.GetValueKind("");
+            if (kind is not (RegistryValueKind.String or RegistryValueKind.ExpandString))
+                return false;
+
+            var raw = key.GetValue("", null, RegistryValueOptions.DoNotExpandEnvironmentNames);
+            return raw is string;
+        }
+        catch (IOException)
+        {
+            return false;
+        }
+        catch (UnauthorizedAccessException)
+        {
+            return false;
+        }
+        catch (ArgumentException)
+        {
+            // GetValueKind throws when (Default) was never written.
+            return false;
+        }
     }
 
     public void DeleteValue(string hive, string path, string name)
@@ -87,7 +145,7 @@ public sealed class RegistryManager
             if (sub is null) return false;
             var raw = sub.GetValue(NormalizeValueName(name), defaultValue: null);
             if (raw is null) return false;
-            if (!string.Equals(raw.ToString(), expected, StringComparison.OrdinalIgnoreCase))
+            if (!ValuesEqual(raw.ToString(), expected, "DWord"))
                 return false;
         }
 
@@ -107,6 +165,30 @@ public sealed class RegistryManager
             RegistryValueKind.QWord => long.TryParse(raw, out var l) ? l : Convert.ToInt64(raw),
             _ => raw ?? ""
         };
+
+    /// <summary>Compares a live registry string to a catalog value, including DWORD -1 vs 4294967295.</summary>
+    public static bool ValuesEqual(string? current, string expected, string valueKind)
+    {
+        if (current is null)
+            return false;
+        if (string.Equals(current, expected, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        var kind = ParseKind(valueKind);
+        if (kind is not RegistryValueKind.DWord and not RegistryValueKind.QWord)
+            return false;
+
+        try
+        {
+            var a = ParseValue(current, kind);
+            var b = ParseValue(expected, kind);
+            return Convert.ToInt64(a) == Convert.ToInt64(b);
+        }
+        catch
+        {
+            return false;
+        }
+    }
 
     /// <summary>
     /// Accepts signed ints, unsigned (e.g. 4294967295 → 0xFFFFFFFF), and 0x hex forms.

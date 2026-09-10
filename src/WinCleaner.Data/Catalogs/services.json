@@ -245,6 +245,7 @@
   {
     "id": "svc-tabletinput",
     "serviceName": "TabletInputService",
+    "serviceAliases": [ "TextInputManagementService" ],
     "displayNameKey": "svc.tabletinput.name",
     "descriptionKey": "svc.tabletinput.desc",
     "category": "Other",

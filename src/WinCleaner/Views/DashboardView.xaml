@@ -6,6 +6,25 @@
     <TextBlock Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
     <TextBlock Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
 
+    <Border Style="{StaticResource CardBorderStyle}">
+      <Grid>
+        <Grid.ColumnDefinitions>
+          <ColumnDefinition Width="*"/>
+          <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Margin="0,0,16,0">
+          <TextBlock Text="{Binding RestoreCardTitle}" Style="{StaticResource CardTitleStyle}"/>
+          <TextBlock Text="{Binding RestoreStatusText}" TextWrapping="Wrap"
+                     Foreground="{StaticResource TextSecondaryBrush}" Margin="0,6,0,0" FontSize="12"/>
+        </StackPanel>
+        <Button Grid.Column="1" Content="{Binding CreateRestoreLabel}"
+                Command="{Binding CreateRestoreCommand}"
+                Style="{StaticResource PrimaryButtonStyle}"
+                VerticalAlignment="Center"
+                IsEnabled="{Binding CanRunQuickActions}"/>
+      </Grid>
+    </Border>
+
     <UniformGrid Columns="2">
       <Border Style="{StaticResource CardBorderStyle}" Margin="0,0,10,10">
         <StackPanel>
@@ -42,9 +61,12 @@
 
     <TextBlock Text="{Binding QuickTitle}" Style="{StaticResource SectionHeaderStyle}"/>
     <StackPanel Orientation="Horizontal">
-      <Button Content="Gamer Preset" Command="{Binding ApplyGamerCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0"/>
-      <Button Content="Flush DNS" Command="{Binding FlushDnsCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0"/>
-      <Button Content="Clean Temp" Command="{Binding CleanTempCommand}" Style="{StaticResource SecondaryButtonStyle}"/>
+      <Button Content="{Binding ApplyGamerLabel}" Command="{Binding ApplyGamerCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0"
+              IsEnabled="{Binding CanRunQuickActions}"/>
+      <Button Content="{Binding FlushDnsLabel}" Command="{Binding FlushDnsCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0"
+              IsEnabled="{Binding CanRunQuickActions}"/>
+      <Button Content="{Binding CleanTempLabel}" Command="{Binding CleanTempCommand}" Style="{StaticResource SecondaryButtonStyle}"
+              IsEnabled="{Binding CanRunQuickActions}"/>
     </StackPanel>
 
     <TextBlock Text="{Binding RecentTitle}" Style="{StaticResource SectionHeaderStyle}"/>

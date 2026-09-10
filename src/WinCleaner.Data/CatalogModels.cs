@@ -25,11 +25,33 @@ public sealed class ServiceCatalogEntry
     [JsonPropertyName("recommendedStart")]
     public string RecommendedStart { get; set; } = "Disabled";
 
+    /// <summary>Alternate SCM names (e.g. TabletInputService vs TextInputManagementService).</summary>
+    [JsonPropertyName("serviceAliases")]
+    public List<string>? ServiceAliases { get; set; }
+
     [JsonPropertyName("minBuild")]
     public int? MinBuild { get; set; }
 
     [JsonPropertyName("win11Only")]
     public bool Win11Only { get; set; }
+
+    public IReadOnlyList<string> GetServiceNames()
+    {
+        var names = new List<string>();
+        if (!string.IsNullOrWhiteSpace(ServiceName))
+            names.Add(ServiceName.Trim());
+        if (ServiceAliases is { Count: > 0 })
+        {
+            foreach (var alias in ServiceAliases)
+            {
+                if (string.IsNullOrWhiteSpace(alias)) continue;
+                var trimmed = alias.Trim();
+                if (!names.Exists(n => n.Equals(trimmed, StringComparison.OrdinalIgnoreCase)))
+                    names.Add(trimmed);
+            }
+        }
+        return names;
+    }
 }
 
 public sealed class AppCatalogEntry
@@ -39,6 +61,13 @@ public sealed class AppCatalogEntry
 
     [JsonPropertyName("packageName")]
     public string PackageName { get; set; } = "";
+
+    /// <summary>
+    /// Alternate AppX names for the same catalog row (e.g. Microsoft.XboxApp vs Microsoft.GamingApp).
+    /// Used for installed detection and removal.
+    /// </summary>
+    [JsonPropertyName("packageAliases")]
+    public List<string>? PackageAliases { get; set; }
 
     [JsonPropertyName("displayNameKey")]
     public string DisplayNameKey { get; set; } = "";
@@ -54,6 +83,68 @@ public sealed class AppCatalogEntry
 
     [JsonPropertyName("win11Only")]
     public bool Win11Only { get; set; }
+
+    public IReadOnlyList<string> GetPackageNamePatterns()
+    {
+        var names = new List<string>();
+        AddUnique(names, PackageName);
+        if (PackageAliases is { Count: > 0 })
+        {
+            foreach (var alias in PackageAliases)
+                AddUnique(names, alias);
+        }
+        return names;
+    }
+
+    public bool MatchesInstalledName(string? installedName)
+    {
+        if (string.IsNullOrWhiteSpace(installedName))
+            return false;
+        foreach (var pattern in GetPackageNamePatterns())
+        {
+            if (NameMatchesPattern(installedName, pattern))
+                return true;
+        }
+        return false;
+    }
+
+    public bool MatchesAnyInstalled(IEnumerable<string> installedNames)
+    {
+        foreach (var name in installedNames)
+        {
+            if (MatchesInstalledName(name))
+                return true;
+        }
+        return false;
+    }
+
+    /// <summary>
+    /// Exact package name, or a bounded prefix so Microsoft.People does not match
+    /// Microsoft.PeopleExperienceHost / Microsoft.Windows.PeopleExperienceHost.
+    /// </summary>
+    public static bool NameMatchesPattern(string installedName, string pattern)
+    {
+        if (string.IsNullOrWhiteSpace(installedName) || string.IsNullOrWhiteSpace(pattern))
+            return false;
+        if (installedName.Equals(pattern, StringComparison.OrdinalIgnoreCase))
+            return true;
+        if (installedName.Length <= pattern.Length)
+            return false;
+        if (!installedName.StartsWith(pattern, StringComparison.OrdinalIgnoreCase))
+            return false;
+        var next = installedName[pattern.Length];
+        return next is '.' or '_' or '-';
+    }
+
+    private static void AddUnique(List<string> names, string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return;
+        var trimmed = value.Trim();
+        if (names.Exists(n => n.Equals(trimmed, StringComparison.OrdinalIgnoreCase)))
+            return;
+        names.Add(trimmed);
+    }
 }
 
 /// <summary>winget-based software installer catalog entry.</summary>
@@ -162,7 +253,10 @@ public sealed class RegistryBuildVariant
     public int? MaxBuild { get; set; }
 
     [JsonPropertyName("registry")]
-    public RegistryTweakSpec Registry { get; set; } = new();
+    public RegistryTweakSpec? Registry { get; set; }
+
+    [JsonPropertyName("registries")]
+    public List<RegistryTweakSpec>? Registries { get; set; }
 }
 
 public sealed class RegistryTweakSpec
@@ -265,13 +359,26 @@ public sealed class CommandSpec
     public bool RequiresAdmin { get; set; }
 
     /// <summary>
+    /// One-shot command (DNS flush, set autotuning). Toggle must not stick; IsApplied is always false.
+    /// </summary>
+    [JsonPropertyName("oneShot")]
+    public bool OneShot { get; set; }
+
+    /// <summary>
     /// BCD / command state probe key (e.g. disabledynamictick, useplatformclock).
     /// Read via `bcdedit /enum {current}` when fileName is bcdedit.
     /// </summary>
     [JsonPropertyName("detectKey")]
     public string? DetectKey { get; set; }
 
-    /// <summary>equals | present | absent</summary>
+    /// <summary>Optional probe executable (powercfg, powershell). When set, stdout is used instead of bcdedit.</summary>
+    [JsonPropertyName("detectFileName")]
+    public string? DetectFileName { get; set; }
+
+    [JsonPropertyName("detectArguments")]
+    public string? DetectArguments { get; set; }
+
+    /// <summary>equals | present | absent | contains | lacks | acIndexEquals</summary>
     [JsonPropertyName("detectMode")]
     public string DetectMode { get; set; } = "equals";
 

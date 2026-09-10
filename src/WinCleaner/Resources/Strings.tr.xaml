@@ -53,6 +53,7 @@
   <sys:String x:Key="dash.applyGamer">Gamer Preset Uygula</sys:String>
   <sys:String x:Key="dash.flushDns">DNS Önbelleğini Temizle</sys:String>
   <sys:String x:Key="dash.cleanTemp">Geçici Dosyaları Temizle</sys:String>
+  <sys:String x:Key="dash.createRestore">Geri Yükleme Noktası Oluştur</sys:String>
   <sys:String x:Key="svc.title">Servisler</sys:String>
   <sys:String x:Key="svc.subtitle">Windows’un arka planda sürekli çalıştırdığı küçük programlar. Gereksiz olanları kapatınca bilgisayar daha rahat nefes alır. Anahtar = Devre dışı.</sys:String>
   <sys:String x:Key="svc.startType">Başlangıç Türü</sys:String>
@@ -113,6 +114,7 @@
   <sys:String x:Key="tools.takeOwn.desc">Dosya ve klasör sağ tık menüsüne &quot;Sahipliği Al&quot; ekler (takeown + icacls). Yönetici gerekir. Kapatınca menü kaydı silinir.</sys:String>
   <sys:String x:Key="tools.takeOwn.menu">Sahipliği Al</sys:String>
   <sys:String x:Key="tools.tempFreed">Yaklaşık {0} boşaltıldı.</sys:String>
+  <sys:String x:Key="tools.tempWorking">Geçici dosyalar temizleniyor…</sys:String>
   <sys:String x:Key="tools.progress.done">Tamamlandı.</sys:String>
   <sys:String x:Key="tools.progress.failed">Hata ile bitti.</sys:String>
   <sys:String x:Key="tools.registrySafe">Güvenli Registry Ayarları</sys:String>
@@ -123,7 +125,15 @@
   <sys:String x:Key="set.title">Ayarlar</sys:String>
   <sys:String x:Key="set.subtitle">Dil, güvenlik ve günlükler — WinCleaner’ın kendi davranışını buradan yönetirsin</sys:String>
   <sys:String x:Key="set.language">Dil</sys:String>
-  <sys:String x:Key="set.restore">Değişiklik öncesi System Restore Point oluştur (önerilir: açık kalsın)</sys:String>
+  <sys:String x:Key="set.restore">Geri yükleme noktası olmadan işlem başlatılırsa uyar ve otomatik oluştur (önerilir: açık kalsın). Her ayar için ayrı nokta oluşturulmaz.</sys:String>
+  <sys:String x:Key="restore.cardTitle">Sistem Geri Yükleme Noktası</sys:String>
+  <sys:String x:Key="restore.statusNone">Bu oturumda henüz geri yükleme noktası yok. İşlemlerden önce oluşturman önerilir.</sys:String>
+  <sys:String x:Key="restore.statusOk">Bu oturum için geri yükleme noktası hazır.</sys:String>
+  <sys:String x:Key="restore.created">Geri yükleme noktası oluşturuldu.</sys:String>
+  <sys:String x:Key="restore.failed">Geri yükleme noktası oluşturulamadı. Sistem Geri Yükleme kapalı olabilir.</sys:String>
+  <sys:String x:Key="restore.warnTitle">Geri Yükleme Noktası Yok</sys:String>
+  <sys:String x:Key="restore.warnBody">Bu oturumda henüz geri yükleme noktası oluşturulmadı. Devam etmeden önce otomatik olarak bir nokta oluşturulacak (yaklaşık bir dakika sürebilir). Her ayar için ayrı nokta oluşturulmaz; bu oturum için tek nokta yeter.</sys:String>
+  <sys:String x:Key="restore.creating">Geri yükleme noktası oluşturuluyor…</sys:String>
   <sys:String x:Key="set.dangerous">Riskli işlemlere izin ver (sadece ne yaptığını biliyorsan)</sys:String>
   <sys:String x:Key="set.logs">Log klasörü</sys:String>
   <sys:String x:Key="set.updates">Açılışta güncelleme kontrolü (opsiyonel, internet gerekir)</sys:String>
@@ -201,8 +211,8 @@
   <sys:String x:Key="app.3dviewer.desc">Ne: 3D model dosyalarına bakmak için uygulama.&#x0a;Kaldırınca: 3D dosya açamazsın (çoğu insan zaten açmıyor).&#x0a;Geri getirme: Microsoft Store. Güvenle silinebilir.</sys:String>
   <sys:String x:Key="app.mixedreality.name">Mixed Reality Portal</sys:String>
   <sys:String x:Key="app.mixedreality.desc">Ne: VR / karma gerçeklik kulaklığı kurulum kapısı.&#x0a;VR’ın yoksa: Yer kaplayan gereksiz bir şey.&#x0a;Kaldırmak güvenli. Store’dan geri gelir.</sys:String>
-  <sys:String x:Key="app.xboxapp.name">Xbox Uygulaması</sys:String>
-  <sys:String x:Key="app.xboxapp.desc">Ne: Eski/yan Xbox uygulaması.&#x0a;Kaldırınca: Game Pass / Xbox arkadaşlık bazı özellikler etkilenebilir.&#x0a;Game Pass kullanıyorsan düşünerek kaldır.</sys:String>
+  <sys:String x:Key="app.xboxapp.name">Xbox uygulaması</sys:String>
+  <sys:String x:Key="app.xboxapp.desc">Ne: Xbox / Game Pass uygulaması. Windows 11’de Microsoft.GamingApp, eski PC’lerde Microsoft.XboxApp gelir; WinCleaner hangisi yüklüyse onu kaldırır.&#x0a;Kaldırınca: Game Pass, arkadaşlar ve bazı Xbox sosyal özellikleri etkilenebilir.&#x0a;Game Pass kullanıyorsan düşünerek kaldır.</sys:String>
   <sys:String x:Key="app.xboxoverlay.name">Xbox Game Bar</sys:String>
   <sys:String x:Key="app.xboxoverlay.desc">Ne: Oyunda Win+G ile açılan çubuk; kayıt, widget, FPS sayacı.&#x0a;Kaldırınca / kapatınca: Arka planda kayıt yükü azalır → bazı PC’lerde FPS artar.&#x0a;Oyuncu için sık tercih edilir. Store’dan geri kurulabilir.</sys:String>
   <sys:String x:Key="app.xboxidentity.name">Xbox Kimlik</sys:String>
@@ -255,6 +265,26 @@
   <sys:String x:Key="app.todo.desc">Ne: Görev listesi uygulaması.&#x0a;Başka bir uygulama kullanıyorsan gereksiz. Güvenle kaldırılabilir.</sys:String>
   <sys:String x:Key="app.quickassist.name">Hızlı Yardım (Quick Assist)</sys:String>
   <sys:String x:Key="app.quickassist.desc">Ne: Uzaktan destek uygulaması.&#x0a;Nadiren kullanılır ama bazı destek senaryolarında lazım olabilir — dikkatli kaldır.</sys:String>
+  <sys:String x:Key="app.copilot.name">Copilot</sys:String>
+  <sys:String x:Key="app.copilot.desc">Ne: Görev çubuğu / Başlat’taki Windows Copilot sohbet uygulaması.&#x0a;Kaldırınca: Copilot kısayolları kaybolur; Store’dan geri kurulabilir.&#x0a;Gerçekten kullanıyorsan dikkatli kaldır.</sys:String>
+  <sys:String x:Key="app.bingsearch.name">Bing Search</sys:String>
+  <sys:String x:Key="app.bingsearch.desc">Ne: Windows Arama’ya web sonuçları / öne çıkan arama ekleyen Bing paketi.&#x0a;Kaldırınca: Yerel arama çalışır; Bing ekleri gider.&#x0a;Güvenle kaldırılabilir.</sys:String>
+  <sys:String x:Key="app.outlook.name">Outlook (yeni)</sys:String>
+  <sys:String x:Key="app.outlook.desc">Ne: Birçok PC’de Mail / Takvim’in yerini alan yeni Outlook for Windows.&#x0a;Klasik Outlook veya başka bir posta istemcisi kullanıyorsan güvenle kaldır.&#x0a;Günlük mail uygulaman buysa dokunma.</sys:String>
+  <sys:String x:Key="app.stickynotes.name">Yapışkan Notlar</sys:String>
+  <sys:String x:Key="app.stickynotes.desc">Ne: Microsoft Yapışkan Notlar.&#x0a;Kullanmıyorsan arka planda durur.&#x0a;Güvenle kaldırılabilir. Store / Microsoft hesabından geri gelir.</sys:String>
+  <sys:String x:Key="app.powerautomate.name">Power Automate</sys:String>
+  <sys:String x:Key="app.powerautomate.desc">Ne: Windows ile gelen masaüstü otomasyon / akış uygulaması.&#x0a;Hiç akış kurmadıysan gerekmez.&#x0a;Güvenle kaldırılabilir.</sys:String>
+  <sys:String x:Key="app.devhome.name">Dev Home</sys:String>
+  <sys:String x:Key="app.devhome.desc">Ne: Microsoft’un geliştirici panosu (widget, makine kurulumu).&#x0a;Kullanmayan geliştirici değilsen güvenle kaldır.&#x0a;Yalnızca Windows 11.</sys:String>
+  <sys:String x:Key="app.xboxtcui.name">Xbox TCUI</sys:String>
+  <sys:String x:Key="app.xboxtcui.desc">Ne: Game Bar / Game Pass pencerelerinde kullanılan Xbox arayüz bileşeni.&#x0a;Kaldırınca: Bazı Xbox oyun içi istemler bozulabilir.&#x0a;Game Bar veya Game Pass bırakıyorsan dokunma.</sys:String>
+  <sys:String x:Key="app.xboxspeech.name">Xbox konuşma katmanı</sys:String>
+  <sys:String x:Key="app.xboxspeech.desc">Ne: Xbox Game Bar konuşmayı yazıya çevirme katmanı.&#x0a;Oyun içi altyazı kullanmıyorsan güvenle kaldır.&#x0a;Xbox erişilebilirlik özelliklerini kullanıyorsan bırak.</sys:String>
+  <sys:String x:Key="app.family.name">Microsoft Aile</sys:String>
+  <sys:String x:Key="app.family.desc">Ne: Aile Güvenliği / ebeveyn denetimi uygulaması.&#x0a;Bu PC’de çocuk hesabı yönetmiyorsan güvenle kaldır.&#x0a;Geri getirme: Microsoft Store.</sys:String>
+  <sys:String x:Key="app.startexperiences.name">Başlat deneyimleri</sys:String>
+  <sys:String x:Key="app.startexperiences.desc">Ne: Windows 11 Başlat menüsü önerileri / önerilen uygulama deneyimleri.&#x0a;Kaldırınca: Bazı Başlat önerileri kaybolur.&#x0a;Dikkatli kaldır — Başlat çalışır, öneriler değişir.</sys:String>
   <sys:String x:Key="tweak.gamemode.name">Game Mode Aç</sys:String>
   <sys:String x:Key="tweak.gamemode.desc">Ne yapar: Windows’a &quot;şu an oyun oynuyorum, başka işlere daha az öncelik ver&quot; der.&#x0a;Açıkken: Arka plan güncelleme / indeks gibi işler biraz geriler; oyun biraz daha öne çıkar.&#x0a;Kapatınca: Eski haline döner.&#x0a;Geri alınır mı: Evet. Zararı yok, oyuncuya önerilir.</sys:String>
   <sys:String x:Key="tweak.gamebar.name">Game Bar Kaydını Kapat</sys:String>
@@ -310,7 +340,7 @@
   <sys:String x:Key="tweak.qos.name">QoS Bant Genişliği Rezervini Kaldır</sys:String>
   <sys:String x:Key="tweak.qos.desc">Ne yapar: Windows’un &quot;acil durum için internetin bir kısmını kenarda tutayım&quot; rezervini (varsayılan ~%20) sıfırlar.&#x0a;Sonuç: Teoride tüm bant genişliği senin olur. Pratikte herkeste büyük fark olmayabilir ama zararı yok.&#x0a;Geri alınır mı: Evet.</sys:String>
   <sys:String x:Key="tweak.tcpauto.name">TCP Otomatik Ayar Normal</sys:String>
-  <sys:String x:Key="tweak.tcpauto.desc">Ne yapar: Windows’un TCP pencere otomatik ayarını &quot;normal&quot; seviyeye çeker (netsh).&#x0a;Ne zaman: Garip indirme hızı / ağ tuhaflığı varsa.&#x0a;Tek seferlik komut gibi düşün. Geri alma da benzer komut.</sys:String>
+  <sys:String x:Key="tweak.tcpauto.desc">Ne yapar: Windows’un TCP pencere otomatik ayarını &quot;normal&quot; seviyeye çeker (netsh).&#x0a;Ne zaman: Garip indirme hızı / ağ tuhaflığı varsa.&#x0a;Tek seferlik komut gibi düşün. Geri alınacak bir şey yok.</sys:String>
   <sys:String x:Key="tweak.dnsflush.name">DNS Önbelleğini Temizle</sys:String>
   <sys:String x:Key="tweak.dnsflush.desc">Ne yapar: Bilgisayarın aklında tuttuğu &quot;site adresi = IP&quot; notlarını siler.&#x0a;Ne zaman: Site açılmıyor, yanlış yere gidiyor, VPN sonrası garip durum.&#x0a;Zararı yok, tek seferlik temizlik. Geri alınacak bir şey yok.</sys:String>
   <sys:String x:Key="tweak.netbios.name">NetBIOS over TCP/IP Kapat</sys:String>
@@ -358,7 +388,7 @@
   <sys:String x:Key="tweak.searchicon.name">Arama Kutusunu Simgeye Küçült</sys:String>
   <sys:String x:Key="tweak.searchicon.desc">Ne yapar: Görev çubuğundaki geniş arama kutusunu küçük bir simgeye indirger.&#x0a;Explorer yeniden başlar. Geri alınır mı: Evet.</sys:String>
   <sys:String x:Key="tweak.hidetaskview.name">Görev Görünümü Düğmesini Gizle</sys:String>
-  <sys:String x:Key="tweak.hidetaskview.desc">Ne yapar: Görev çubuğundaki Görev Görünümü (Task View) simgesini kaldırır.&#x0a;Explorer yeniden başlar. Geri alınır mı: Evet.</sys:String>
+  <sys:String x:Key="tweak.hidetaskview.desc">Ne yapar: Görev çubuğundaki Görev Görünümü (Task View) simgesini gizler (hiçbir uygulamayı silmez).&#x0a;Explorer yeniden başlar. Geri alınır mı: Evet.</sys:String>
   <sys:String x:Key="tweak.explorerthispc.name">Gezgin’i &quot;Bu Bilgisayar&quot;a Aç</sys:String>
   <sys:String x:Key="tweak.explorerthispc.desc">Ne yapar: Dosya Gezgini varsayılan olarak Giriş / Home yerine &quot;Bu Bilgisayar&quot; ile açılır.&#x0a;Geri alınır mı: Evet.</sys:String>
   <sys:String x:Key="tweak.netthrottle.name">Ağ Kısıtlama İndeksini Sıfırla</sys:String>
@@ -492,5 +522,14 @@
   <sys:String x:Key="set.social.youtube">YouTube</sys:String>
   <sys:String x:Key="set.social.instagram">Instagram</sys:String>
   <sys:String x:Key="set.social.github">GitHub</sys:String>
+  <sys:String x:Key="common.loading">Yükleniyor...</sys:String>
+  <sys:String x:Key="blo.installed">Yüklü</sys:String>
+  <sys:String x:Key="blo.notInstalled">Yüklü değil</sys:String>
+  <sys:String x:Key="svc.disable">Devre dışı</sys:String>
+  <sys:String x:Key="preset.applyPreview">Uygula / Önizle</sys:String>
+  <sys:String x:Key="preset.custom">Özel Profil</sys:String>
+  <sys:String x:Key="tools.cleanTemp.confirm">Windows ve kullanıcı Temp klasörlerindeki dosyalar silinsin mi? Kullanımdaki dosyalar atlanır. Devam?</sys:String>
+  <sys:String x:Key="danger.needSettings">Bu işlem için önce Ayarlar’da “Riskli işlemlere izin ver”i aç.</sys:String>
+  <sys:String x:Key="msg.oneShotOk">Komut tamamlandı.</sys:String>
 
 </ResourceDictionary>

@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:WinCleaner.ViewModels"
              xmlns:views="clr-namespace:WinCleaner.Views"
-             xmlns:conv="clr-namespace:WinCleaner.Converters"
-             StartupUri="MainWindow.xaml">
+             xmlns:conv="clr-namespace:WinCleaner.Converters">
+  <!-- MainWindow is shown from App.OnStartup after prerequisite checks. -->
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>

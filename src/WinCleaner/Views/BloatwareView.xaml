@@ -7,12 +7,15 @@
     <TextBlock Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
 
     <StackPanel Orientation="Horizontal" Margin="0,0,0,12">
-      <Button Content="Refresh" Command="{Binding ReloadCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0"/>
-      <Button Content="Remove Selected" Command="{Binding RemoveSelectedCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0"/>
-      <Button Content="Uninstall OneDrive" Command="{Binding UninstallOneDriveCommand}" Style="{StaticResource DangerButtonStyle}"/>
+      <Button Content="{DynamicResource common.refresh}" Command="{Binding ReloadCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0"
+              IsEnabled="{Binding CanRunBloatware}"/>
+      <Button Content="{DynamicResource common.remove}" Command="{Binding RemoveSelectedCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0"
+              IsEnabled="{Binding CanRunBloatware}"/>
+      <Button Content="{DynamicResource blo.onedrive}" Command="{Binding UninstallOneDriveCommand}" Style="{StaticResource DangerButtonStyle}"
+              IsEnabled="{Binding CanRunBloatware}"/>
     </StackPanel>
 
-    <TextBlock Text="Loading..." Foreground="{StaticResource TextMutedBrush}"
+    <TextBlock Text="{DynamicResource common.loading}" Foreground="{StaticResource TextMutedBrush}"
                Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
 
     <ItemsControl ItemsSource="{Binding Items}">
@@ -41,10 +44,10 @@
                   <TextBlock.Style>
                     <Style TargetType="TextBlock">
                       <Setter Property="Foreground" Value="{StaticResource TextMutedBrush}"/>
-                      <Setter Property="Text" Value="Not installed"/>
+                      <Setter Property="Text" Value="{DynamicResource blo.notInstalled}"/>
                       <Style.Triggers>
                         <DataTrigger Binding="{Binding IsInstalled}" Value="True">
-                          <Setter Property="Text" Value="Installed"/>
+                          <Setter Property="Text" Value="{DynamicResource blo.installed}"/>
                           <Setter Property="Foreground" Value="{StaticResource SuccessBrush}"/>
                         </DataTrigger>
                       </Style.Triggers>

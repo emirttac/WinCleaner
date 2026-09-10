@@ -124,7 +124,17 @@ public sealed class LocalizationService
         A("common.rebootRequired", "Change saved. Restart your PC for it to take full effect.");
         A("msg.done", "Done");
         A("msg.failed", "Failed");
+        A("msg.oneShotOk", "Command completed.");
+        A("common.loading", "Loading...");
+        A("danger.needSettings", "Turn on Allow dangerous actions in Settings before this operation.");
+        A("tools.cleanTemp.confirm", "Delete files in Windows and user Temp folders?");
         A("dash.recentEmpty", "No changes in this session yet.");
+        A("dash.createRestore", "Create Restore Point");
+        A("restore.warnTitle", "No restore point yet");
+        A("restore.warnBody", "You have not created a restore point in this session. A restore point will be created automatically before continuing.");
+        A("restore.creating", "Creating restore point…");
+        A("restore.created", "Restore point created.");
+        A("restore.failed", "Could not create a restore point.");
         A("msg.unexpectedError", "Unexpected error (details in the log):");
         A("msg.logLabel", "Log:");
     }

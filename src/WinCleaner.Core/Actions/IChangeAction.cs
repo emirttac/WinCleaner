@@ -14,9 +14,14 @@ public interface IChangeAction
     bool RequiresReboot => false;
     /// <summary>When true, UI must show anti-cheat risk confirmation before apply.</summary>
     bool RequiresAntiCheatConfirm => false;
+    /// <summary>One-shot command: toggle must not stick on; show a success message after apply.</summary>
+    bool IsOneShot => false;
     Task<ChangeResult> ApplyAsync(CancellationToken cancellationToken = default);
     Task<ChangeResult> RevertAsync(CancellationToken cancellationToken = default);
     Task<string?> GetCurrentStateAsync(CancellationToken cancellationToken = default);
+
+    /// <summary>True when the live system already matches the applied (on) state.</summary>
+    bool IsApplied() => false;
 
     /// <summary>
     /// Seeds prior state from the change journal so a freshly resolved action can revert correctly.

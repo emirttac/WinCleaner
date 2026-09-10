@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Globalization;
 using System.ServiceProcess;
 using WinCleaner.Core.Actions;
 using WinCleaner.Core.Models;
@@ -85,6 +86,18 @@ public sealed class ServiceChangeAction : IChangeAction
         return Task.FromResult(ChangeResult.Ok(oldValue, $"{_desired}/{newInfo?.Status}", "Service updated"));
     }
 
+    public bool IsApplied()
+    {
+        var info = _services.GetService(_serviceName);
+        if (info is null) return false;
+        return _desired switch
+        {
+            ServiceStartModeTarget.Disabled => info.StartType == ServiceStartMode.Disabled,
+            ServiceStartModeTarget.Automatic => info.StartType == ServiceStartMode.Automatic,
+            _ => info.StartType == ServiceStartMode.Manual
+        };
+    }
+
     public void SeedPreviousState(string? oldValue)
     {
         if (string.IsNullOrWhiteSpace(oldValue))
@@ -95,13 +108,27 @@ public sealed class ServiceChangeAction : IChangeAction
         if (parts.Length == 0)
             return;
 
-        if (Enum.TryParse<ServiceStartMode>(parts[0], ignoreCase: true, out var start))
-            _previousStart = start;
+        _previousStart = ParseStartMode(parts[0]);
 
         if (parts.Length > 1)
         {
             _wasRunning = parts[1].Contains("Running", StringComparison.OrdinalIgnoreCase);
         }
+    }
+
+    private static ServiceStartMode? ParseStartMode(string raw)
+    {
+        if (Enum.TryParse<ServiceStartMode>(raw, ignoreCase: true, out var start))
+            return start;
+        if (raw.Contains("Automatic", StringComparison.OrdinalIgnoreCase)
+            || raw.Contains("Auto", StringComparison.OrdinalIgnoreCase))
+            return ServiceStartMode.Automatic;
+        if (raw.Contains("Disabled", StringComparison.OrdinalIgnoreCase))
+            return ServiceStartMode.Disabled;
+        if (raw.Contains("Manual", StringComparison.OrdinalIgnoreCase)
+            || raw.Contains("Demand", StringComparison.OrdinalIgnoreCase))
+            return ServiceStartMode.Manual;
+        return null;
     }
 
     public Task<ChangeResult> RevertAsync(CancellationToken cancellationToken = default)
@@ -169,8 +196,14 @@ public sealed class RegistryChangeAction : IChangeAction
     private string KeyPathToDelete =>
         string.IsNullOrWhiteSpace(_spec.DeleteKeyPath) ? _spec.Path : _spec.DeleteKeyPath!;
 
+    private bool IsClassicContextMenuTweak =>
+        _spec.DeleteKeyOnDisable
+        && _spec.Path.Contains("{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}", StringComparison.OrdinalIgnoreCase);
+
     public Task<string?> GetCurrentStateAsync(CancellationToken cancellationToken = default)
     {
+        if (IsClassicContextMenuTweak)
+            return Task.FromResult<string?>(_registry.IsClassicContextMenuEnabled() ? "key-present" : "key-absent");
         if (_spec.DeleteKeyOnDisable)
             return Task.FromResult<string?>(_registry.KeyExists(_spec.Hive, _spec.Path) ? "key-present" : "key-absent");
         if (_isInterfaceWildcard)
@@ -180,6 +213,14 @@ public sealed class RegistryChangeAction : IChangeAction
 
     public Task<ChangeResult> ApplyAsync(CancellationToken cancellationToken = default)
     {
+        if (IsClassicContextMenuTweak)
+        {
+            var old = _registry.IsClassicContextMenuEnabled() ? "key-present" : "key-absent";
+            _registry.EnableClassicContextMenu();
+            MaybeRestartExplorer();
+            return Task.FromResult(ChangeResult.Ok(old, "key-present", "Classic context menu enabled"));
+        }
+
         if (_spec.DeleteKeyOnDisable)
         {
             var old = _registry.KeyExists(_spec.Hive, _spec.Path) ? "key-present" : "key-absent";
@@ -260,6 +301,9 @@ public sealed class RegistryChangeAction : IChangeAction
 
     public bool IsApplied()
     {
+        if (IsClassicContextMenuTweak)
+            return _registry.IsClassicContextMenuEnabled();
+
         if (_spec.DeleteKeyOnDisable)
             return _registry.KeyExists(_spec.Hive, _spec.Path);
 
@@ -268,11 +312,10 @@ public sealed class RegistryChangeAction : IChangeAction
 
         var current = _registry.GetValueAsString(_spec.Hive, _spec.Path, _spec.Name);
 
-        // Empty enabled value (classic context default "") must match exactly, including empty string.
         if (_spec.EnabledValue.Length == 0)
             return current is not null && current.Length == 0;
 
-        return string.Equals(current, _spec.EnabledValue, StringComparison.OrdinalIgnoreCase);
+        return RegistryManager.ValuesEqual(current, _spec.EnabledValue, _spec.ValueKind);
     }
 
     private void MaybeRestartExplorer()
@@ -403,7 +446,7 @@ public sealed class MultiRegistryChangeAction : IChangeAction
                 continue;
             }
 
-            if (!string.Equals(current, spec.EnabledValue, StringComparison.OrdinalIgnoreCase))
+            if (!RegistryManager.ValuesEqual(current, spec.EnabledValue, spec.ValueKind))
                 return false;
         }
 
@@ -448,6 +491,8 @@ public sealed class PowerPlanChangeAction : IChangeAction
         _power.ActivateUltimatePerformance();
         return Task.FromResult(ChangeResult.Ok(_previousScheme, "Ultimate Performance", "Power plan activated"));
     }
+
+    public bool IsApplied() => _power.IsUltimateActive();
 
     public void SeedPreviousState(string? oldValue) => _previousScheme = oldValue;
 
@@ -498,6 +543,7 @@ public sealed class CommandChangeAction : IChangeAction
     public bool CanRevert { get; }
     public bool RequiresReboot => _requiresReboot;
     public bool RequiresAntiCheatConfirm { get; }
+    public bool IsOneShot => _spec.OneShot;
 
     public Task<string?> GetCurrentStateAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<string?>(IsApplied() ? "applied" : "not-applied");
@@ -509,14 +555,15 @@ public sealed class CommandChangeAction : IChangeAction
             if (_spec.RequiresAdmin && !PrivilegeHelper.IsAdministrator())
                 return Task.FromResult(ChangeResult.Fail(_localize("common.adminRequired")));
 
-            if (HasDetectSpec() && IsApplied())
+            if (!_spec.OneShot && HasDetectSpec() && IsApplied())
                 return Task.FromResult(ChangeResult.Ok("applied", "applied", "Already applied"));
 
             var run = ElevatedCommandRunner.Run(_spec.FileName, _spec.Arguments);
             if (!run.Success)
                 return Task.FromResult(ChangeResult.Fail(FormatFailure(run)));
 
-            return Task.FromResult(ChangeResult.Ok("not-applied", "applied", "Command executed"));
+            return Task.FromResult(ChangeResult.Ok("not-applied", "applied",
+                _spec.OneShot ? _localize("msg.oneShotOk") : "Command executed"));
         }
         catch (Exception ex)
         {
@@ -551,11 +598,17 @@ public sealed class CommandChangeAction : IChangeAction
 
     public bool IsApplied()
     {
+        if (_spec.OneShot)
+            return false;
+
         if (!HasDetectSpec())
             return false;
 
         try
         {
+            if (!string.IsNullOrWhiteSpace(_spec.DetectFileName))
+                return IsAppliedFromProbeCommand();
+
             var key = _spec.DetectKey!;
             var mode = (_spec.DetectMode ?? "equals").Trim().ToLowerInvariant();
             var current = ElevatedCommandRunner.ReadBcdValue(key);
@@ -573,7 +626,33 @@ public sealed class CommandChangeAction : IChangeAction
         }
     }
 
-    private bool HasDetectSpec() => !string.IsNullOrWhiteSpace(_spec.DetectKey);
+    private bool IsAppliedFromProbeCommand()
+    {
+        var run = ElevatedCommandRunner.Run(_spec.DetectFileName!, _spec.DetectArguments ?? "", timeoutMs: 45_000);
+        var output = (run.StdOut ?? "") + Environment.NewLine + (run.StdErr ?? "");
+        var mode = (_spec.DetectMode ?? "contains").Trim().ToLowerInvariant();
+
+        return mode switch
+        {
+            "lacks" => !CommandStateProbe.OutputContains(output, _spec.DetectValue),
+            "acindexequals" => AcIndexEquals(output, _spec.DetectValue),
+            "equals" => ValuesMatch(output.Trim(), _spec.DetectValue),
+            _ => CommandStateProbe.OutputContains(output, _spec.DetectValue)
+        };
+    }
+
+    private static bool AcIndexEquals(string output, string? expected)
+    {
+        var index = CommandStateProbe.ParsePowerCfgAcSettingIndex(output);
+        if (!index.HasValue)
+            return false;
+        if (!int.TryParse(expected, NumberStyles.Integer, CultureInfo.InvariantCulture, out var want))
+            return false;
+        return index.Value == want;
+    }
+
+    private bool HasDetectSpec() =>
+        !string.IsNullOrWhiteSpace(_spec.DetectKey) || !string.IsNullOrWhiteSpace(_spec.DetectFileName);
 
     private static bool ValuesMatch(string actual, string? expected)
     {
@@ -629,16 +708,27 @@ public sealed class CommandChangeAction : IChangeAction
 public sealed class AppxRemoveAction : IChangeAction
 {
     private readonly AppxManager _appx;
-    private readonly string _packageName;
+    private readonly IReadOnlyList<string> _packageNames;
 
     public AppxRemoveAction(string id, string displayName, string description, RiskLevel risk, string packageName, AppxManager appx)
+        : this(id, displayName, description, risk, new[] { packageName }, appx)
+    {
+    }
+
+    public AppxRemoveAction(
+        string id,
+        string displayName,
+        string description,
+        RiskLevel risk,
+        IReadOnlyList<string> packageNames,
+        AppxManager appx)
     {
         Id = id;
         DisplayName = displayName;
         Description = description;
         Risk = risk;
         Category = "Bloatware";
-        _packageName = packageName;
+        _packageNames = packageNames;
         _appx = appx;
         CanRevert = false;
     }
@@ -655,7 +745,7 @@ public sealed class AppxRemoveAction : IChangeAction
 
     public async Task<ChangeResult> ApplyAsync(CancellationToken cancellationToken = default)
     {
-        var result = await _appx.RemovePackageAsync(_packageName, cancellationToken).ConfigureAwait(false);
+        var result = await _appx.RemovePackageAsync(_packageNames, cancellationToken).ConfigureAwait(false);
         if (!result.Success)
             return ChangeResult.Fail(result.ErrorDetail);
         return ChangeResult.Ok("installed", "removed", "Package removed");
@@ -668,15 +758,17 @@ public sealed class AppxRemoveAction : IChangeAction
 public sealed class OneDriveUninstallAction : IChangeAction
 {
     private readonly AppxManager _appx;
+    private readonly Func<string, string> _localize;
 
-    public OneDriveUninstallAction(AppxManager appx)
+    public OneDriveUninstallAction(AppxManager appx, Func<string, string>? localize = null)
     {
         _appx = appx;
+        _localize = localize ?? (k => k);
     }
 
     public string Id => "onedrive-uninstall";
-    public string DisplayName => "Uninstall OneDrive";
-    public string Description => "Completely uninstalls OneDrive from this PC.";
+    public string DisplayName => _localize("blo.onedrive");
+    public string Description => _localize("blo.onedriveConfirm");
     public RiskLevel Risk => RiskLevel.Dangerous;
     public string Category => "Bloatware";
     public bool CanRevert => false;
@@ -689,7 +781,7 @@ public sealed class OneDriveUninstallAction : IChangeAction
         var result = await _appx.UninstallOneDriveAsync(cancellationToken).ConfigureAwait(false);
         if (!result.Success)
             return ChangeResult.Fail(result.ErrorDetail);
-        return ChangeResult.Ok("installed", "uninstalled", "OneDrive uninstalled");
+        return ChangeResult.Ok("installed", "uninstalled", _localize("blo.onedriveOk"));
     }
 
     public Task<ChangeResult> RevertAsync(CancellationToken cancellationToken = default) =>
@@ -726,8 +818,17 @@ public sealed class TaskDisableAction : IChangeAction
     public Task<ChangeResult> ApplyAsync(CancellationToken cancellationToken = default)
     {
         _wasEnabled = _tasks.IsTaskEnabled(_taskPath);
+        if (!_tasks.TaskExists(_taskPath))
+            return Task.FromResult(ChangeResult.Ok(_wasEnabled ? "Enabled" : "Disabled", "Disabled", "Task not present"));
         _tasks.SetTaskEnabled(_taskPath, enabled: false);
         return Task.FromResult(ChangeResult.Ok(_wasEnabled ? "Enabled" : "Disabled", "Disabled"));
+    }
+
+    public bool IsApplied()
+    {
+        if (!_tasks.TaskExists(_taskPath))
+            return true;
+        return !_tasks.IsTaskEnabled(_taskPath);
     }
 
     public void SeedPreviousState(string? oldValue)

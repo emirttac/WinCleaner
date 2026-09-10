@@ -37,7 +37,7 @@
     </ItemsControl>
 
     <TextBlock Text="{Binding StartupTitle}" Style="{StaticResource SectionHeaderStyle}"/>
-    <Button Content="Open Virtual Memory Settings" Command="{Binding OpenPagefileCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="0,0,0,12"/>
+    <Button Content="{DynamicResource vis.pagefile}" Command="{Binding OpenPagefileCommand}" Style="{StaticResource SecondaryButtonStyle}" HorizontalAlignment="Left" Margin="0,0,0,12"/>
 
     <ItemsControl ItemsSource="{Binding StartupItems}">
       <ItemsControl.ItemTemplate>

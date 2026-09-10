@@ -8,6 +8,9 @@
 
     <TextBlock Text="{Binding MaintenanceTitle}" Style="{StaticResource SectionHeaderStyle}"/>
     <WrapPanel Margin="0,0,0,8">
+      <Button Content="{Binding CreateRestoreLabel}" Command="{Binding CreateRestoreCommand}"
+              Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,8"
+              IsEnabled="{Binding CanRunTools}"/>
       <Button Content="{Binding CleanTempLabel}" Command="{Binding CleanTempCommand}"
               Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,8"
               IsEnabled="{Binding CanRunTools}"/>

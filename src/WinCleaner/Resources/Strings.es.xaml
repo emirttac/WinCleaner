@@ -53,6 +53,7 @@
   <sys:String x:Key="dash.applyGamer">Aplicar preajuste Gamer</sys:String>
   <sys:String x:Key="dash.flushDns">Vaciar DNS</sys:String>
   <sys:String x:Key="dash.cleanTemp">Limpiar archivos temporales</sys:String>
+  <sys:String x:Key="dash.createRestore">Crear punto de restauración</sys:String>
   <sys:String x:Key="svc.title">Servicios</sys:String>
   <sys:String x:Key="svc.subtitle">Pequeños programas que Windows mantiene en segundo plano. Desactivar los que no necesitas deja respirar al PC. Interruptor = Desactivado.</sys:String>
   <sys:String x:Key="svc.startType">Tipo de inicio</sys:String>
@@ -113,6 +114,7 @@
   <sys:String x:Key="tools.takeOwn.desc">Añade &quot;Tomar posesión&quot; a los menús contextuales de archivos y carpetas (takeown + icacls). Requiere administrador. Al desactivarlo se eliminan las claves del menú.</sys:String>
   <sys:String x:Key="tools.takeOwn.menu">Tomar posesión</sys:String>
   <sys:String x:Key="tools.tempFreed">Se liberaron aproximadamente {0}.</sys:String>
+  <sys:String x:Key="tools.tempWorking">Limpiando archivos temporales…</sys:String>
   <sys:String x:Key="tools.progress.done">Completado.</sys:String>
   <sys:String x:Key="tools.progress.failed">Finalizó con errores.</sys:String>
   <sys:String x:Key="tools.registrySafe">Ajustes seguros del registro</sys:String>
@@ -123,7 +125,15 @@
   <sys:String x:Key="set.title">Configuración</sys:String>
   <sys:String x:Key="set.subtitle">Idioma, seguridad y registros: gestiona aquí el comportamiento de WinCleaner</sys:String>
   <sys:String x:Key="set.language">Idioma</sys:String>
-  <sys:String x:Key="set.restore">Crear punto de restauración del sistema antes de los cambios (recomendado: dejar activado)</sys:String>
+  <sys:String x:Key="set.restore">Avisar y crear un punto de restauración de sesión si empiezas sin uno (recomendado). No crea un punto por cada ajuste.</sys:String>
+  <sys:String x:Key="restore.cardTitle">Punto de restauración del sistema</sys:String>
+  <sys:String x:Key="restore.statusNone">Aún no hay un punto de restauración en esta sesión. Créalo antes de hacer cambios.</sys:String>
+  <sys:String x:Key="restore.statusOk">El punto de restauración está listo para esta sesión.</sys:String>
+  <sys:String x:Key="restore.created">Punto de restauración creado.</sys:String>
+  <sys:String x:Key="restore.failed">No se pudo crear el punto de restauración. La Restauración del sistema puede estar desactivada.</sys:String>
+  <sys:String x:Key="restore.warnTitle">No hay punto de restauración</sys:String>
+  <sys:String x:Key="restore.warnBody">No has creado un punto de restauración en esta sesión. Se creará uno automáticamente antes de continuar (puede tardar alrededor de un minuto). Se usa un solo punto para toda la sesión, no uno por cada ajuste.</sys:String>
+  <sys:String x:Key="restore.creating">Creando punto de restauración…</sys:String>
   <sys:String x:Key="set.dangerous">Permitir acciones peligrosas (solo si sabes lo que haces)</sys:String>
   <sys:String x:Key="set.logs">Carpeta de registros</sys:String>
   <sys:String x:Key="set.updates">Buscar actualizaciones al iniciar (opcional, requiere internet)</sys:String>
@@ -201,8 +211,8 @@
   <sys:String x:Key="app.3dviewer.desc">Qué es: Una app para ver archivos de modelos 3D.&#x0a;Si la quitas: No podrás abrir archivos 3D (la mayoría de la gente nunca lo hace).&#x0a;Cómo recuperarla: Microsoft Store. Segura de quitar.</sys:String>
   <sys:String x:Key="app.mixedreality.name">Portal de realidad mixta</sys:String>
   <sys:String x:Key="app.mixedreality.desc">Qué es: Portal de configuración para cascos VR / realidad mixta.&#x0a;Si no tienes VR: Solo ocupa espacio.&#x0a;Segura de quitar. Se puede reinstalar desde la Store.</sys:String>
-  <sys:String x:Key="app.xboxapp.name">Xbox Console Companion</sys:String>
-  <sys:String x:Key="app.xboxapp.desc">Qué es: La app Xbox antigua / de acompañamiento.&#x0a;Si la quitas: Game Pass y algunas funciones sociales de Xbox pueden verse afectados.&#x0a;Piénsalo dos veces si usas Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxapp.name">App de Xbox</sys:String>
+  <sys:String x:Key="app.xboxapp.desc">Qué es: La app de Xbox / Game Pass. Windows 11 trae Microsoft.GamingApp; PCs antiguos tienen Microsoft.XboxApp. WinCleaner quita la que esté instalada.&#x0a;Si la quitas: Game Pass, amigos y algunas funciones sociales de Xbox pueden verse afectados.&#x0a;Piénsalo dos veces si usas Game Pass.</sys:String>
   <sys:String x:Key="app.xboxoverlay.name">Xbox Game Bar</sys:String>
   <sys:String x:Key="app.xboxoverlay.desc">Qué es: La superposición Win+G en juegos: grabación, widgets, contador de FPS.&#x0a;Si la quitas / desactivas: Menos carga de grabación en segundo plano → algunos PCs ganan FPS.&#x0a;Elección popular entre gamers. Se puede reinstalar desde la Store.</sys:String>
   <sys:String x:Key="app.xboxidentity.name">Proveedor de identidad de Xbox</sys:String>
@@ -255,6 +265,26 @@
   <sys:String x:Key="app.todo.desc">Qué es: App de lista de tareas.&#x0a;Si usas otra cosa: Segura de quitar.</sys:String>
   <sys:String x:Key="app.quickassist.name">Asistencia rápida</sys:String>
   <sys:String x:Key="app.quickassist.desc">Qué es: App de soporte remoto.&#x0a;Poco usada, pero útil en algunos escenarios de soporte — quítala con cuidado.</sys:String>
+  <sys:String x:Key="app.copilot.name">Copilot</sys:String>
+  <sys:String x:Key="app.copilot.desc">Qué es: La app de chat Copilot de Windows en la barra de tareas / Inicio.&#x0a;Si la quitas: Desaparecen los accesos de Copilot; se puede reinstalar desde la Store.&#x0a;Quítala con cuidado si realmente usas Copilot.</sys:String>
+  <sys:String x:Key="app.bingsearch.name">Búsqueda Bing</sys:String>
+  <sys:String x:Key="app.bingsearch.desc">Qué es: El paquete Bing / destacados de búsqueda que mete resultados web en la Búsqueda de Windows.&#x0a;Si lo quitas: La búsqueda local sigue; desaparecen los extras de Bing.&#x0a;Seguro de quitar.</sys:String>
+  <sys:String x:Key="app.outlook.name">Outlook (nuevo)</sys:String>
+  <sys:String x:Key="app.outlook.desc">Qué es: La nueva app Outlook para Windows que en muchos PCs sustituye Correo / Calendario.&#x0a;Si usas Outlook clásico u otro cliente: Segura de quitar.&#x0a;No la quites si es tu correo diario.</sys:String>
+  <sys:String x:Key="app.stickynotes.name">Notas adhesivas</sys:String>
+  <sys:String x:Key="app.stickynotes.desc">Qué es: Microsoft Sticky Notes.&#x0a;Si no las usas: Solo ocupan segundo plano.&#x0a;Seguras de quitar. Se pueden restaurar desde la Store / tu cuenta Microsoft.</sys:String>
+  <sys:String x:Key="app.powerautomate.name">Power Automate</sys:String>
+  <sys:String x:Key="app.powerautomate.desc">Qué es: Automatización de escritorio / flujos incluidos con Windows.&#x0a;Si nunca creaste un flujo: No lo necesitas.&#x0a;Seguro de quitar.</sys:String>
+  <sys:String x:Key="app.devhome.name">Dev Home</sys:String>
+  <sys:String x:Key="app.devhome.desc">Qué es: El panel para desarrolladores de Microsoft (widgets, preparación del PC).&#x0a;Si no lo usas: Seguro de quitar.&#x0a;Solo Windows 11.</sys:String>
+  <sys:String x:Key="app.xboxtcui.name">Xbox TCUI</sys:String>
+  <sys:String x:Key="app.xboxtcui.desc">Qué es: Interfaz Xbox usada por Game Bar / ventanas de Game Pass.&#x0a;Si la quitas: Algunos avisos de Xbox en el juego pueden fallar.&#x0a;Déjala si conservas Game Bar o Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxspeech.name">Superposición de voz Xbox</sys:String>
+  <sys:String x:Key="app.xboxspeech.desc">Qué es: Superposición de voz a texto de Xbox Game Bar.&#x0a;Si no usas subtítulos en el juego: Segura de quitar.&#x0a;Déjala si usas accesibilidad de Xbox.</sys:String>
+  <sys:String x:Key="app.family.name">Microsoft Family</sys:String>
+  <sys:String x:Key="app.family.desc">Qué es: Family Safety / controles parentales.&#x0a;Si no gestionas cuentas infantiles en este PC: Segura de quitar.&#x0a;Cómo recuperarla: Microsoft Store.</sys:String>
+  <sys:String x:Key="app.startexperiences.name">Experiencias de Inicio</sys:String>
+  <sys:String x:Key="app.startexperiences.desc">Qué es: Recomendaciones del menú Inicio / apps sugeridas en Windows 11.&#x0a;Si lo quitas: Algunas sugerencias de Inicio desaparecen.&#x0a;Quítalo con cuidado: Inicio sigue funcionando, cambian las recomendaciones.</sys:String>
   <sys:String x:Key="tweak.gamemode.name">Activar Game Mode</sys:String>
   <sys:String x:Key="tweak.gamemode.desc">Qué hace: Le dice a Windows &quot;estoy jugando — da menos prioridad a otras tareas&quot;.&#x0a;Al activarlo: Actualizaciones en segundo plano, indexación y trabajos similares se apartan; el juego recibe un poco más de atención.&#x0a;Si lo desactivas: Vuelve el comportamiento normal.&#x0a;¿Se puede deshacer?: Sí. Sin riesgo; recomendado para gamers.</sys:String>
   <sys:String x:Key="tweak.gamebar.name">Desactivar captura de Game Bar</sys:String>
@@ -310,7 +340,7 @@
   <sys:String x:Key="tweak.qos.name">Quitar reserva de ancho de banda QoS</sys:String>
   <sys:String x:Key="tweak.qos.desc">Qué hace: Elimina la reserva predeterminada de Windows que guarda parte del ancho de banda &quot;por si acaso&quot; (a menudo ~20 %).&#x0a;Resultado: En teoría todo el ancho de banda es tuyo. No todos ven una gran diferencia, pero es inocuo probarlo.&#x0a;¿Se puede deshacer?: Sí.</sys:String>
   <sys:String x:Key="tweak.tcpauto.name">Autotuning TCP normal</sys:String>
-  <sys:String x:Key="tweak.tcpauto.desc">Qué hace: Establece el autotuning de ventana TCP de Windows en nivel &quot;normal&quot; (netsh).&#x0a;Cuándo usarlo: Velocidades de descarga raras o comportamiento de red extraño.&#x0a;Piénsalo como un comando de una sola vez. Deshacer es un comando similar.</sys:String>
+  <sys:String x:Key="tweak.tcpauto.desc">Qué hace: Establece el autotuning de ventana TCP de Windows en nivel &quot;normal&quot; (netsh).&#x0a;Cuándo usarlo: Velocidades de descarga raras o comportamiento de red extraño.&#x0a;Piénsalo como un comando de una sola vez. No hay nada que deshacer.</sys:String>
   <sys:String x:Key="tweak.dnsflush.name">Vaciar caché DNS</sys:String>
   <sys:String x:Key="tweak.dnsflush.desc">Qué hace: Borra las notas en caché del PC de &quot;dirección del sitio = IP&quot;.&#x0a;Cuándo usarlo: Un sitio no carga, va al lugar equivocado o hay rarezas tras una VPN.&#x0a;Limpieza inocua de una sola vez. Nada que deshacer.</sys:String>
   <sys:String x:Key="tweak.netbios.name">Desactivar NetBIOS sobre TCP/IP</sys:String>
@@ -358,7 +388,7 @@
   <sys:String x:Key="tweak.searchicon.name">Reducir cuadro de búsqueda a icono</sys:String>
   <sys:String x:Key="tweak.searchicon.desc">Qué hace: Reduce el cuadro de búsqueda ancho de la barra de tareas a un icono pequeño.&#x0a;Se reinicia el Explorador. ¿Se puede deshacer?: Sí.</sys:String>
   <sys:String x:Key="tweak.hidetaskview.name">Ocultar botón Vista de tareas</sys:String>
-  <sys:String x:Key="tweak.hidetaskview.desc">Qué hace: Quita el botón Vista de tareas de la barra de tareas.&#x0a;Se reinicia el Explorador. ¿Se puede deshacer?: Sí.</sys:String>
+  <sys:String x:Key="tweak.hidetaskview.desc">Qué hace: Oculta el botón Vista de tareas de la barra de tareas (no desinstala nada).&#x0a;Se reinicia el Explorador. ¿Se puede deshacer?: Sí.</sys:String>
   <sys:String x:Key="tweak.explorerthispc.name">Abrir el Explorador en Este equipo</sys:String>
   <sys:String x:Key="tweak.explorerthispc.desc">Qué hace: El Explorador de archivos se abre en Este equipo en lugar de Inicio.&#x0a;¿Se puede deshacer?: Sí.</sys:String>
   <sys:String x:Key="tweak.netthrottle.name">Restablecer índice de limitación de red</sys:String>
@@ -492,5 +522,14 @@
   <sys:String x:Key="set.social.youtube">YouTube</sys:String>
   <sys:String x:Key="set.social.instagram">Instagram</sys:String>
   <sys:String x:Key="set.social.github">GitHub</sys:String>
+  <sys:String x:Key="common.loading">Cargando...</sys:String>
+  <sys:String x:Key="blo.installed">Instalado</sys:String>
+  <sys:String x:Key="blo.notInstalled">No instalado</sys:String>
+  <sys:String x:Key="svc.disable">Desactivar</sys:String>
+  <sys:String x:Key="preset.applyPreview">Aplicar / Vista previa</sys:String>
+  <sys:String x:Key="preset.custom">Perfil personalizado</sys:String>
+  <sys:String x:Key="tools.cleanTemp.confirm">¿Eliminar archivos de las carpetas Temp de Windows y del usuario? Se omiten los que estén en uso. ¿Continuar?</sys:String>
+  <sys:String x:Key="danger.needSettings">Activa “Permitir acciones peligrosas” en Ajustes antes de esta operación.</sys:String>
+  <sys:String x:Key="msg.oneShotOk">Comando completado.</sys:String>
 
 </ResourceDictionary>

@@ -33,6 +33,10 @@ if (Test-Path $Dest) {
 Sync-Tree (Join-Path $Root "src\WinCleaner") (Join-Path $Dest "src\WinCleaner")
 Sync-Tree (Join-Path $Root "src\WinCleaner.Core") (Join-Path $Dest "src\WinCleaner.Core")
 Sync-Tree (Join-Path $Root "src\WinCleaner.Data") (Join-Path $Dest "src\WinCleaner.Data")
+$bootstrap = Join-Path $Root "src\WinCleaner.Bootstrap"
+if (Test-Path $bootstrap) {
+    Sync-Tree $bootstrap (Join-Path $Dest "src\WinCleaner.Bootstrap")
+}
 Sync-Tree (Join-Path $Root "tests\WinCleaner.Core.Tests") (Join-Path $Dest "tests\WinCleaner.Core.Tests")
 Sync-Tree (Join-Path $Root "installer") (Join-Path $Dest "installer")
 Sync-Tree (Join-Path $Root "scripts") (Join-Path $Dest "scripts")

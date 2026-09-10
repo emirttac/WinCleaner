@@ -3,6 +3,7 @@
     <Project Path="src/WinCleaner.Core/WinCleaner.Core.csproj" />
     <Project Path="src/WinCleaner.Data/WinCleaner.Data.csproj" />
     <Project Path="src/WinCleaner/WinCleaner.csproj" />
+    <Project Path="src/WinCleaner.Bootstrap/WinCleaner.Bootstrap.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/WinCleaner.Core.Tests/WinCleaner.Core.Tests.csproj" />

@@ -63,6 +63,23 @@ public sealed class ServiceManager
         }
     }
 
+    public string ResolveExistingName(string primary, IEnumerable<string>? aliases = null)
+    {
+        if (GetService(primary) is not null)
+            return primary;
+        if (aliases is not null)
+        {
+            foreach (var alias in aliases)
+            {
+                if (string.IsNullOrWhiteSpace(alias)) continue;
+                var trimmed = alias.Trim();
+                if (GetService(trimmed) is not null)
+                    return trimmed;
+            }
+        }
+        return primary;
+    }
+
     public void SetStartType(string serviceName, ServiceStartModeTarget target)
     {
         var mode = target switch

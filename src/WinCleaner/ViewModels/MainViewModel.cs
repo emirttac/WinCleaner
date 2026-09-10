@@ -81,11 +81,25 @@ public partial class MainViewModel : ObservableObject
         SettingsPage = new SettingsViewModel(App, _loc, this);
 
         OsBanner = App.Os.DisplayName + (App.Os.IsSupported ? "" : " (unsupported)");
+        App.RestorePoints.NotifyMissingSessionCheckpoint = ShowMissingRestoreWarningAsync;
         RefreshLabels();
         _loc.LanguageChanged += RefreshLabels;
         SelectedNav = "dashboard";
         AppLog.Info("MainViewModel initialized");
         _ = SettingsPage.CheckForUpdatesOnStartupAsync();
+    }
+
+    private Task ShowMissingRestoreWarningAsync()
+    {
+        return UiThread.RunAsync(() =>
+        {
+            MessageBox.Show(
+                _loc.Get("restore.warnBody"),
+                _loc.Get("restore.warnTitle"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            StatusText = _loc.Get("restore.creating");
+        });
     }
 
     private void RefreshLabels()
@@ -210,7 +224,7 @@ public partial class MainViewModel : ObservableObject
         var svc = CatalogLoader.LoadServices().FirstOrDefault(s => s.Id == actionId);
         if (svc is not null)
             return App.ActionFactory.CreateServiceAction(svc.Id, svc.ServiceName, svc.DescriptionKey, svc.Category,
-                RiskParser.Parse(svc.Risk), svc.ServiceName, svc.RecommendedStart);
+                RiskParser.Parse(svc.Risk), svc.ServiceName, svc.RecommendedStart, svc.ServiceAliases);
 
         return null;
     }
@@ -279,6 +293,7 @@ public partial class DashboardViewModel : ObservableObject
         RefreshLabels();
         RefreshRecent();
         _app.ChangeLog.Changed += OnChangeLogChanged;
+        _app.RestorePoints.SessionCheckpointChanged += OnRestoreChanged;
         CpuName = app.Hardware.CpuName;
         GpuName = app.Hardware.GpuName;
         RamText = loc.FormatBytes(app.Hardware.TotalRamBytes);
@@ -289,6 +304,7 @@ public partial class DashboardViewModel : ObservableObject
     }
 
     private void OnChangeLogChanged() => UiThread.Run(RefreshRecent);
+    private void OnRestoreChanged() => UiThread.Run(RefreshRestoreStatus);
 
     [ObservableProperty] private string _title = "";
     [ObservableProperty] private string _subtitle = "";
@@ -300,8 +316,16 @@ public partial class DashboardViewModel : ObservableObject
     [ObservableProperty] private string _recentTitle = "";
     [ObservableProperty] private string _quickTitle = "";
     [ObservableProperty] private string _recentEmpty = "";
+    [ObservableProperty] private string _restoreCardTitle = "";
+    [ObservableProperty] private string _restoreStatusText = "";
+    [ObservableProperty] private string _createRestoreLabel = "";
+    [ObservableProperty] private string _applyGamerLabel = "";
+    [ObservableProperty] private string _flushDnsLabel = "";
+    [ObservableProperty] private string _cleanTempLabel = "";
+    [ObservableProperty] private bool _isBusy;
     public ObservableCollection<string> RecentChanges { get; } = new();
     public bool HasRecentChanges => RecentChanges.Count > 0;
+    public bool CanRunQuickActions => !IsBusy;
 
     public void RefreshLabels()
     {
@@ -310,7 +334,22 @@ public partial class DashboardViewModel : ObservableObject
         RecentTitle = _loc.Get("dash.recent");
         QuickTitle = _loc.Get("dash.quick");
         RecentEmpty = _loc.Get("dash.recentEmpty");
+        RestoreCardTitle = _loc.Get("restore.cardTitle");
+        CreateRestoreLabel = _loc.Get("dash.createRestore");
+        ApplyGamerLabel = _loc.Get("dash.applyGamer");
+        FlushDnsLabel = _loc.Get("dash.flushDns");
+        CleanTempLabel = _loc.Get("dash.cleanTemp");
+        RefreshRestoreStatus();
     }
+
+    public void RefreshRestoreStatus()
+    {
+        RestoreStatusText = _app.RestorePoints.HasSessionCheckpoint
+            ? _loc.Get("restore.statusOk")
+            : _loc.Get("restore.statusNone");
+    }
+
+    partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanRunQuickActions));
 
     public void RefreshRecent()
     {
@@ -324,28 +363,83 @@ public partial class DashboardViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private async Task CreateRestoreAsync()
+    {
+        if (IsBusy) return;
+        IsBusy = true;
+        _main.StatusText = _loc.Get("restore.creating");
+        try
+        {
+            var ok = await _app.RestorePoints.CreateManualAsync("WinCleaner").ConfigureAwait(true);
+            RefreshRestoreStatus();
+            MessageBox.Show(
+                ok ? _loc.Get("restore.created") : _loc.Get("restore.failed"),
+                _loc.Get("restore.cardTitle"),
+                MessageBoxButton.OK,
+                ok ? MessageBoxImage.Information : MessageBoxImage.Warning);
+            _main.StatusText = ok ? _loc.Get("restore.created") : _loc.Get("restore.failed");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, _loc.Get("restore.cardTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
     private async Task ApplyGamerAsync()
     {
+        if (IsBusy) return;
         var preset = CatalogLoader.LoadPresets().First(p => p.Id == "preset-gamer");
         var actions = _app.Presets.BuildPreview(preset);
         await _main.ShowPreviewAndApplyAsync(actions, _loc.Get("preset.gamer.name"));
         RefreshRecent();
+        RefreshRestoreStatus();
     }
 
     [RelayCommand]
     private async Task FlushDnsAsync()
     {
+        if (IsBusy) return;
         var tweak = CatalogLoader.LoadTweaks().First(t => t.Id == "tweak-dns-flush");
         var action = _app.ActionFactory.CreateFromTweak(tweak);
         if (action is not null) await _app.Executor.ExecuteAsync(action);
         RefreshRecent();
+        RefreshRestoreStatus();
     }
 
     [RelayCommand]
-    private void CleanTemp()
+    private async Task CleanTempAsync()
     {
-        var freed = _app.TempCleanup.CleanTempFolders();
-        MessageBox.Show(_loc.Format("dash.freedApprox", _loc.FormatBytes(freed)), _loc.Get("app.title"));
+        if (IsBusy) return;
+        if (MessageBox.Show(
+                _loc.Get("tools.cleanTemp.confirm"),
+                _loc.Get("dash.cleanTemp"),
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        IsBusy = true;
+        _main.StatusText = _loc.Get("tools.tempWorking");
+        try
+        {
+            await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
+            var freed = await Task.Run(() => _app.TempCleanup.CleanTempFolders()).ConfigureAwait(true);
+            RefreshRestoreStatus();
+            MessageBox.Show(_loc.Format("dash.freedApprox", _loc.FormatBytes(freed)), _loc.Get("app.title"));
+            _main.StatusText = _loc.Format("dash.freedApprox", _loc.FormatBytes(freed));
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, _loc.Get("app.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 }
 
@@ -416,7 +510,12 @@ public partial class ServicesViewModel : ObservableObject
             {
                 _all = catalog.Select(c =>
                 {
-                    live.TryGetValue(c.ServiceName, out var info);
+                    WindowsServiceInfo? info = null;
+                    foreach (var name in c.GetServiceNames())
+                    {
+                        if (live.TryGetValue(name, out info))
+                            break;
+                    }
                     return new ServiceRowViewModel(c, info, _app, _loc, _confirm);
                 }).ToList();
 
@@ -519,14 +618,12 @@ public partial class ServiceRowViewModel : ObservableObject
         _loc = loc;
         _confirm = confirm;
         Id = entry.Id;
-        ServiceName = entry.ServiceName;
+        ServiceName = info?.ServiceName ?? entry.ServiceName;
         Category = entry.Category;
         Risk = RiskParser.Parse(entry.Risk);
         IsInstalled = info is not null;
-        StatusText = info is null ? loc.Get("common.na") : info.Status.ToString();
-        StartTypeText = info?.StartType.ToString() ?? loc.Get("common.na");
         IsEnabled = Risk != RiskLevel.Blocked && IsInstalled;
-        IsDisabled = info?.StartType == System.ServiceProcess.ServiceStartMode.Disabled;
+        ApplyLiveInfo(info);
         RefreshLabels();
     }
 
@@ -536,13 +633,13 @@ public partial class ServiceRowViewModel : ObservableObject
     public RiskLevel Risk { get; }
     public bool IsInstalled { get; }
     public bool IsEnabled { get; }
-    public string StatusText { get; }
-    public string StartTypeText { get; }
 
     [ObservableProperty] private string _title = "";
     [ObservableProperty] private string _description = "";
     [ObservableProperty] private string _riskLabel = "";
     [ObservableProperty] private string _statusLine = "";
+    [ObservableProperty] private string _statusText = "";
+    [ObservableProperty] private string _startTypeText = "";
     [ObservableProperty] private bool _isDisabled;
     [ObservableProperty] private bool _isBusy;
 
@@ -563,6 +660,14 @@ public partial class ServiceRowViewModel : ObservableObject
     public IChangeAction CreateDisableAction() =>
         _app.ActionFactory.CreateServiceAction(_entry.Id, Title, Description, Category, Risk, ServiceName, "Disabled");
 
+    private void ApplyLiveInfo(WindowsServiceInfo? info)
+    {
+        StatusText = info is null ? _loc.Get("common.na") : info.Status.ToString();
+        StartTypeText = info?.StartType.ToString() ?? _loc.Get("common.na");
+        IsDisabled = info?.StartType == System.ServiceProcess.ServiceStartMode.Disabled;
+        StatusLine = _loc.Format("svc.statusLine", StatusText, StartTypeText);
+    }
+
     [RelayCommand]
     private async Task ToggleAsync()
     {
@@ -582,13 +687,37 @@ public partial class ServiceRowViewModel : ObservableObject
                 return;
             }
 
-            var desired = desiredDisabled ? "Disabled" : "Manual";
-            var action = _app.ActionFactory.CreateServiceAction(_entry.Id, Title, Description, Category, Risk, ServiceName, desired);
-            var result = await _app.Executor.ExecuteAsync(action).ConfigureAwait(true);
+            ChangeResult result;
+            if (desiredDisabled)
+            {
+                var action = CreateDisableAction();
+                result = await _app.Executor.ExecuteAsync(action).ConfigureAwait(true);
+            }
+            else
+            {
+                var journal = _app.ChangeLog.GetLatestRevertable(Id);
+                if (journal is not null)
+                {
+                    var action = CreateDisableAction();
+                    action.SeedPreviousState(journal.OldValue);
+                    result = await _app.Executor.ExecuteAsync(action, isRevert: true).ConfigureAwait(true);
+                }
+                else
+                {
+                    var action = _app.ActionFactory.CreateServiceAction(
+                        _entry.Id, Title, Description, Category, Risk, ServiceName, "Manual");
+                    result = await _app.Executor.ExecuteAsync(action).ConfigureAwait(true);
+                }
+            }
+
             if (!result.Success)
             {
                 IsDisabled = previous;
                 MessageBox.Show(result.Message ?? _loc.Get("msg.failed"), _loc.Get("app.title"));
+            }
+            else
+            {
+                ApplyLiveInfo(_app.Services.GetService(ServiceName));
             }
         }
         catch (Exception ex)

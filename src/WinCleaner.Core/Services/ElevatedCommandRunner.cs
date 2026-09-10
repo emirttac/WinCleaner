@@ -137,6 +137,12 @@ public static class ElevatedCommandRunner
         var leaf = fileName.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) ? fileName : fileName + ".exe";
         if (leaf.Equals("bcdedit.exe", StringComparison.OrdinalIgnoreCase))
             return Path.Combine(Environment.SystemDirectory, "bcdedit.exe");
+        if (leaf.Equals("powershell.exe", StringComparison.OrdinalIgnoreCase))
+        {
+            var ps = Path.Combine(Environment.SystemDirectory, @"WindowsPowerShell\v1.0\powershell.exe");
+            if (File.Exists(ps))
+                return ps;
+        }
 
         var systemPath = Path.Combine(Environment.SystemDirectory, leaf);
         if (File.Exists(systemPath))

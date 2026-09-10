@@ -77,14 +77,6 @@ public partial class TweaksCategoryViewModel : ObservableObject
         var action = _app.ActionFactory.CreateFromTweak(entry);
         if (action is null) return null;
 
-        var applied = false;
-        if (action is RegistryChangeAction reg)
-            applied = reg.IsApplied();
-        else if (action is MultiRegistryChangeAction multi)
-            applied = multi.IsApplied();
-        else if (action is CommandChangeAction cmd)
-            applied = cmd.IsApplied();
-
         return new TweakItemViewModel(
             entry.Id,
             entry.DisplayNameKey,
@@ -94,7 +86,7 @@ public partial class TweaksCategoryViewModel : ObservableObject
             _app,
             _loc,
             () => _app.ActionFactory.CreateFromTweak(entry)!,
-            isApplied: applied,
+            isApplied: action.IsApplied(),
             confirmDangerous: _confirm,
             requiresAntiCheatConfirm: entry.RequiresAntiCheatConfirm,
             confirmAntiCheat: _confirmAntiCheat);
@@ -131,7 +123,12 @@ public partial class BloatwareViewModel : ObservableObject
     [ObservableProperty] private string _title = "";
     [ObservableProperty] private string _subtitle = "";
     [ObservableProperty] private bool _isLoading;
+    [ObservableProperty] private bool _isBusy;
     public ObservableCollection<AppRowViewModel> Items { get; } = new();
+    public bool CanRunBloatware => !IsLoading && !IsBusy;
+
+    partial void OnIsLoadingChanged(bool value) => OnPropertyChanged(nameof(CanRunBloatware));
+    partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanRunBloatware));
 
     public void RefreshLabels()
     {
@@ -153,7 +150,7 @@ public partial class BloatwareViewModel : ObservableObject
 
             var rows = CatalogLoader.LoadApps()
                 .Where(a => OsCompatibility.IsCompatible(null, a.Win11Only, _app.Os))
-                .Select(a => new AppRowViewModel(a, names.Contains(a.PackageName) || names.Any(n => n.StartsWith(a.PackageName, StringComparison.OrdinalIgnoreCase)), _loc))
+                .Select(a => new AppRowViewModel(a, a.MatchesAnyInstalled(names), _loc))
                 .ToList();
 
             await UiThread.RunAsync(() =>
@@ -179,9 +176,7 @@ public partial class BloatwareViewModel : ObservableObject
         Items.Clear();
         foreach (var item in _all)
         {
-            if (!string.IsNullOrWhiteSpace(query) &&
-                !item.Title.Contains(query, StringComparison.OrdinalIgnoreCase) &&
-                !item.PackageName.Contains(query, StringComparison.OrdinalIgnoreCase))
+            if (!string.IsNullOrWhiteSpace(query) && !item.MatchesQuery(query))
                 continue;
             Items.Add(item);
         }
@@ -198,22 +193,30 @@ public partial class BloatwareViewModel : ObservableObject
         if (selected.Any(s => s.Risk == RiskLevel.Dangerous) && !await _confirm())
             return;
 
-        var actions = selected.Select(s => _app.ActionFactory.CreateAppxRemove(
-            CatalogLoader.LoadApps().First(a => a.Id == s.Id))).Cast<IChangeAction>().ToList();
-        var results = await _app.Executor.ExecuteManyAsync(actions);
-        var failed = results.Where(r => !r.Success).ToList();
-        if (failed.Count > 0)
+        IsBusy = true;
+        try
         {
-            var msg = string.Join(Environment.NewLine, failed.Select(f => f.Message).Where(m => !string.IsNullOrWhiteSpace(m)).Take(5));
-            MessageBox.Show(
-                string.IsNullOrWhiteSpace(msg)
-                    ? _loc.Format("blo.removeFailedCount", failed.Count)
-                    : msg,
-                _loc.Get("app.title"),
-                MessageBoxButton.OK,
-                MessageBoxImage.Warning);
+            var actions = selected.Select(s => _app.ActionFactory.CreateAppxRemove(
+                CatalogLoader.LoadApps().First(a => a.Id == s.Id))).Cast<IChangeAction>().ToList();
+            var results = await _app.Executor.ExecuteManyAsync(actions);
+            var failed = results.Where(r => !r.Success).ToList();
+            if (failed.Count > 0)
+            {
+                var msg = string.Join(Environment.NewLine, failed.Select(f => f.Message).Where(m => !string.IsNullOrWhiteSpace(m)).Take(5));
+                MessageBox.Show(
+                    string.IsNullOrWhiteSpace(msg)
+                        ? _loc.Format("blo.removeFailedCount", failed.Count)
+                        : msg,
+                    _loc.Get("app.title"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Warning);
+            }
+            await ReloadAsync();
         }
-        await ReloadAsync();
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
@@ -223,17 +226,29 @@ public partial class BloatwareViewModel : ObservableObject
             return;
         if (!await _confirm()) return;
 
-        var action = _app.ActionFactory.CreateOneDriveUninstall();
-        var result = await _app.Executor.ExecuteAsync(action);
-        if (!result.Success)
+        IsBusy = true;
+        try
         {
-            MessageBox.Show(result.Message ?? _loc.Get("blo.onedriveFailed"), _loc.Get("app.title"),
-                MessageBoxButton.OK, MessageBoxImage.Warning);
+            var action = _app.ActionFactory.CreateOneDriveUninstall();
+            var result = await _app.Executor.ExecuteAsync(action);
+            if (!result.Success)
+            {
+                MessageBox.Show(result.Message ?? _loc.Get("blo.onedriveFailed"), _loc.Get("app.title"),
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                MessageBox.Show(result.Message ?? _loc.Get("blo.onedriveOk"), _loc.Get("app.title"),
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
         }
-        else
+        catch (Exception ex)
         {
-            MessageBox.Show(result.Message ?? _loc.Get("blo.onedriveOk"), _loc.Get("app.title"),
-                MessageBoxButton.OK, MessageBoxImage.Information);
+            MessageBox.Show(ex.Message, _loc.Get("app.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsBusy = false;
         }
     }
 }
@@ -249,6 +264,7 @@ public partial class AppRowViewModel : ObservableObject
         _criticalKey = "blo.critical";
         Id = entry.Id;
         PackageName = entry.PackageName;
+        PackageNames = entry.GetPackageNamePatterns();
         Risk = RiskParser.Parse(entry.Risk);
         IsSystemCritical = entry.SystemCritical;
         IsInstalled = isInstalled;
@@ -258,6 +274,7 @@ public partial class AppRowViewModel : ObservableObject
 
     public string Id { get; }
     public string PackageName { get; }
+    public IReadOnlyList<string> PackageNames { get; }
     public RiskLevel Risk { get; }
     public bool IsSystemCritical { get; }
     public bool IsInstalled { get; }
@@ -282,6 +299,11 @@ public partial class AppRowViewModel : ObservableObject
         };
         CriticalLabel = IsSystemCritical ? loc.Get(_criticalKey) : "";
     }
+
+    public bool MatchesQuery(string query) =>
+        Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+        Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
+        PackageNames.Any(n => n.Contains(query, StringComparison.OrdinalIgnoreCase));
 }
 
 public partial class VisualViewModel : TweaksCategoryViewModel
@@ -404,6 +426,7 @@ public partial class NetworkViewModel : TweaksCategoryViewModel
         DnsStatus = _loc.Get("net.dns.applying");
         try
         {
+            await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
             var kind = SelectedDnsOption.Kind;
             var result = await Task.Run(() => _app.Dns.ApplyPreset(kind)).ConfigureAwait(true);
             DnsStatus = result.Success
@@ -481,6 +504,7 @@ public partial class StartupRowViewModel : ObservableObject
 
         try
         {
+            await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
             await Task.Run(() => _app.Startup.SetEnabled(_entry, desired)).ConfigureAwait(true);
         }
         catch (Exception ex)
@@ -521,6 +545,7 @@ public partial class ToolsViewModel : ObservableObject
     [ObservableProperty] private string _maintenanceTitle = "";
     [ObservableProperty] private string _tweaksSectionTitle = "";
     [ObservableProperty] private string _cleanTempLabel = "";
+    [ObservableProperty] private string _createRestoreLabel = "";
     [ObservableProperty] private string _diskCleanupLabel = "";
     [ObservableProperty] private string _sfcDismLabel = "";
     [ObservableProperty] private string _winsxsLabel = "";
@@ -543,6 +568,7 @@ public partial class ToolsViewModel : ObservableObject
         MaintenanceTitle = _loc.Get("tools.maintenance");
         TweaksSectionTitle = _loc.Get("tools.registrySafe");
         CleanTempLabel = _loc.Get("tools.cleanTemp");
+        CreateRestoreLabel = _loc.Get("dash.createRestore");
         DiskCleanupLabel = _loc.Get("tools.diskCleanup");
         SfcDismLabel = _loc.Get("tools.sfcDism");
         WinsxsLabel = _loc.Get("tools.winsxs");
@@ -566,11 +592,8 @@ public partial class ToolsViewModel : ObservableObject
             .Where(t => OsCompatibility.IsCompatible(t.MinBuild, t.Win11Only, _app.Os))
             .Select(entry =>
             {
-                var applied = false;
                 var action = _app.ActionFactory.CreateFromTweak(entry);
-                if (action is RegistryChangeAction reg) applied = reg.IsApplied();
-                else if (action is MultiRegistryChangeAction multi) applied = multi.IsApplied();
-                else if (action is CommandChangeAction cmd) applied = cmd.IsApplied();
+                var applied = action?.IsApplied() ?? false;
                 return new TweakItemViewModel(
                     entry.Id, entry.DisplayNameKey, entry.DescriptionKey,
                     entry.Category, RiskParser.Parse(entry.Risk), _app, _loc,
@@ -591,12 +614,57 @@ public partial class ToolsViewModel : ObservableObject
         _all.Where(i => i.IsApplied).Select(i => i.Id).Distinct(StringComparer.OrdinalIgnoreCase).ToList();
 
     [RelayCommand]
-    private void CleanTemp()
+    private async Task CreateRestoreAsync()
     {
-        var freed = _app.TempCleanup.CleanTempFolders();
-        MessageBox.Show(
-            string.Format(_loc.Get("tools.tempFreed"), _loc.FormatBytes(freed)),
-            "WinCleaner");
+        if (IsBusy) return;
+        IsBusy = true;
+        try
+        {
+            var ok = await _app.RestorePoints.CreateManualAsync("WinCleaner").ConfigureAwait(true);
+            MessageBox.Show(
+                ok ? _loc.Get("restore.created") : _loc.Get("restore.failed"),
+                _loc.Get("restore.cardTitle"),
+                MessageBoxButton.OK,
+                ok ? MessageBoxImage.Information : MessageBoxImage.Warning);
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, _loc.Get("restore.cardTitle"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task CleanTempAsync()
+    {
+        if (IsBusy) return;
+        if (MessageBox.Show(
+                _loc.Get("tools.cleanTemp.confirm"),
+                _loc.Get("tools.cleanTemp"),
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question) != MessageBoxResult.Yes)
+            return;
+
+        IsBusy = true;
+        try
+        {
+            await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
+            var freed = await Task.Run(() => _app.TempCleanup.CleanTempFolders()).ConfigureAwait(true);
+            MessageBox.Show(
+                string.Format(_loc.Get("tools.tempFreed"), _loc.FormatBytes(freed)),
+                "WinCleaner");
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(ex.Message, "WinCleaner", MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
     }
 
     [RelayCommand]
@@ -616,6 +684,7 @@ public partial class ToolsViewModel : ObservableObject
             MessageBoxImage.Information);
         if (confirm != MessageBoxResult.OK) return;
 
+        await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
         await RunWithProgressWindowAsync(
             _loc.Get("tools.sfcDism"),
             (progress, ct) => _app.SystemHealth.RunSfcAndDismRepairAsync(progress, ct)).ConfigureAwait(true);
@@ -631,8 +700,9 @@ public partial class ToolsViewModel : ObservableObject
             MessageBoxButton.OKCancel,
             MessageBoxImage.Warning);
         if (warn != MessageBoxResult.OK) return;
-        if (!await _confirm().ConfigureAwait(true)) return;
+        if (!await EnsureDangerousToolAsync().ConfigureAwait(true)) return;
 
+        await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
         await RunWithProgressWindowAsync(
             _loc.Get("tools.winsxs"),
             (progress, ct) => _app.SystemHealth.RunComponentStoreCleanupAsync(progress, ct)).ConfigureAwait(true);
@@ -666,7 +736,9 @@ public partial class ToolsViewModel : ObservableObject
             MessageBoxButton.OKCancel,
             MessageBoxImage.Warning);
         if (confirm != MessageBoxResult.OK) return;
+        if (!await EnsureDangerousToolAsync().ConfigureAwait(true)) return;
 
+        await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
         await RunWithProgressWindowAsync(
             _loc.Get("tools.wuReset"),
             (progress, ct) => _app.SystemHealth.ResetWindowsUpdateAsync(progress, ct)).ConfigureAwait(true);
@@ -682,7 +754,9 @@ public partial class ToolsViewModel : ObservableObject
             MessageBoxButton.OKCancel,
             MessageBoxImage.Warning);
         if (confirm != MessageBoxResult.OK) return;
+        if (!await EnsureDangerousToolAsync().ConfigureAwait(true)) return;
 
+        await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
         await RunWithProgressWindowAsync(
             _loc.Get("tools.networkReset"),
             (progress, ct) => _app.SystemHealth.ResetNetworkStackAsync(progress, ct)).ConfigureAwait(true);
@@ -722,7 +796,7 @@ public partial class ToolsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ToggleTakeOwnership()
+    private async Task ToggleTakeOwnershipAsync()
     {
         var desired = !TakeOwnershipEnabled;
         try
@@ -733,7 +807,8 @@ public partial class ToolsViewModel : ObservableObject
                 return;
             }
 
-            _app.SystemHealth.SetTakeOwnershipMenu(desired, _loc.Get("tools.takeOwn.menu"));
+            await _app.EnsureSessionRestoreAsync().ConfigureAwait(true);
+            await Task.Run(() => _app.SystemHealth.SetTakeOwnershipMenu(desired, _loc.Get("tools.takeOwn.menu"))).ConfigureAwait(true);
             TakeOwnershipEnabled = _app.SystemHealth.IsTakeOwnershipMenuEnabled();
         }
         catch (Exception ex)
@@ -745,6 +820,21 @@ public partial class ToolsViewModel : ObservableObject
                 MessageBoxImage.Warning);
             TakeOwnershipEnabled = _app.SystemHealth.IsTakeOwnershipMenuEnabled();
         }
+    }
+
+    private async Task<bool> EnsureDangerousToolAsync()
+    {
+        if (!_app.Settings.AllowDangerousActions)
+        {
+            MessageBox.Show(
+                _loc.Get("danger.needSettings"),
+                _loc.Get("danger.title"),
+                MessageBoxButton.OK,
+                MessageBoxImage.Warning);
+            return false;
+        }
+
+        return await _confirm().ConfigureAwait(true);
     }
 
     private async Task RunWithProgressWindowAsync(

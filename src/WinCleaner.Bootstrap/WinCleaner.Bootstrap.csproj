@@ -1,0 +1,23 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0-windows</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWindowsForms>true</UseWindowsForms>
+    <ApplicationManifest>..\WinCleaner\app.manifest</ApplicationManifest>
+    <ApplicationIcon>..\WinCleaner\app.ico</ApplicationIcon>
+    <AssemblyName>WinCleaner</AssemblyName>
+    <RootNamespace>WinCleaner.Bootstrap</RootNamespace>
+    <Version>1.0.0</Version>
+    <Product>WinCleaner</Product>
+    <Company>emirttac</Company>
+    <Description>WinCleaner launcher — checks and installs prerequisites, then starts the app.</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WinCleaner.Core\WinCleaner.Core.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
+using WinCleaner.Data;
 
 namespace WinCleaner.Core.Tests;
 
@@ -55,7 +56,52 @@ public class LocalizationParityTests
             Assert.True(empty.Count == 0, $"{lang} empty values: {string.Join(", ", empty)}");
         }
 
-        Assert.Equal(490, en.Count);
+        Assert.Equal(529, en.Count);
+    }
+
+    [Fact]
+    public void CatalogApps_HaveEnglishNameAndDescriptionKeys()
+    {
+        var resources = FindResourcesDir();
+        var en = LoadKeys(Path.Combine(resources, "Strings.en.xaml"));
+        foreach (var app in CatalogLoader.LoadApps())
+        {
+            Assert.True(en.ContainsKey(app.DisplayNameKey), $"Missing {app.DisplayNameKey} for {app.Id}");
+            Assert.True(en.ContainsKey(app.DescriptionKey), $"Missing {app.DescriptionKey} for {app.Id}");
+        }
+    }
+
+    [Fact]
+    public void CatalogTweaksServicesPresetsInstallers_HaveEnglishKeys()
+    {
+        var resources = FindResourcesDir();
+        var en = LoadKeys(Path.Combine(resources, "Strings.en.xaml"));
+
+        foreach (var t in CatalogLoader.LoadTweaks())
+        {
+            Assert.True(en.ContainsKey(t.DisplayNameKey), $"Missing {t.DisplayNameKey} for {t.Id}");
+            Assert.True(en.ContainsKey(t.DescriptionKey), $"Missing {t.DescriptionKey} for {t.Id}");
+        }
+
+        foreach (var s in CatalogLoader.LoadServices())
+        {
+            Assert.True(en.ContainsKey(s.DisplayNameKey), $"Missing {s.DisplayNameKey} for {s.Id}");
+            Assert.True(en.ContainsKey(s.DescriptionKey), $"Missing {s.DescriptionKey} for {s.Id}");
+        }
+
+        foreach (var p in CatalogLoader.LoadPresets())
+        {
+            Assert.True(en.ContainsKey(p.DisplayNameKey), $"Missing {p.DisplayNameKey} for {p.Id}");
+            Assert.True(en.ContainsKey(p.DescriptionKey), $"Missing {p.DescriptionKey} for {p.Id}");
+        }
+
+        foreach (var i in CatalogLoader.LoadInstallerApps())
+        {
+            Assert.True(en.ContainsKey(i.DisplayNameKey), $"Missing {i.DisplayNameKey} for {i.Id}");
+            Assert.True(en.ContainsKey(i.DescriptionKey), $"Missing {i.DescriptionKey} for {i.Id}");
+            if (!string.IsNullOrWhiteSpace(i.CategoryKey))
+                Assert.True(en.ContainsKey(i.CategoryKey), $"Missing {i.CategoryKey} for {i.Id}");
+        }
     }
 
     [Theory]

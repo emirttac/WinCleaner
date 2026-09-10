@@ -53,6 +53,7 @@
   <sys:String x:Key="dash.applyGamer">Aplică presetarea Gamer</sys:String>
   <sys:String x:Key="dash.flushDns">Golește DNS</sys:String>
   <sys:String x:Key="dash.cleanTemp">Curăță fișiere temporare</sys:String>
+  <sys:String x:Key="dash.createRestore">Creează punct de restaurare</sys:String>
   <sys:String x:Key="svc.title">Servicii</sys:String>
   <sys:String x:Key="svc.subtitle">Programe mici pe care Windows le ține active în fundal. Dezactivarea celor de care nu aveți nevoie lasă PC-ul să respire mai ușor. Comutator = Dezactivat.</sys:String>
   <sys:String x:Key="svc.startType">Tip pornire</sys:String>
@@ -113,6 +114,7 @@
   <sys:String x:Key="tools.takeOwn.desc">Adaugă &quot;Take Ownership&quot; în meniurile clic-dreapta pentru fișiere și foldere (takeown + icacls). Necesită Administrator. Dezactivarea elimină cheile din meniu.</sys:String>
   <sys:String x:Key="tools.takeOwn.menu">Take Ownership</sys:String>
   <sys:String x:Key="tools.tempFreed">S-au eliberat aproximativ {0}.</sys:String>
+  <sys:String x:Key="tools.tempWorking">Se curăță fișierele temporare…</sys:String>
   <sys:String x:Key="tools.progress.done">Finalizat.</sys:String>
   <sys:String x:Key="tools.progress.failed">Finalizat cu erori.</sys:String>
   <sys:String x:Key="tools.registrySafe">Ajustări sigure în Registry</sys:String>
@@ -123,7 +125,15 @@
   <sys:String x:Key="set.title">Setări</sys:String>
   <sys:String x:Key="set.subtitle">Limbă, siguranță și jurnale — gestionați aici comportamentul WinCleaner</sys:String>
   <sys:String x:Key="set.language">Limbă</sys:String>
-  <sys:String x:Key="set.restore">Creează punct de restaurare a sistemului înainte de modificări (recomandat: lăsați activ)</sys:String>
+  <sys:String x:Key="set.restore">Avertizează și creează automat un punct de restaurare al sesiunii dacă începi fără unul (recomandat). Nu se creează un punct pentru fiecare setare.</sys:String>
+  <sys:String x:Key="restore.cardTitle">Punct de restaurare a sistemului</sys:String>
+  <sys:String x:Key="restore.statusNone">Nu există încă un punct de restaurare în această sesiune. Creează unul înainte de modificări.</sys:String>
+  <sys:String x:Key="restore.statusOk">Punctul de restaurare este gata pentru această sesiune.</sys:String>
+  <sys:String x:Key="restore.created">Punct de restaurare creat.</sys:String>
+  <sys:String x:Key="restore.failed">Nu s-a putut crea punctul de restaurare. Restaurarea sistemului poate fi dezactivată.</sys:String>
+  <sys:String x:Key="restore.warnTitle">Nu există punct de restaurare</sys:String>
+  <sys:String x:Key="restore.warnBody">Nu ai creat un punct de restaurare în această sesiune. Înainte de a continua se va crea automat unul (poate dura aproximativ un minut). Se folosește un singur punct pentru toată sesiunea — nu câte unul pentru fiecare setare.</sys:String>
+  <sys:String x:Key="restore.creating">Se creează punctul de restaurare…</sys:String>
   <sys:String x:Key="set.dangerous">Permite acțiuni periculoase (doar dacă știți ce faceți)</sys:String>
   <sys:String x:Key="set.logs">Folder jurnale</sys:String>
   <sys:String x:Key="set.updates">Verifică actualizări la pornire (opțional, necesită internet)</sys:String>
@@ -201,8 +211,8 @@
   <sys:String x:Key="app.3dviewer.desc">Ce este: O aplicație pentru vizualizarea fișierelor de modele 3D.&#x0a;Dacă o eliminați: Nu puteți deschide fișiere 3D (oricum majoritatea oamenilor nu o fac).&#x0a;Cum o aduceți înapoi: Microsoft Store. Sigură de eliminat.</sys:String>
   <sys:String x:Key="app.mixedreality.name">Mixed Reality Portal</sys:String>
   <sys:String x:Key="app.mixedreality.desc">Ce este: Portal de configurare pentru căști VR / mixed reality.&#x0a;Dacă nu aveți VR: Este doar spațiu irosit.&#x0a;Sigură de eliminat. Poate fi reinstalată din Store.</sys:String>
-  <sys:String x:Key="app.xboxapp.name">Xbox Console Companion</sys:String>
-  <sys:String x:Key="app.xboxapp.desc">Ce este: Aplicația Xbox mai veche / companion.&#x0a;Dacă o eliminați: Game Pass și unele funcții sociale Xbox pot fi afectate.&#x0a;Gândiți-vă de două ori dacă folosiți Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxapp.name">Aplicația Xbox</sys:String>
+  <sys:String x:Key="app.xboxapp.desc">Ce este: Aplicația Xbox / Game Pass. Windows 11 vine cu Microsoft.GamingApp; PC-urile vechi au Microsoft.XboxApp. WinCleaner o elimină pe cea instalată.&#x0a;Dacă o eliminați: Game Pass, prietenii și unele funcții sociale Xbox pot fi afectate.&#x0a;Gândiți-vă de două ori dacă folosiți Game Pass.</sys:String>
   <sys:String x:Key="app.xboxoverlay.name">Xbox Game Bar</sys:String>
   <sys:String x:Key="app.xboxoverlay.desc">Ce este: Overlay-ul Win+G din jocuri — înregistrare, widget-uri, contor FPS.&#x0a;Dacă o eliminați / dezactivați: Mai puțină încărcare de înregistrare în fundal → unele PC-uri câștigă FPS.&#x0a;Alegere populară pentru gameri. Poate fi reinstalată din Store.</sys:String>
   <sys:String x:Key="app.xboxidentity.name">Xbox Identity Provider</sys:String>
@@ -255,6 +265,26 @@
   <sys:String x:Key="app.todo.desc">Ce este: Aplicație de listă de sarcini.&#x0a;Dacă folosiți altceva: Sigură de eliminat.</sys:String>
   <sys:String x:Key="app.quickassist.name">Quick Assist</sys:String>
   <sys:String x:Key="app.quickassist.desc">Ce este: Aplicație de asistență la distanță.&#x0a;Rar folosită, dar utilă în unele scenarii de suport — eliminați cu grijă.</sys:String>
+  <sys:String x:Key="app.copilot.name">Copilot</sys:String>
+  <sys:String x:Key="app.copilot.desc">Ce este: Aplicația de chat Copilot Windows din bara de activități / Start.&#x0a;Dacă o eliminați: Dispar scurtăturile Copilot; se poate reinstala din Store.&#x0a;Eliminați cu grijă dacă folosiți cu adevărat Copilot.</sys:String>
+  <sys:String x:Key="app.bingsearch.name">Căutare Bing</sys:String>
+  <sys:String x:Key="app.bingsearch.desc">Ce este: Pachetul Bing / evidențieri de căutare care bagă rezultate web în Căutarea Windows.&#x0a;Dacă îl eliminați: Căutarea locală rămâne; extra-urile Bing dispar.&#x0a;Sigur de eliminat.</sys:String>
+  <sys:String x:Key="app.outlook.name">Outlook (nou)</sys:String>
+  <sys:String x:Key="app.outlook.desc">Ce este: Noua aplicație Outlook for Windows care pe multe PC-uri înlocuiește Mail / Calendar.&#x0a;Dacă folosiți Outlook clasic sau alt client: Sigură de eliminat.&#x0a;Nu o eliminați dacă aceasta e aplicația zilnică de e-mail.</sys:String>
+  <sys:String x:Key="app.stickynotes.name">Sticky Notes</sys:String>
+  <sys:String x:Key="app.stickynotes.desc">Ce este: Microsoft Sticky Notes.&#x0a;Dacă nu le folosiți: Stau doar în fundal.&#x0a;Sigure de eliminat. Se pot restaura din Store / contul Microsoft.</sys:String>
+  <sys:String x:Key="app.powerautomate.name">Power Automate</sys:String>
+  <sys:String x:Key="app.powerautomate.desc">Ce este: Automatizare desktop / fluxuri livrate cu Windows.&#x0a;Dacă nu ați creat niciun flux: Nu vă trebuie.&#x0a;Sigur de eliminat.</sys:String>
+  <sys:String x:Key="app.devhome.name">Dev Home</sys:String>
+  <sys:String x:Key="app.devhome.desc">Ce este: Tabloul de bord pentru dezvoltatori Microsoft (widget-uri, configurare PC).&#x0a;Dacă nu îl folosiți: Sigur de eliminat.&#x0a;Doar Windows 11.</sys:String>
+  <sys:String x:Key="app.xboxtcui.name">Xbox TCUI</sys:String>
+  <sys:String x:Key="app.xboxtcui.desc">Ce este: Interfața Xbox folosită de Game Bar / ferestrele Game Pass.&#x0a;Dacă o eliminați: Unele mesaje Xbox din joc pot eșua.&#x0a;Lăsați-o dacă păstrați Game Bar sau Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxspeech.name">Overlay vocal Xbox</sys:String>
+  <sys:String x:Key="app.xboxspeech.desc">Ce este: Overlay-ul vorbire-în-text din Xbox Game Bar.&#x0a;Fără subtitrări în joc: Sigur de eliminat.&#x0a;Lăsați-l dacă folosiți accesibilitatea Xbox.</sys:String>
+  <sys:String x:Key="app.family.name">Microsoft Family</sys:String>
+  <sys:String x:Key="app.family.desc">Ce este: Family Safety / control parental.&#x0a;Fără conturi de copii pe acest PC: Sigur de eliminat.&#x0a;Cum îl aduceți înapoi: Microsoft Store.</sys:String>
+  <sys:String x:Key="app.startexperiences.name">Experiențe Start</sys:String>
+  <sys:String x:Key="app.startexperiences.desc">Ce este: Recomandările meniului Start / aplicații sugerate pe Windows 11.&#x0a;Dacă le eliminați: Unele sugestii Start dispar.&#x0a;Eliminați cu grijă — Start funcționează în continuare, se schimbă recomandările.</sys:String>
   <sys:String x:Key="tweak.gamemode.name">Activează Game Mode</sys:String>
   <sys:String x:Key="tweak.gamemode.desc">Ce face: Spune Windows &quot;joc acum — dă prioritate mai mică celorlalte sarcini&quot;.&#x0a;Când e activ: Actualizările din fundal, indexarea și munca similară se retrag; jocul primește puțin mai multă atenție.&#x0a;Dacă îl opriți: Revenire la comportamentul normal.&#x0a;Puteți anula: Da. Fără riscuri; recomandat pentru gameri.</sys:String>
   <sys:String x:Key="tweak.gamebar.name">Dezactivează Game Bar Capture</sys:String>
@@ -310,7 +340,7 @@
   <sys:String x:Key="tweak.qos.name">Elimină rezerva de lățime de bandă QoS</sys:String>
   <sys:String x:Key="tweak.qos.desc">Ce face: Șterge rezerva implicită Windows care ține o parte din lățimea de bandă &quot;pentru orice eventualitate&quot; (deseori ~20%).&#x0a;Rezultat: În teorie toată lățimea de bandă e a dvs. Nu toată lumea vede o diferență mare, dar e inofensiv de încercat.&#x0a;Puteți anula: Da.</sys:String>
   <sys:String x:Key="tweak.tcpauto.name">TCP Autotuning Normal</sys:String>
-  <sys:String x:Key="tweak.tcpauto.desc">Ce face: Setează autotuning-ul ferestrei TCP Windows la nivelul &quot;normal&quot; (netsh).&#x0a;Când să folosiți: Viteze de descărcare ciudate sau comportament de rețea ciudat.&#x0a;Gândiți-l ca pe o comandă unică. Anularea e o comandă similară.</sys:String>
+  <sys:String x:Key="tweak.tcpauto.desc">Ce face: Setează autotuning-ul ferestrei TCP Windows la nivelul &quot;normal&quot; (netsh).&#x0a;Când să folosiți: Viteze de descărcare ciudate sau comportament de rețea ciudat.&#x0a;Gândiți-l ca pe o comandă unică. Nu există ce anula.</sys:String>
   <sys:String x:Key="tweak.dnsflush.name">Golește cache-ul DNS</sys:String>
   <sys:String x:Key="tweak.dnsflush.desc">Ce face: Șterge notele cache ale PC-ului &quot;adresă site = IP&quot;.&#x0a;Când să folosiți: Site-ul nu se încarcă, duce la locul greșit sau comportament ciudat după VPN.&#x0a;Curățare unică inofensivă. Nimic de anulat.</sys:String>
   <sys:String x:Key="tweak.netbios.name">Dezactivează NetBIOS over TCP/IP</sys:String>
@@ -358,7 +388,7 @@
   <sys:String x:Key="tweak.searchicon.name">Micșorează caseta de căutare la pictogramă</sys:String>
   <sys:String x:Key="tweak.searchicon.desc">Ce face: Micșorează caseta largă de căutare din bara de activități la o pictogramă mică.&#x0a;Explorer repornește. Puteți anula: Da.</sys:String>
   <sys:String x:Key="tweak.hidetaskview.name">Ascunde butonul Task View</sys:String>
-  <sys:String x:Key="tweak.hidetaskview.desc">Ce face: Elimină butonul Task View din bara de activități.&#x0a;Explorer repornește. Puteți anula: Da.</sys:String>
+  <sys:String x:Key="tweak.hidetaskview.desc">Ce face: Ascunde butonul Task View din bara de activități (nu dezinstalează nimic).&#x0a;Explorer repornește. Puteți anula: Da.</sys:String>
   <sys:String x:Key="tweak.explorerthispc.name">Deschide Explorer la This PC</sys:String>
   <sys:String x:Key="tweak.explorerthispc.desc">Ce face: File Explorer se deschide la This PC în loc de Home.&#x0a;Puteți anula: Da.</sys:String>
   <sys:String x:Key="tweak.netthrottle.name">Resetează Network Throttling Index</sys:String>
@@ -492,5 +522,14 @@
   <sys:String x:Key="set.social.youtube">YouTube</sys:String>
   <sys:String x:Key="set.social.instagram">Instagram</sys:String>
   <sys:String x:Key="set.social.github">GitHub</sys:String>
+  <sys:String x:Key="common.loading">Se încarcă...</sys:String>
+  <sys:String x:Key="blo.installed">Instalat</sys:String>
+  <sys:String x:Key="blo.notInstalled">Neinstalat</sys:String>
+  <sys:String x:Key="svc.disable">Dezactivează</sys:String>
+  <sys:String x:Key="preset.applyPreview">Aplică / Previzualizare</sys:String>
+  <sys:String x:Key="preset.custom">Profil personalizat</sys:String>
+  <sys:String x:Key="tools.cleanTemp.confirm">Ștergeți fișierele din folderele Temp Windows și utilizator? Fișierele folosite sunt omise. Continuați?</sys:String>
+  <sys:String x:Key="danger.needSettings">Activați „Permite acțiuni periculoase” în Setări înainte de această operație.</sys:String>
+  <sys:String x:Key="msg.oneShotOk">Comanda a fost executată.</sys:String>
 
 </ResourceDictionary>

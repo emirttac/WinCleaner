@@ -53,6 +53,7 @@
   <sys:String x:Key="dash.applyGamer">Применить пресет &quot;Геймер&quot;</sys:String>
   <sys:String x:Key="dash.flushDns">Очистить DNS</sys:String>
   <sys:String x:Key="dash.cleanTemp">Очистить временные файлы</sys:String>
+  <sys:String x:Key="dash.createRestore">Создать точку восстановления</sys:String>
   <sys:String x:Key="svc.title">Службы</sys:String>
   <sys:String x:Key="svc.subtitle">Небольшие программы, которые Windows держит запущенными в фоне. Отключение ненужных даёт ПК больше ресурсов. Переключатель = Отключено.</sys:String>
   <sys:String x:Key="svc.startType">Тип запуска</sys:String>
@@ -113,6 +114,7 @@
   <sys:String x:Key="tools.takeOwn.desc">Добавляет &quot;Взять владение&quot; в меню правого клика по файлам и папкам (takeown + icacls). Требуются права администратора. Отключение удаляет ключи меню.</sys:String>
   <sys:String x:Key="tools.takeOwn.menu">Взять владение</sys:String>
   <sys:String x:Key="tools.tempFreed">Освобождено примерно {0}.</sys:String>
+  <sys:String x:Key="tools.tempWorking">Очистка временных файлов…</sys:String>
   <sys:String x:Key="tools.progress.done">Завершено.</sys:String>
   <sys:String x:Key="tools.progress.failed">Завершено с ошибками.</sys:String>
   <sys:String x:Key="tools.registrySafe">Безопасные твики реестра</sys:String>
@@ -123,7 +125,15 @@
   <sys:String x:Key="set.title">Настройки</sys:String>
   <sys:String x:Key="set.subtitle">Язык, безопасность и журналы — управление поведением самого WinCleaner</sys:String>
   <sys:String x:Key="set.language">Язык</sys:String>
-  <sys:String x:Key="set.restore">Создавать точку восстановления системы перед изменениями (рекомендуется оставить включённым)</sys:String>
+  <sys:String x:Key="set.restore">Предупреждать и автоматически создавать точку восстановления сеанса, если вы начали без неё (рекомендуется). Точка не создаётся для каждой настройки.</sys:String>
+  <sys:String x:Key="restore.cardTitle">Точка восстановления системы</sys:String>
+  <sys:String x:Key="restore.statusNone">В этом сеансе ещё нет точки восстановления. Создайте её перед изменениями.</sys:String>
+  <sys:String x:Key="restore.statusOk">Точка восстановления для этого сеанса готова.</sys:String>
+  <sys:String x:Key="restore.created">Точка восстановления создана.</sys:String>
+  <sys:String x:Key="restore.failed">Не удалось создать точку восстановления. Восстановление системы может быть отключено.</sys:String>
+  <sys:String x:Key="restore.warnTitle">Нет точки восстановления</sys:String>
+  <sys:String x:Key="restore.warnBody">В этом сеансе ещё не создана точка восстановления. Перед продолжением она будет создана автоматически (это может занять около минуты). Для всего сеанса используется одна точка — не отдельная для каждой настройки.</sys:String>
+  <sys:String x:Key="restore.creating">Создание точки восстановления…</sys:String>
   <sys:String x:Key="set.dangerous">Разрешить опасные действия (только если вы понимаете, что делаете)</sys:String>
   <sys:String x:Key="set.logs">Папка журналов</sys:String>
   <sys:String x:Key="set.updates">Проверять обновления при запуске (необязательно, нужен интернет)</sys:String>
@@ -201,8 +211,8 @@
   <sys:String x:Key="app.3dviewer.desc">Что это: Приложение для просмотра файлов 3D-моделей.&#x0a;Если удалить: Нельзя будет открывать 3D-файлы (большинство всё равно этого не делает).&#x0a;Как вернуть: Microsoft Store. Безопасно удалять.</sys:String>
   <sys:String x:Key="app.mixedreality.name">Mixed Reality Portal</sys:String>
   <sys:String x:Key="app.mixedreality.desc">Что это: Портал настройки VR / устройств смешанной реальности.&#x0a;Если у вас нет VR: Это просто лишнее место.&#x0a;Безопасно удалять. Можно переустановить из Store.</sys:String>
-  <sys:String x:Key="app.xboxapp.name">Xbox Console Companion</sys:String>
-  <sys:String x:Key="app.xboxapp.desc">Что это: Старое / сопутствующее приложение Xbox.&#x0a;Если удалить: Могут пострадать Game Pass и часть социальных функций Xbox.&#x0a;Подумайте дважды, если пользуетесь Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxapp.name">Приложение Xbox</sys:String>
+  <sys:String x:Key="app.xboxapp.desc">Что это: Приложение Xbox / Game Pass. В Windows 11 это Microsoft.GamingApp; на старых ПК — Microsoft.XboxApp. WinCleaner удаляет то, что установлено.&#x0a;Если удалить: Могут пострадать Game Pass, друзья и часть социальных функций Xbox.&#x0a;Подумайте дважды, если пользуетесь Game Pass.</sys:String>
   <sys:String x:Key="app.xboxoverlay.name">Xbox Game Bar</sys:String>
   <sys:String x:Key="app.xboxoverlay.desc">Что это: Оверлей Win+G в играх — запись, виджеты, счётчик FPS.&#x0a;Если удалить / отключить: Меньше фоновой нагрузки записи → на части ПК растёт FPS.&#x0a;Популярный выбор у геймеров. Можно переустановить из Store.</sys:String>
   <sys:String x:Key="app.xboxidentity.name">Xbox Identity Provider</sys:String>
@@ -255,6 +265,26 @@
   <sys:String x:Key="app.todo.desc">Что это: Приложение списка задач.&#x0a;Если используете что-то другое: Безопасно удалять.</sys:String>
   <sys:String x:Key="app.quickassist.name">Быстрая помощь</sys:String>
   <sys:String x:Key="app.quickassist.desc">Что это: Приложение удалённой поддержки.&#x0a;Редко используется, но удобно в некоторых сценариях поддержки — удаляйте осторожно.</sys:String>
+  <sys:String x:Key="app.copilot.name">Copilot</sys:String>
+  <sys:String x:Key="app.copilot.desc">Что это: Чат-приложение Windows Copilot на панели задач / в меню Пуск.&#x0a;Если удалить: Ярлыки Copilot пропадут; можно поставить снова из Store.&#x0a;Удаляйте осторожно, если Copilot реально используете.</sys:String>
+  <sys:String x:Key="app.bingsearch.name">Поиск Bing</sys:String>
+  <sys:String x:Key="app.bingsearch.desc">Что это: Пакет Bing / подсветки поиска, который подмешивает веб-результаты в поиск Windows.&#x0a;Если удалить: Локальный поиск остаётся; дополнения Bing исчезают.&#x0a;Безопасно удалять.</sys:String>
+  <sys:String x:Key="app.outlook.name">Outlook (новый)</sys:String>
+  <sys:String x:Key="app.outlook.desc">Что это: Новое приложение Outlook для Windows, которое на многих ПК заменяет Почту / Календарь.&#x0a;Если пользуетесь классическим Outlook или другим клиентом: Безопасно удалять.&#x0a;Не удаляйте, если это ваша ежедневная почта.</sys:String>
+  <sys:String x:Key="app.stickynotes.name">Записки</sys:String>
+  <sys:String x:Key="app.stickynotes.desc">Что это: Microsoft Sticky Notes.&#x0a;Если не пользуетесь: Просто висит в фоне.&#x0a;Безопасно удалять. Можно вернуть из Store / учётной записи Microsoft.</sys:String>
+  <sys:String x:Key="app.powerautomate.name">Power Automate</sys:String>
+  <sys:String x:Key="app.powerautomate.desc">Что это: Автоматизация рабочего стола / потоки, идущие с Windows.&#x0a;Если никогда не создавали поток: Не нужно.&#x0a;Безопасно удалять.</sys:String>
+  <sys:String x:Key="app.devhome.name">Dev Home</sys:String>
+  <sys:String x:Key="app.devhome.desc">Что это: Панель разработчика Microsoft (виджеты, настройка ПК).&#x0a;Если не пользуетесь: Безопасно удалять.&#x0a;Только Windows 11.</sys:String>
+  <sys:String x:Key="app.xboxtcui.name">Xbox TCUI</sys:String>
+  <sys:String x:Key="app.xboxtcui.desc">Что это: Интерфейс Xbox для Game Bar / окон Game Pass.&#x0a;Если удалить: Некоторые подсказки Xbox в игре могут сломаться.&#x0a;Оставьте, если оставляете Game Bar или Game Pass.</sys:String>
+  <sys:String x:Key="app.xboxspeech.name">Голосовой оверлей Xbox</sys:String>
+  <sys:String x:Key="app.xboxspeech.desc">Что это: Оверлей «речь в текст» Xbox Game Bar.&#x0a;Без внутриигровых субтитров: Безопасно удалять.&#x0a;Оставьте, если пользуетесь спецвозможностями Xbox.</sys:String>
+  <sys:String x:Key="app.family.name">Microsoft Family</sys:String>
+  <sys:String x:Key="app.family.desc">Что это: Семейная безопасность / родительский контроль.&#x0a;Если на этом ПК нет детских учёток: Безопасно удалять.&#x0a;Как вернуть: Microsoft Store.</sys:String>
+  <sys:String x:Key="app.startexperiences.name">Возможности меню Пуск</sys:String>
+  <sys:String x:Key="app.startexperiences.desc">Что это: Рекомендации меню Пуск / предлагаемые приложения в Windows 11.&#x0a;Если удалить: Часть подсказок Пуск исчезнет.&#x0a;Удаляйте осторожно — Пуск работает, рекомендации меняются.</sys:String>
   <sys:String x:Key="tweak.gamemode.name">Включить Game Mode</sys:String>
   <sys:String x:Key="tweak.gamemode.desc">Что делает: Сообщает Windows &quot;сейчас играю — понизь приоритет других задач&quot;.&#x0a;При включении: Фоновые обновления, индексация и похожая работа отступают; игра получает чуть больше внимания.&#x0a;Если отключить: Возврат к обычному поведению.&#x0a;Можно ли отменить: Да. Без вреда; рекомендуется геймерам.</sys:String>
   <sys:String x:Key="tweak.gamebar.name">Отключить захват Game Bar</sys:String>
@@ -310,7 +340,7 @@
   <sys:String x:Key="tweak.qos.name">Убрать резерв полосы QoS</sys:String>
   <sys:String x:Key="tweak.qos.desc">Что делает: Снимает стандартный резерв Windows, который держит часть полосы &quot;на всякий случай&quot; (часто ~20%).&#x0a;Результат: Теоретически вся полоса ваша. Не все видят большую разницу, но попробовать безопасно.&#x0a;Можно ли отменить: Да.</sys:String>
   <sys:String x:Key="tweak.tcpauto.name">TCP Autotuning: Normal</sys:String>
-  <sys:String x:Key="tweak.tcpauto.desc">Что делает: Ставит автонастройку окна TCP Windows на уровень &quot;normal&quot; (netsh).&#x0a;Когда использовать: Странные скорости загрузки или странное поведение сети.&#x0a;Думайте об этом как об одноразовой команде. Откат — похожая команда.</sys:String>
+  <sys:String x:Key="tweak.tcpauto.desc">Что делает: Ставит автонастройку окна TCP Windows на уровень &quot;normal&quot; (netsh).&#x0a;Когда использовать: Странные скорости загрузки или странное поведение сети.&#x0a;Думайте об этом как об одноразовой команде. Откатывать нечего.</sys:String>
   <sys:String x:Key="tweak.dnsflush.name">Очистить кэш DNS</sys:String>
   <sys:String x:Key="tweak.dnsflush.desc">Что делает: Очищает кэш ПК &quot;адрес сайта = IP&quot;.&#x0a;Когда использовать: Сайт не загружается, ведёт не туда или странности после VPN.&#x0a;Безопасная разовая очистка. Откатывать нечего.</sys:String>
   <sys:String x:Key="tweak.netbios.name">Отключить NetBIOS over TCP/IP</sys:String>
@@ -358,7 +388,7 @@
   <sys:String x:Key="tweak.searchicon.name">Свернуть поиск до значка</sys:String>
   <sys:String x:Key="tweak.searchicon.desc">Что делает: Сжимает широкое поле поиска на панели задач до маленького значка.&#x0a;Explorer перезапускается. Можно ли отменить: Да.</sys:String>
   <sys:String x:Key="tweak.hidetaskview.name">Скрыть кнопку &quot;Представление задач&quot;</sys:String>
-  <sys:String x:Key="tweak.hidetaskview.desc">Что делает: Убирает кнопку &quot;Представление задач&quot; с панели задач.&#x0a;Explorer перезапускается. Можно ли отменить: Да.</sys:String>
+  <sys:String x:Key="tweak.hidetaskview.desc">Что делает: Скрывает кнопку &quot;Представление задач&quot; на панели задач (ничего не удаляет).&#x0a;Explorer перезапускается. Можно ли отменить: Да.</sys:String>
   <sys:String x:Key="tweak.explorerthispc.name">Открывать Проводник в &quot;Этот компьютер&quot;</sys:String>
   <sys:String x:Key="tweak.explorerthispc.desc">Что делает: Проводник открывается в &quot;Этот компьютер&quot; вместо &quot;Домой&quot;.&#x0a;Можно ли отменить: Да.</sys:String>
   <sys:String x:Key="tweak.netthrottle.name">Сбросить индекс ограничения сети</sys:String>
@@ -492,5 +522,14 @@
   <sys:String x:Key="set.social.youtube">YouTube</sys:String>
   <sys:String x:Key="set.social.instagram">Instagram</sys:String>
   <sys:String x:Key="set.social.github">GitHub</sys:String>
+  <sys:String x:Key="common.loading">Загрузка...</sys:String>
+  <sys:String x:Key="blo.installed">Установлено</sys:String>
+  <sys:String x:Key="blo.notInstalled">Не установлено</sys:String>
+  <sys:String x:Key="svc.disable">Отключить</sys:String>
+  <sys:String x:Key="preset.applyPreview">Применить / Просмотр</sys:String>
+  <sys:String x:Key="preset.custom">Свой профиль</sys:String>
+  <sys:String x:Key="tools.cleanTemp.confirm">Удалить файлы из папок Temp Windows и пользователя? Занятые файлы пропускаются. Продолжить?</sys:String>
+  <sys:String x:Key="danger.needSettings">Сначала включите «Разрешить опасные действия» в настройках.</sys:String>
+  <sys:String x:Key="msg.oneShotOk">Команда выполнена.</sys:String>
 
 </ResourceDictionary>

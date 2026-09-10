@@ -19,8 +19,8 @@
                Foreground="{StaticResource TextSecondaryBrush}"/>
     <CheckBox x:Name="AckCheck" Grid.Row="2" Content="I understand the risks" Margin="0,12,0,16"/>
     <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Right">
-      <Button Content="Cancel" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0" IsCancel="True" Click="Cancel_Click"/>
-      <Button x:Name="OkButton" Content="Confirm" Style="{StaticResource DangerButtonStyle}" IsEnabled="False" Click="Ok_Click"/>
+      <Button x:Name="CancelButton" Content="{DynamicResource common.cancel}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0" IsCancel="True" Click="Cancel_Click"/>
+      <Button x:Name="OkButton" Content="{DynamicResource common.confirm}" Style="{StaticResource DangerButtonStyle}" IsEnabled="False" Click="Ok_Click"/>
     </StackPanel>
   </Grid>
 </Window>

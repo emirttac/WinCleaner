@@ -17,7 +17,8 @@
   },
   {
     "id": "app-xboxapp",
-    "packageName": "Microsoft.XboxApp",
+    "packageName": "Microsoft.GamingApp",
+    "packageAliases": [ "Microsoft.XboxApp" ],
     "displayNameKey": "app.xboxapp.name",
     "descriptionKey": "app.xboxapp.desc",
     "risk": "Caution",
@@ -26,6 +27,7 @@
   {
     "id": "app-xboxgamingoverlay",
     "packageName": "Microsoft.XboxGamingOverlay",
+    "packageAliases": [ "Microsoft.XboxGameOverlay" ],
     "displayNameKey": "app.xboxoverlay.name",
     "descriptionKey": "app.xboxoverlay.desc",
     "risk": "Caution",
@@ -146,7 +148,8 @@
   },
   {
     "id": "app-teams",
-    "packageName": "MicrosoftTeams",
+    "packageName": "MSTeams",
+    "packageAliases": [ "MicrosoftTeams" ],
     "displayNameKey": "app.teams.name",
     "descriptionKey": "app.teams.desc",
     "risk": "Caution",
@@ -233,5 +236,90 @@
     "descriptionKey": "app.quickassist.desc",
     "risk": "Caution",
     "systemCritical": false
+  },
+  {
+    "id": "app-copilot",
+    "packageName": "Microsoft.Copilot",
+    "displayNameKey": "app.copilot.name",
+    "descriptionKey": "app.copilot.desc",
+    "risk": "Caution",
+    "systemCritical": false,
+    "win11Only": true
+  },
+  {
+    "id": "app-bingsearch",
+    "packageName": "Microsoft.BingSearch",
+    "displayNameKey": "app.bingsearch.name",
+    "descriptionKey": "app.bingsearch.desc",
+    "risk": "Safe",
+    "systemCritical": false,
+    "win11Only": true
+  },
+  {
+    "id": "app-outlook",
+    "packageName": "Microsoft.OutlookForWindows",
+    "displayNameKey": "app.outlook.name",
+    "descriptionKey": "app.outlook.desc",
+    "risk": "Caution",
+    "systemCritical": false,
+    "win11Only": true
+  },
+  {
+    "id": "app-stickynotes",
+    "packageName": "Microsoft.MicrosoftStickyNotes",
+    "displayNameKey": "app.stickynotes.name",
+    "descriptionKey": "app.stickynotes.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-powerautomate",
+    "packageName": "Microsoft.PowerAutomateDesktop",
+    "displayNameKey": "app.powerautomate.name",
+    "descriptionKey": "app.powerautomate.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-devhome",
+    "packageName": "Microsoft.Windows.DevHome",
+    "displayNameKey": "app.devhome.name",
+    "descriptionKey": "app.devhome.desc",
+    "risk": "Safe",
+    "systemCritical": false,
+    "win11Only": true
+  },
+  {
+    "id": "app-xboxtcui",
+    "packageName": "Microsoft.Xbox.TCUI",
+    "displayNameKey": "app.xboxtcui.name",
+    "descriptionKey": "app.xboxtcui.desc",
+    "risk": "Caution",
+    "systemCritical": false
+  },
+  {
+    "id": "app-xboxspeech",
+    "packageName": "Microsoft.XboxSpeechToTextOverlay",
+    "displayNameKey": "app.xboxspeech.name",
+    "descriptionKey": "app.xboxspeech.desc",
+    "risk": "Caution",
+    "systemCritical": false
+  },
+  {
+    "id": "app-family",
+    "packageName": "MicrosoftCorporationII.MicrosoftFamily",
+    "displayNameKey": "app.family.name",
+    "descriptionKey": "app.family.desc",
+    "risk": "Safe",
+    "systemCritical": false
+  },
+  {
+    "id": "app-startexperiences",
+    "packageName": "Microsoft.StartExperiencesApp",
+    "displayNameKey": "app.startexperiences.name",
+    "descriptionKey": "app.startexperiences.desc",
+    "risk": "Caution",
+    "systemCritical": false,
+    "win11Only": true
   }
 ]

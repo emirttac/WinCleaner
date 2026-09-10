@@ -1,6 +1,7 @@
 using WinCleaner.Core.Actions;
 using WinCleaner.Core.Compatibility;
 using WinCleaner.Core.Models;
+using WinCleaner.Core.Services;
 using WinCleaner.Data;
 
 namespace WinCleaner.Core.Tests;
@@ -70,7 +71,9 @@ public class CatalogLoaderTests
         Assert.Contains(tweaks, t => t.Id == "tweak-inking-typing" && t.Registries is { Count: 3 });
         Assert.Contains(tweaks, t => t.Id == "tweak-feedback-frequency" && t.Registry!.DeleteValueOnDisable);
         Assert.Contains(tweaks, t => t.Id == "tweak-dark-mode" && t.Registries is { Count: 2 });
-        Assert.Contains(tweaks, t => t.Id == "tweak-core-parking" && t.Type == "command");
+        Assert.Contains(tweaks, t => t.Id == "tweak-core-parking" && t.Type == "command"
+            && t.Command!.DetectMode == "acIndexEquals" && t.Command.DetectValue == "100");
+        Assert.Contains(tweaks, t => t.Id == "tweak-nic-power-save" && t.Command!.DetectValue == "WC_NIC_POWER_OFF");
         Assert.Contains(tweaks, t => t.Id == "tweak-network-throttling" && t.Risk == "Caution");
         Assert.Contains(tweaks, t => t.Id == "tweak-disable-ipv6" && t.RequiresReboot);
     }
@@ -141,6 +144,150 @@ public class CatalogLoaderTests
         var store = Assert.Single(apps, a => a.PackageName == "Microsoft.WindowsStore");
         Assert.True(store.SystemCritical);
     }
+
+    [Fact]
+    public void LoadApps_XboxAndTeamsHaveModernAliases()
+    {
+        var apps = CatalogLoader.LoadApps();
+
+        var xbox = Assert.Single(apps, a => a.Id == "app-xboxapp");
+        Assert.Contains("Microsoft.GamingApp", xbox.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("Microsoft.XboxApp", xbox.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.True(xbox.MatchesInstalledName("Microsoft.GamingApp"));
+        Assert.True(xbox.MatchesInstalledName("Microsoft.XboxApp"));
+        Assert.False(xbox.MatchesInstalledName("Microsoft.XboxGamingOverlay"));
+        Assert.False(xbox.MatchesInstalledName("Microsoft.XboxIdentityProvider"));
+
+        var teams = Assert.Single(apps, a => a.Id == "app-teams");
+        Assert.Contains("MSTeams", teams.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("MicrosoftTeams", teams.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.True(teams.MatchesInstalledName("MSTeams"));
+        Assert.True(teams.MatchesInstalledName("MicrosoftTeams"));
+
+        var overlay = Assert.Single(apps, a => a.Id == "app-xboxgamingoverlay");
+        Assert.True(overlay.MatchesInstalledName("Microsoft.XboxGamingOverlay"));
+        Assert.True(overlay.MatchesInstalledName("Microsoft.XboxGameOverlay"));
+    }
+
+    [Fact]
+    public void LoadApps_ContainsWin11InboxBloat()
+    {
+        var apps = CatalogLoader.LoadApps();
+        Assert.Contains(apps, a => a.Id == "app-copilot" && a.PackageName == "Microsoft.Copilot");
+        Assert.Contains(apps, a => a.Id == "app-bingsearch" && a.PackageName == "Microsoft.BingSearch");
+        Assert.Contains(apps, a => a.Id == "app-outlook" && a.PackageName == "Microsoft.OutlookForWindows");
+        Assert.Contains(apps, a => a.Id == "app-devhome" && a.Win11Only);
+        Assert.Contains(apps, a => a.Id == "app-xboxtcui" && a.PackageName == "Microsoft.Xbox.TCUI");
+        Assert.Contains(apps, a => a.Id == "app-family" && a.PackageName == "MicrosoftCorporationII.MicrosoftFamily");
+    }
+
+    [Fact]
+    public void LoadTweaks_Win11AndOneShotFixes()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+
+        var copilot = Assert.Single(tweaks, t => t.Id == "tweak-disable-copilot");
+        var v22631 = Assert.Single(copilot.RegistryVariants!, v => v.MinBuild == 22631);
+        Assert.True(v22631.Registries is { Count: >= 3 });
+        Assert.Contains(v22631.Registries!, r => r.Name == "ShowCopilotButton");
+        Assert.Contains(v22631.Registries!, r => r.Name == "TurnOffWindowsCopilot");
+
+        var widgets = Assert.Single(tweaks, t => t.Id == "tweak-disable-widgets");
+        Assert.True(widgets.Registries is { Count: 2 });
+        Assert.Contains(widgets.Registries!, r => r.Name == "TaskbarDa");
+        Assert.Contains(widgets.Registries!, r => r.Name == "AllowNewsAndInterests");
+
+        var bing = Assert.Single(tweaks, t => t.Id == "tweak-bing-search");
+        Assert.True(bing.Registries is { Count: 2 });
+        Assert.Contains(bing.Registries!, r => r.Name == "DisableSearchBoxSuggestions");
+
+        var delivery = Assert.Single(tweaks, t => t.Id == "tweak-delivery-opt");
+        Assert.True(delivery.Registries is { Count: 2 });
+        Assert.Contains(delivery.Registries!, r => r.Path.Contains("Policies", StringComparison.OrdinalIgnoreCase));
+
+        var tcp = Assert.Single(tweaks, t => t.Id == "tweak-tcp-autotuning");
+        Assert.True(string.IsNullOrWhiteSpace(tcp.Command!.RevertArguments));
+        Assert.True(tcp.Command.RequiresAdmin);
+        Assert.True(tcp.Command.OneShot);
+
+        var dns = Assert.Single(tweaks, t => t.Id == "tweak-dns-flush");
+        Assert.True(string.IsNullOrWhiteSpace(dns.Command!.RevertArguments));
+        Assert.True(dns.Command.OneShot);
+
+        var mouse = Assert.Single(tweaks, t => t.Id == "tweak-mouse-accel");
+        Assert.True(mouse.Registries is { Count: 3 });
+        Assert.Contains(mouse.Registries!, r => r.Name == "MouseThreshold1" && r.EnabledValue == "0");
+        Assert.Contains(mouse.Registries!, r => r.Name == "MouseThreshold2" && r.EnabledValue == "0");
+
+        var nagle = Assert.Single(tweaks, t => t.Id == "tweak-nagle-ack");
+        Assert.True(nagle.Registry!.ApplyToAllSubkeys);
+        var nodelay = Assert.Single(tweaks, t => t.Id == "tweak-tcp-nodelay");
+        Assert.True(nodelay.Registry!.ApplyToAllSubkeys);
+    }
+
+    [Fact]
+    public void LoadServices_TabletInputHasWin11Alias()
+    {
+        var tablet = Assert.Single(CatalogLoader.LoadServices(), s => s.Id == "svc-tabletinput");
+        Assert.Equal("TabletInputService", tablet.ServiceName);
+        Assert.Contains(tablet.GetServiceNames(), n => n.Equals("TextInputManagementService", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void Catalogs_HaveUniqueIds_AndCompleteSpecs_AndPresetRefsResolve()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        var services = CatalogLoader.LoadServices();
+        var apps = CatalogLoader.LoadApps();
+        var installers = CatalogLoader.LoadInstallerApps();
+        var presets = CatalogLoader.LoadPresets();
+
+        Assert.Equal(tweaks.Count, tweaks.Select(t => t.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(services.Count, services.Select(s => s.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(apps.Count, apps.Select(a => a.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(installers.Count, installers.Select(a => a.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+
+        foreach (var t in tweaks)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(t.Id));
+            switch (t.Type.ToLowerInvariant())
+            {
+                case "registry":
+                    Assert.True(
+                        t.Registry is not null
+                        || t.Registries is { Count: > 0 }
+                        || t.RegistryVariants is { Count: > 0 },
+                        $"{t.Id} registry spec missing");
+                    break;
+                case "command":
+                    Assert.False(string.IsNullOrWhiteSpace(t.Command?.FileName), t.Id);
+                    Assert.False(string.IsNullOrWhiteSpace(t.Command?.Arguments), t.Id);
+                    break;
+                case "service":
+                    Assert.False(string.IsNullOrWhiteSpace(t.Service?.ServiceName), t.Id);
+                    break;
+                case "task":
+                    Assert.False(string.IsNullOrWhiteSpace(t.Task?.TaskPath), t.Id);
+                    break;
+                case "powerplan":
+                    Assert.NotNull(t.PowerPlan);
+                    break;
+                default:
+                    Assert.True(false, $"{t.Id} has unknown type '{t.Type}'");
+                    break;
+            }
+        }
+
+        var tweakIds = tweaks.Select(t => t.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var serviceIds = services.Select(s => s.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var preset in presets)
+        {
+            foreach (var id in preset.TweakIds)
+                Assert.True(tweakIds.Contains(id), $"preset {preset.Id} missing tweak {id}");
+            foreach (var id in preset.ServiceIds)
+                Assert.True(serviceIds.Contains(id), $"preset {preset.Id} missing service {id}");
+        }
+    }
 }
 
 public class OsCompatibilityTests
@@ -195,5 +342,18 @@ public class ChangeResultTests
         var fail = ChangeResult.Fail("nope");
         Assert.False(fail.Success);
         Assert.Equal("nope", fail.Message);
+    }
+}
+
+public class RegistryManagerValuesEqualTests
+{
+    [Fact]
+    public void ValuesEqual_DwordAcceptsUnsignedNegativeOne()
+    {
+        Assert.True(RegistryManager.ValuesEqual("-1", "4294967295", "DWord"));
+        Assert.True(RegistryManager.ValuesEqual("4294967295", "-1", "DWord"));
+        Assert.True(RegistryManager.ValuesEqual("255", "255", "DWord"));
+        Assert.False(RegistryManager.ValuesEqual(null, "0", "DWord"));
+        Assert.False(RegistryManager.ValuesEqual("1", "0", "DWord"));
     }
 }

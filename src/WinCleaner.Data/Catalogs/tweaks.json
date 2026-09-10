@@ -93,7 +93,8 @@
       "valueKind": "DWord",
       "enabledValue": "1",
       "disabledValue": "0",
-      "applyMeansDisable": false
+      "applyMeansDisable": false,
+      "applyToAllSubkeys": true
     }
   },
   {
@@ -110,7 +111,8 @@
       "valueKind": "DWord",
       "enabledValue": "1",
       "disabledValue": "0",
-      "applyMeansDisable": false
+      "applyMeansDisable": false,
+      "applyToAllSubkeys": true
     }
   },
   {
@@ -208,15 +210,32 @@
     "category": "Gaming",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Control Panel\\Mouse",
-      "name": "MouseSpeed",
-      "valueKind": "String",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Control Panel\\Mouse",
+        "name": "MouseSpeed",
+        "valueKind": "String",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Control Panel\\Mouse",
+        "name": "MouseThreshold1",
+        "valueKind": "String",
+        "enabledValue": "0",
+        "disabledValue": "6"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Control Panel\\Mouse",
+        "name": "MouseThreshold2",
+        "valueKind": "String",
+        "enabledValue": "0",
+        "disabledValue": "10"
+      }
+    ]
   },
   {
     "id": "tweak-disable-vbs",
@@ -346,15 +365,24 @@
     "category": "Telemetry",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
-      "name": "BingSearchEnabled",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "name": "BingSearchEnabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "name": "DisableSearchBoxSuggestions",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      }
+    ]
   },
   {
     "id": "tweak-location",
@@ -468,7 +496,8 @@
     "command": {
       "fileName": "netsh",
       "arguments": "int tcp set global autotuninglevel=normal",
-      "revertArguments": "int tcp set global autotuninglevel=normal"
+      "requiresAdmin": true,
+      "oneShot": true
     }
   },
   {
@@ -480,7 +509,8 @@
     "type": "command",
     "command": {
       "fileName": "ipconfig",
-      "arguments": "/flushdns"
+      "arguments": "/flushdns",
+      "oneShot": true
     }
   },
   {
@@ -508,15 +538,24 @@
     "category": "Tools",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKLM",
-      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
-      "name": "DODownloadMode",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\DeliveryOptimization\\Config",
+        "name": "DODownloadMode",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeliveryOptimization",
+        "name": "DODownloadMode",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      }
+    ]
   },
   {
     "id": "tweak-wu-pause",
@@ -600,15 +639,33 @@
       },
       {
         "minBuild": 22631,
-        "registry": {
-          "hive": "HKLM",
-          "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
-          "name": "TurnOffWindowsCopilot",
-          "valueKind": "DWord",
-          "enabledValue": "1",
-          "disabledValue": "0",
-          "applyMeansDisable": false
-        }
+        "registries": [
+          {
+            "hive": "HKLM",
+            "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+            "name": "TurnOffWindowsCopilot",
+            "valueKind": "DWord",
+            "enabledValue": "1",
+            "disabledValue": "0"
+          },
+          {
+            "hive": "HKCU",
+            "path": "Software\\Policies\\Microsoft\\Windows\\WindowsCopilot",
+            "name": "TurnOffWindowsCopilot",
+            "valueKind": "DWord",
+            "enabledValue": "1",
+            "disabledValue": "0"
+          },
+          {
+            "hive": "HKCU",
+            "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+            "name": "ShowCopilotButton",
+            "valueKind": "DWord",
+            "enabledValue": "0",
+            "disabledValue": "1",
+            "restartExplorer": true
+          }
+        ]
       }
     ]
   },
@@ -669,16 +726,26 @@
     "risk": "Safe",
     "type": "registry",
     "win11Only": true,
-    "registry": {
-      "hive": "HKLM",
-      "path": "SOFTWARE\\Policies\\Microsoft\\Dsh",
-      "name": "AllowNewsAndInterests",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false,
-      "restartExplorer": true
-    }
+    "registries": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Dsh",
+        "name": "AllowNewsAndInterests",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "restartExplorer": true
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "TaskbarDa",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "restartExplorer": true
+      }
+    ]
   },
   {
     "id": "tweak-inking-typing",
@@ -790,7 +857,11 @@
       "fileName": "cmd",
       "arguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 100 & powercfg /setactive SCHEME_CURRENT",
       "revertArguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 5 & powercfg /setactive SCHEME_CURRENT",
-      "requiresAdmin": true
+      "requiresAdmin": true,
+      "detectFileName": "powercfg",
+      "detectArguments": "/query SCHEME_CURRENT SUB_PROCESSOR CPMINCORES",
+      "detectMode": "acIndexEquals",
+      "detectValue": "100"
     }
   },
   {
@@ -1006,7 +1077,11 @@
       "fileName": "powershell",
       "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; Get-NetAdapter | Disable-NetAdapterPowerManagement\"",
       "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; Get-NetAdapter | Enable-NetAdapterPowerManagement\"",
-      "requiresAdmin": true
+      "requiresAdmin": true,
+      "detectFileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; try { $n=@(Get-NetAdapter | Get-NetAdapterPowerManagement | Where-Object { $_.AllowComputerToTurnOffDevice -eq 'Enabled' }); if ($n.Count -eq 0) { 'WC_NIC_POWER_OFF' } else { 'WC_NIC_POWER_ON' } } catch { 'WC_NIC_POWER_ON' }\"",
+      "detectMode": "contains",
+      "detectValue": "WC_NIC_POWER_OFF"
     }
   }
 ]

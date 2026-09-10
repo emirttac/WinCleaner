@@ -277,18 +277,11 @@ public sealed class ActionExecutor
         if (action.Risk == Models.RiskLevel.Dangerous && !_settings.AllowDangerousActions && !isRevert)
             return ChangeResult.Fail("Dangerous actions are disabled in Settings.");
 
-        // Never block the UI thread: restore + registry/service work run on the thread pool.
-        if (!isRevert && _settings.AutoRestorePoint && _restore.ShouldCreateNow())
+        // One restore point per session — never per tweak (Windows rate-limits and can hang).
+        if (!isRevert)
         {
-            try
-            {
-                await _restore.CreateRestorePointAsync($"WinCleaner: {action.DisplayName}", ct)
-                    .ConfigureAwait(false);
-            }
-            catch
-            {
-                // Restore failure must not abort the tweak
-            }
+            await _restore.EnsureSessionCheckpointAsync(_settings.AutoRestorePoint, warnIfMissing: true, ct)
+                .ConfigureAwait(false);
         }
 
         ChangeResult result;
@@ -333,31 +326,18 @@ public sealed class ActionExecutor
         var results = new List<ChangeResult>();
         var list = actions.ToList();
 
-        if (_settings.AutoRestorePoint && list.Count > 0 && _restore.ShouldCreateNow())
+        if (list.Count > 0 && _settings.AutoRestorePoint && !_restore.HasSessionCheckpoint)
         {
             progress?.Report("Creating restore point...");
-            try
-            {
-                await _restore.CreateRestorePointAsync($"WinCleaner batch ({list.Count} changes)", ct)
-                    .ConfigureAwait(false);
-            }
-            catch { }
+            await _restore.EnsureSessionCheckpointAsync(_settings.AutoRestorePoint, warnIfMissing: true, ct)
+                .ConfigureAwait(false);
         }
 
-        var prev = _settings.AutoRestorePoint;
-        _settings.AutoRestorePoint = false; // avoid per-item restore during batch
-        try
+        foreach (var action in list)
         {
-            foreach (var action in list)
-            {
-                ct.ThrowIfCancellationRequested();
-                progress?.Report(action.DisplayName);
-                results.Add(await ExecuteAsync(action, false, ct).ConfigureAwait(false));
-            }
-        }
-        finally
-        {
-            _settings.AutoRestorePoint = prev;
+            ct.ThrowIfCancellationRequested();
+            progress?.Report(action.DisplayName);
+            results.Add(await ExecuteAsync(action, false, ct).ConfigureAwait(false));
         }
 
         return results;

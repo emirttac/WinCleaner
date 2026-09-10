@@ -3,16 +3,34 @@ using System.Management;
 
 namespace WinCleaner.Core.Services;
 
+/// <summary>
+/// Creates at most one System Restore checkpoint per WinCleaner session.
+/// Per-tweak checkpoints hit Windows rate limits and can freeze the UI.
+/// </summary>
 public sealed class RestorePointManager
 {
     private static readonly object Gate = new();
     private static DateTimeOffset _lastSuccess = DateTimeOffset.MinValue;
+
+    private readonly SemaphoreSlim _sessionGate = new(1, 1);
+    private bool _autoAttempted;
 
     /// <summary>
     /// Minimum gap between restore points. Windows rate-limits checkpoints;
     /// calling too often freezes or fails and was hanging the UI.
     /// </summary>
     public static TimeSpan MinInterval { get; set; } = TimeSpan.FromMinutes(10);
+
+    /// <summary>True after a restore point was created (or confirmed) in this app session.</summary>
+    public bool HasSessionCheckpoint { get; private set; }
+
+    /// <summary>UI hook: show a warning when the user starts work without a session restore point.</summary>
+    public Func<Task>? NotifyMissingSessionCheckpoint { get; set; }
+
+    public event Action? SessionCheckpointChanged;
+
+    /// <summary>Test hook — when set, WMI/PowerShell are not called.</summary>
+    internal static Func<string, bool>? CreateCoreOverride { get; set; }
 
     public bool ShouldCreateNow()
     {
@@ -21,23 +39,31 @@ public sealed class RestorePointManager
     }
 
     public Task<bool> CreateRestorePointAsync(string description, CancellationToken cancellationToken = default) =>
-        Task.Run(() => CreateRestorePoint(description), cancellationToken);
+        CreateRestorePointAsync(description, ignoreMinInterval: false, cancellationToken);
 
-    public bool CreateRestorePoint(string description)
+    public Task<bool> CreateRestorePointAsync(string description, bool ignoreMinInterval, CancellationToken cancellationToken = default) =>
+        Task.Run(() => CreateRestorePoint(description, ignoreMinInterval), cancellationToken);
+
+    public bool CreateRestorePoint(string description, bool ignoreMinInterval = false)
     {
-        lock (Gate)
+        if (!ignoreMinInterval)
         {
-            if (DateTimeOffset.UtcNow - _lastSuccess < MinInterval)
-                return true; // skip; treat as ok so callers don't block
+            lock (Gate)
+            {
+                if (DateTimeOffset.UtcNow - _lastSuccess < MinInterval)
+                    return true; // skip; treat as ok so callers don't block
+            }
         }
 
         try
         {
-            var ok = TryWmi(description) || TryPowerShell(description);
+            var ok = CreateCoreOverride?.Invoke(description)
+                     ?? (TryWmi(description) || TryPowerShell(description));
             if (ok)
             {
                 lock (Gate)
                     _lastSuccess = DateTimeOffset.UtcNow;
+                MarkSessionCheckpoint();
             }
             return ok;
         }
@@ -47,7 +73,90 @@ public sealed class RestorePointManager
         }
     }
 
+    /// <summary>User clicked "Create restore point" — always try, mark session on success.</summary>
+    public Task<bool> CreateManualAsync(string description, CancellationToken cancellationToken = default) =>
+        CreateRestorePointAsync(description, ignoreMinInterval: true, cancellationToken);
+
+    /// <summary>
+    /// One restore point per session. If the user skipped the manual button,
+    /// optionally warn (UI callback) then create automatically. Never creates per tweak.
+    /// </summary>
+    public async Task EnsureSessionCheckpointAsync(
+        bool enabled,
+        bool warnIfMissing,
+        CancellationToken cancellationToken = default)
+    {
+        if (!enabled || HasSessionCheckpoint)
+            return;
+
+        await _sessionGate.WaitAsync(cancellationToken).ConfigureAwait(false);
+        try
+        {
+            if (HasSessionCheckpoint)
+                return;
+
+            if (_autoAttempted)
+                return;
+
+            if (warnIfMissing && NotifyMissingSessionCheckpoint is not null)
+            {
+                try
+                {
+                    await NotifyMissingSessionCheckpoint().ConfigureAwait(false);
+                }
+                catch
+                {
+                    // Warning UI must not block the actual work
+                }
+            }
+
+            _autoAttempted = true;
+            try
+            {
+                await CreateRestorePointAsync("WinCleaner", ignoreMinInterval: false, cancellationToken)
+                    .ConfigureAwait(false);
+            }
+            catch
+            {
+                // Restore failure must not abort the tweak
+            }
+        }
+        finally
+        {
+            _sessionGate.Release();
+        }
+    }
+
+    public void MarkSessionCheckpoint()
+    {
+        HasSessionCheckpoint = true;
+        SessionCheckpointChanged?.Invoke();
+    }
+
+    internal static void ResetForTests()
+    {
+        lock (Gate)
+            _lastSuccess = DateTimeOffset.MinValue;
+        CreateCoreOverride = null;
+        MinInterval = TimeSpan.FromMinutes(10);
+    }
+
     private static bool TryWmi(string description)
+    {
+        try
+        {
+            var task = Task.Run(() => TryWmiCore(description));
+            if (!task.Wait(TimeSpan.FromSeconds(45)))
+                return false;
+            return task.Status == TaskStatus.RanToCompletion && task.Result;
+        }
+        catch
+        {
+            return false;
+        }
+    }
+
+    private static bool TryWmiCore(string description)
     {
         try
         {
