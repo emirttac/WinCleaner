@@ -68,14 +68,43 @@ public class CatalogLoaderTests
     public void LoadTweaks_ContainsCatalogExpansionEntries()
     {
         var tweaks = CatalogLoader.LoadTweaks();
-        Assert.Contains(tweaks, t => t.Id == "tweak-inking-typing" && t.Registries is { Count: 3 });
-        Assert.Contains(tweaks, t => t.Id == "tweak-feedback-frequency" && t.Registry!.DeleteValueOnDisable);
+        Assert.Contains(tweaks, t => t.Id == "tweak-inking-typing" && t.Registries is { Count: 5 });
+        Assert.Contains(tweaks, t => t.Id == "tweak-feedback-frequency"
+            && t.Registries is { Count: 2 }
+            && t.Registries.Any(r => r.Name == "PeriodInNanoSeconds" && r.DeleteValueOnEnable)
+            && t.Registries.All(r => r.DeleteValueOnDisable));
         Assert.Contains(tweaks, t => t.Id == "tweak-dark-mode" && t.Registries is { Count: 2 });
         Assert.Contains(tweaks, t => t.Id == "tweak-core-parking" && t.Type == "command"
-            && t.Command!.DetectMode == "acIndexEquals" && t.Command.DetectValue == "100");
-        Assert.Contains(tweaks, t => t.Id == "tweak-nic-power-save" && t.Command!.DetectValue == "WC_NIC_POWER_OFF");
+            && t.Command!.DetectMode == "acIndexEquals" && t.Command.DetectValue == "100"
+            && t.Command.Arguments.Contains("CPMINCORES1", StringComparison.OrdinalIgnoreCase)
+            && t.Command.Arguments.Contains("setdcvalueindex", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(tweaks, t => t.Id == "tweak-nic-power-save" && t.Command!.DetectValue == "WC_NIC_POWER_OFF"
+            && t.Command.Arguments.Contains("-Physical", StringComparison.Ordinal)
+            && t.Command.DetectArguments!.Contains("WC_NIC_POWER_ON", StringComparison.Ordinal));
         Assert.Contains(tweaks, t => t.Id == "tweak-network-throttling" && t.Risk == "Caution");
-        Assert.Contains(tweaks, t => t.Id == "tweak-disable-ipv6" && t.RequiresReboot);
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-ipv6" && t.RequiresReboot && t.Type == "command"
+            && t.Command!.DetectValue == "WC_IPV6_OFF"
+            && t.Command.Arguments.Contains("ms_tcpip6", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(tweaks, t => t.Id == "tweak-system-responsiveness" && t.Registry!.EnabledValue == "10");
+        Assert.Contains(tweaks, t => t.Id == "tweak-activity-history"
+            && t.Registries!.Any(r => r.Name == "EnableActivityFeed" && r.EnabledValue == "1"));
+        Assert.Contains(tweaks, t => t.Id == "tweak-location"
+            && t.Registries!.Any(r => r.Name == "SensorPermissionState"));
+        Assert.Contains(tweaks, t => t.Id == "tweak-start-iris"
+            && t.Registries is { Count: 2 }
+            && t.Registries.Any(r => r.Name == "HideRecommendedSection")
+            && t.Registries.All(r => !r.Path.Contains("PolicyManager", StringComparison.OrdinalIgnoreCase)));
+        Assert.Contains(tweaks, t => t.Id == "tweak-visual-perf" && t.Type == "visualEffects");
+        Assert.Contains(tweaks, t => t.Id == "tweak-animations" && t.Type == "visualEffects");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-hpet"
+            && t.Command!.DetectMode == "equals"
+            && t.Command.DetectValue == "false"
+            && t.Command.Arguments.Contains("useplatformclock false", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(tweaks, t => t.Id == "tweak-search-icon-only"
+            && t.Registry!.DisabledValue == "3");
+        Assert.Contains(tweaks, t => t.Id == "tweak-lockscreen-ads"
+            && t.Registries is { Count: >= 6 }
+            && t.Registries.Any(r => r.Name == "SoftLandingEnabled"));
     }
 
     [Fact]
@@ -141,7 +170,7 @@ public class CatalogLoaderTests
         var tweaks = CatalogLoader.LoadTweaks();
         Assert.Contains(tweaks, t => t.Id == "tweak-disable-vbs" && t.RequiresReboot && t.Risk == "Caution");
         Assert.Contains(tweaks, t => t.Id == "tweak-disable-dynamic-tick" && t.Type == "command");
-        Assert.Contains(tweaks, t => t.Id == "tweak-disable-hpet" && t.Command!.DetectMode == "absent");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-hpet" && t.Command!.DetectMode == "equals");
     }
 
     [Fact]
@@ -186,6 +215,9 @@ public class CatalogLoaderTests
         Assert.Contains(apps, a => a.Id == "app-devhome" && a.Win11Only);
         Assert.Contains(apps, a => a.Id == "app-xboxtcui" && a.PackageName == "Microsoft.Xbox.TCUI");
         Assert.Contains(apps, a => a.Id == "app-family" && a.PackageName == "MicrosoftCorporationII.MicrosoftFamily");
+        var widgets = Assert.Single(apps, a => a.Id == "app-widgets");
+        Assert.True(widgets.MatchesInstalledName("MicrosoftWindows.Client.WebExperience"));
+        Assert.True(widgets.MatchesInstalledName("Microsoft.WidgetsPlatformRuntime"));
     }
 
     [Fact]
@@ -200,13 +232,17 @@ public class CatalogLoaderTests
         Assert.Contains(v22631.Registries!, r => r.Name == "TurnOffWindowsCopilot");
 
         var widgets = Assert.Single(tweaks, t => t.Id == "tweak-disable-widgets");
-        Assert.True(widgets.Registries is { Count: 2 });
+        Assert.True(widgets.Registries is { Count: 3 });
         Assert.Contains(widgets.Registries!, r => r.Name == "TaskbarDa");
         Assert.Contains(widgets.Registries!, r => r.Name == "AllowNewsAndInterests");
+        Assert.Contains(widgets.Registries!, r => r.Name == "EnableFeeds");
 
         var bing = Assert.Single(tweaks, t => t.Id == "tweak-bing-search");
-        Assert.True(bing.Registries is { Count: 2 });
-        Assert.Contains(bing.Registries!, r => r.Name == "DisableSearchBoxSuggestions");
+        Assert.True(bing.Registries is { Count: 5 });
+        Assert.Contains(bing.Registries!, r => r.Name == "DisableSearchBoxSuggestions"
+            && r.Path.Contains("Policies\\Microsoft\\Windows\\Explorer", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(bing.Registries!, r => r.Name == "DisableWebSearch");
+        Assert.Contains(bing.Registries!, r => r.Name == "ConnectedSearchUseWeb");
 
         var delivery = Assert.Single(tweaks, t => t.Id == "tweak-delivery-opt");
         Assert.True(delivery.Registries is { Count: 2 });
@@ -228,8 +264,41 @@ public class CatalogLoaderTests
 
         var nagle = Assert.Single(tweaks, t => t.Id == "tweak-nagle-ack");
         Assert.True(nagle.Registry!.ApplyToAllSubkeys);
+        Assert.Equal("2", nagle.Registry.DisabledValue);
         var nodelay = Assert.Single(tweaks, t => t.Id == "tweak-tcp-nodelay");
         Assert.True(nodelay.Registry!.ApplyToAllSubkeys);
+    }
+
+    [Fact]
+    public void LoadTweaks_GameModeFsoVbsHags_UseCurrentWindowsKeys()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+
+        var gameMode = Assert.Single(tweaks, t => t.Id == "tweak-game-mode");
+        Assert.True(gameMode.Registries is { Count: 2 });
+        Assert.Contains(gameMode.Registries!, r => r.Name == "AllowAutoGameMode" && r.EnabledValue == "1");
+        Assert.Contains(gameMode.Registries!, r => r.Name == "AutoGameModeEnabled" && r.EnabledValue == "1");
+
+        var fso = Assert.Single(tweaks, t => t.Id == "tweak-fso");
+        Assert.Contains(fso.Registries!, r => r.Name == "GameDVR_FSEBehaviorMode" && r.EnabledValue == "2");
+        Assert.Contains(fso.Registries!, r => r.Name == "GameDVR_HonorUserFSEBehaviorMode" && r.EnabledValue == "1");
+        Assert.Contains(fso.Registries!, r => r.Name == "GameDVR_DXGIHonorFSEWindowsCompatible" && r.EnabledValue == "1");
+
+        var vbs = Assert.Single(tweaks, t => t.Id == "tweak-disable-vbs");
+        Assert.True(vbs.RequiresReboot);
+        Assert.Contains(vbs.Registries!, r => r.Name == "EnableVirtualizationBasedSecurity" && r.EnabledValue == "0");
+        Assert.Contains(vbs.Registries!, r => r.Path.Contains("WindowsHello", StringComparison.OrdinalIgnoreCase)
+            && r.Name == "Enabled" && r.EnabledValue == "0");
+        Assert.Contains(vbs.Registries!, r => r.Name == "WasEnabledBy" && r.EnabledValue == "0");
+
+        var hags = Assert.Single(tweaks, t => t.Id == "tweak-hags");
+        Assert.True(hags.RequiresReboot);
+        Assert.Equal("2", hags.Registry!.EnabledValue);
+
+        var telemetry = Assert.Single(tweaks, t => t.Id == "tweak-telemetry-allow");
+        Assert.True(telemetry.Registries is { Count: 4 });
+        Assert.Contains(telemetry.Registries!, r => r.Name == "AllowTelemetry");
+        Assert.Contains(telemetry.Registries!, r => r.Name == "Start_TrackProgs" && r.EnabledValue == "0");
     }
 
     [Fact]
@@ -279,8 +348,14 @@ public class CatalogLoaderTests
                 case "powerplan":
                     Assert.NotNull(t.PowerPlan);
                     break;
+                case "visualeffects":
+                    Assert.True(
+                        t.Id.Contains("visual", StringComparison.OrdinalIgnoreCase)
+                        || t.Id.Contains("animation", StringComparison.OrdinalIgnoreCase),
+                        t.Id);
+                    break;
                 default:
-                    Assert.True(false, $"{t.Id} has unknown type '{t.Type}'");
+                    Assert.Fail($"{t.Id} has unknown type '{t.Type}'");
                     break;
             }
         }
@@ -362,5 +437,41 @@ public class RegistryManagerValuesEqualTests
         Assert.True(RegistryManager.ValuesEqual("255", "255", "DWord"));
         Assert.False(RegistryManager.ValuesEqual(null, "0", "DWord"));
         Assert.False(RegistryManager.ValuesEqual("1", "0", "DWord"));
+    }
+}
+
+public class ServiceNameMatcherTests
+{
+    [Fact]
+    public void IsInstanceOf_MatchesPerUserSuffix()
+    {
+        Assert.True(ServiceNameMatcher.IsInstanceOf("OneSyncSvc_1a2b3c", "OneSyncSvc"));
+        Assert.True(ServiceNameMatcher.IsInstanceOf("OneSyncSvc", "OneSyncSvc"));
+        Assert.False(ServiceNameMatcher.IsInstanceOf("CDPUserSvc_1a2b3c", "CDPSvc"));
+        Assert.False(ServiceNameMatcher.IsInstanceOf("XboxNetApiSvc", "Xbox"));
+    }
+
+    [Fact]
+    public void MatchLive_FindsPrefixedInstance()
+    {
+        var live = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["OneSyncSvc_aabbcc"] = "hit"
+        };
+        Assert.Equal("hit", ServiceNameMatcher.MatchLive(live, ["OneSyncSvc"]));
+        Assert.Null(ServiceNameMatcher.MatchLive(live, ["CDPSvc"]));
+    }
+}
+
+public class PowerPlanLabelTests
+{
+    [Theory]
+    [InlineData("Power Scheme GUID: e9a42b02-d5df-448d-aa00-03f14749eb61  (Ultimate Performance)", true)]
+    [InlineData("Güç Şeması GUID: 11111111-2222-3333-4444-555555555555  (Üst Düzey Performans)", true)]
+    [InlineData("Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)", false)]
+    [InlineData("Güç Şeması GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Dengeli)", false)]
+    public void LabelLooksLikeUltimate_LocalizedNames(string label, bool expected)
+    {
+        Assert.Equal(expected, PowerPlanManager.LabelLooksLikeUltimate(label));
     }
 }

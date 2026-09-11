@@ -1,0 +1,262 @@
+[
+  {
+    "id": "inst-chrome",
+    "displayNameKey": "inst.chrome.name",
+    "descriptionKey": "inst.chrome.desc",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "Google.Chrome",
+    "iconGlyph": "🌐",
+    "iconKey": "chrome"
+  },
+  {
+    "id": "inst-firefox",
+    "displayNameKey": "inst.firefox.name",
+    "descriptionKey": "inst.firefox.desc",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "Mozilla.Firefox",
+    "iconGlyph": "🦊",
+    "iconKey": "firefox"
+  },
+  {
+    "id": "inst-edge",
+    "displayNameKey": "inst.edge.name",
+    "descriptionKey": "inst.edge.desc",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "Microsoft.Edge",
+    "iconGlyph": "🔷",
+    "iconKey": "edge"
+  },
+  {
+    "id": "inst-brave",
+    "displayNameKey": "inst.brave.name",
+    "descriptionKey": "inst.brave.desc",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "Brave.Brave",
+    "iconGlyph": "🦁",
+    "iconKey": "brave"
+  },
+  {
+    "id": "inst-vscode",
+    "displayNameKey": "inst.vscode.name",
+    "descriptionKey": "inst.vscode.desc",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Microsoft.VisualStudioCode",
+    "iconGlyph": "💻",
+    "iconKey": "vscode"
+  },
+  {
+    "id": "inst-git",
+    "displayNameKey": "inst.git.name",
+    "descriptionKey": "inst.git.desc",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Git.Git",
+    "iconGlyph": "⎇",
+    "iconKey": "git"
+  },
+  {
+    "id": "inst-nodejs",
+    "displayNameKey": "inst.nodejs.name",
+    "descriptionKey": "inst.nodejs.desc",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "OpenJS.NodeJS.LTS",
+    "iconGlyph": "🟢",
+    "iconKey": "nodejs"
+  },
+  {
+    "id": "inst-python",
+    "displayNameKey": "inst.python.name",
+    "descriptionKey": "inst.python.desc",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Python.Python.3.12",
+    "iconGlyph": "🐍",
+    "iconKey": "python"
+  },
+  {
+    "id": "inst-discord",
+    "displayNameKey": "inst.discord.name",
+    "descriptionKey": "inst.discord.desc",
+    "category": "Gaming",
+    "categoryKey": "inst.cat.gaming",
+    "wingetId": "Discord.Discord",
+    "iconGlyph": "💬",
+    "iconKey": "discord"
+  },
+  {
+    "id": "inst-steam",
+    "displayNameKey": "inst.steam.name",
+    "descriptionKey": "inst.steam.desc",
+    "category": "Gaming",
+    "categoryKey": "inst.cat.gaming",
+    "wingetId": "Valve.Steam",
+    "iconGlyph": "🎮",
+    "iconKey": "steam"
+  },
+  {
+    "id": "inst-epic",
+    "displayNameKey": "inst.epic.name",
+    "descriptionKey": "inst.epic.desc",
+    "category": "Gaming",
+    "categoryKey": "inst.cat.gaming",
+    "wingetId": "EpicGames.EpicGamesLauncher",
+    "iconGlyph": "🎯",
+    "iconKey": "epic"
+  },
+  {
+    "id": "inst-7zip",
+    "displayNameKey": "inst.7zip.name",
+    "descriptionKey": "inst.7zip.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "7zip.7zip",
+    "iconGlyph": "📦",
+    "iconKey": "7zip"
+  },
+  {
+    "id": "inst-vlc",
+    "displayNameKey": "inst.vlc.name",
+    "descriptionKey": "inst.vlc.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "VideoLAN.VLC",
+    "iconGlyph": "▶",
+    "iconKey": "vlc"
+  },
+  {
+    "id": "inst-notepadpp",
+    "displayNameKey": "inst.notepadpp.name",
+    "descriptionKey": "inst.notepadpp.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Notepad++.Notepad++",
+    "iconGlyph": "📝",
+    "iconKey": "notepadpp"
+  },
+  {
+    "id": "inst-powertoys",
+    "displayNameKey": "inst.powertoys.name",
+    "descriptionKey": "inst.powertoys.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Microsoft.PowerToys",
+    "iconGlyph": "🧰",
+    "iconKey": "powertoys"
+  },
+  {
+    "id": "inst-sharex",
+    "displayNameKey": "inst.sharex.name",
+    "descriptionKey": "inst.sharex.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "ShareX.ShareX",
+    "iconGlyph": "📷",
+    "iconKey": "sharex"
+  },
+  {
+    "id": "inst-whatsapp",
+    "displayNameKey": "inst.whatsapp.name",
+    "descriptionKey": "inst.whatsapp.desc",
+    "category": "Communication",
+    "categoryKey": "inst.cat.communication",
+    "wingetId": "9NKSQGP7F2NH",
+    "iconGlyph": "💬",
+    "iconKey": "whatsapp"
+  },
+  {
+    "id": "inst-telegram",
+    "displayNameKey": "inst.telegram.name",
+    "descriptionKey": "inst.telegram.desc",
+    "category": "Communication",
+    "categoryKey": "inst.cat.communication",
+    "wingetId": "Telegram.TelegramDesktop",
+    "iconGlyph": "✈️",
+    "iconKey": "telegram"
+  },
+  {
+    "id": "inst-zoom",
+    "displayNameKey": "inst.zoom.name",
+    "descriptionKey": "inst.zoom.desc",
+    "category": "Communication",
+    "categoryKey": "inst.cat.communication",
+    "wingetId": "Zoom.Zoom",
+    "iconGlyph": "📹",
+    "iconKey": "zoom"
+  },
+  {
+    "id": "inst-spotify",
+    "displayNameKey": "inst.spotify.name",
+    "descriptionKey": "inst.spotify.desc",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "Spotify.Spotify",
+    "iconGlyph": "🎵",
+    "iconKey": "spotify"
+  },
+  {
+    "id": "inst-obs",
+    "displayNameKey": "inst.obs.name",
+    "descriptionKey": "inst.obs.desc",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "OBSProject.OBSStudio",
+    "iconGlyph": "🎥",
+    "iconKey": "obs"
+  },
+  {
+    "id": "inst-afterburner",
+    "displayNameKey": "inst.afterburner.name",
+    "descriptionKey": "inst.afterburner.desc",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "Guru3D.Afterburner",
+    "iconGlyph": "🌡️",
+    "iconKey": "afterburner"
+  },
+  {
+    "id": "inst-winrar",
+    "displayNameKey": "inst.winrar.name",
+    "descriptionKey": "inst.winrar.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "RARLab.WinRAR",
+    "iconGlyph": "📦",
+    "iconKey": "winrar"
+  },
+  {
+    "id": "inst-everything",
+    "displayNameKey": "inst.everything.name",
+    "descriptionKey": "inst.everything.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "voidtools.Everything",
+    "iconGlyph": "🔎",
+    "iconKey": "everything"
+  },
+  {
+    "id": "inst-rufus",
+    "displayNameKey": "inst.rufus.name",
+    "descriptionKey": "inst.rufus.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Rufus.Rufus",
+    "iconGlyph": "💾",
+    "iconKey": "rufus"
+  },
+  {
+    "id": "inst-acrobat",
+    "displayNameKey": "inst.acrobat.name",
+    "descriptionKey": "inst.acrobat.desc",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Adobe.Acrobat.Reader.64-bit",
+    "iconGlyph": "📄",
+    "iconKey": "acrobat"
+  }
+]
