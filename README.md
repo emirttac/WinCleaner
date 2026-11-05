@@ -4,9 +4,9 @@
   <img src="src/WinCleaner/app.ico" alt="WinCleaner" width="96" height="96">
 </p>
 
-**Windows 10/11 optimization and debloat toolkit for gamers** — C# · .NET 8 · WPF · v1.0.0
+**Windows 10/11 optimization and debloat toolkit for gamers** — C# · .NET 8 · WPF · **v2.0.0**
 
-Catalog-driven tweaks · Risk levels · Restore points · Session undo · 8 languages
+Catalog-driven tweaks · Risk levels · Restore points · Session undo · Headless config · 8 languages
 
 [![.NET 8](https://img.shields.io/badge/.NET-8.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/download/dotnet/8.0)
 [![Platform](https://img.shields.io/badge/platform-Windows%2010%2F11-0078D6?logo=windows&logoColor=white)](https://github.com/emirttac/WinCleaner)
@@ -24,10 +24,10 @@ Catalog-driven tweaks · Risk levels · Restore points · Session undo · 8 lang
 
 - [Why WinCleaner?](#why-wincleaner)
 - [Features](#features)
-- [Screenshots](#screenshots)
 - [Requirements](#requirements)
 - [Download](#download)
 - [Quick start (developers)](#quick-start-developers)
+- [Headless / config mode](#headless--config-mode)
 - [Architecture](#architecture)
 - [Safety model](#safety-model)
 - [Updates](#updates)
@@ -61,46 +61,43 @@ Most “cleaner” tools either hide what they do, or dump dozens of unsafe twea
 | Page | What you get |
 |------|----------------|
 | **Dashboard** | CPU / GPU / RAM / OS / disk overview, restore status, recent changes, quick actions (restore point, Gamer preset, flush DNS, clean temp) |
-| **Services** | Curated Windows services with start-mode toggles; critical ones are **Blocked** (`RpcSs`, `DcomLaunch`, `WinDefend`) |
-| **Telemetry** | Privacy / advertising ID / activity history / Cortana–Bing / CEIP-oriented tweaks |
-| **Bloatware** | AppX removal with confirmations; system-critical packages cannot be selected; separate OneDrive uninstall path |
+| **Presets** | Gamer, Balanced, Minimal, Laptop, Privacy Max, Defaults — plus custom profile import / export (JSON schema v3, v2 still reads) with preview |
 | **Gaming** | Game Mode, Game Bar/DVR, HAGS, Ultimate Performance, MMCSS / latency options (anti-cheat confirm where relevant) |
+| **Telemetry** | Privacy / advertising ID / activity history / Cortana–Bing / CEIP-oriented tweaks |
+| **Bloatware** | AppX removal/reinstall (winget Store ID) with confirmations; system-critical packages cannot be removed; separate OneDrive uninstall path |
 | **Visual** | Animations, transparency, performance-oriented visual effects, startup apps |
 | **Win11** | Taskbar / Start / context menu / Copilot / Recall oriented tweaks (OS-gated) |
+| **Services** | Curated Windows services with start-mode toggles; critical ones are **Blocked** (`RpcSs`, `DcomLaunch`, `WinDefend`) |
 | **Network** | Network tweaks + DNS presets (DHCP, Cloudflare, Google, Quad9) + flush |
-| **Tools** | Temp cleanup, Disk Cleanup, SFC / DISM, WinSxS, Windows Update / network reset, God Mode, Take Ownership, Memory Diagnostic, and more |
-| **Installer** | Winget catalog (browsers, runtimes, gaming/dev utilities) with silent install and app icons |
-| **Presets** | Gamer, Balanced, Minimal, Laptop, Privacy Max, Defaults — plus custom profile import / export (JSON schema v2) with preview |
-| **Settings** | Language, auto restore point, allow dangerous actions, update-check toggle, logs, social links |
+| **Tools** | Maintenance grid (restore point, temp cleanup, Disk Cleanup, SFC/DISM, WinSxS, WU/network reset, memory diagnostic, disk analyze, God Mode), Take Ownership, NTP/autologon/winget repair, registry import/export, legacy Control Panel launchers, plus Tools-category tweak toggles |
+| **Installer** | Expanded winget catalog with silent install **and uninstall**, plus app icons |
+| **Settings** | Language, appearance (dark, light, or match Windows), auto restore point, allow dangerous actions, update-check toggle, logs, social links |
 
-Global **Undo** lives in the main chrome and reverts journaled session changes where possible.
+Global **Undo** lives in the main chrome and reverts journaled session changes where possible. The top search box opens a **global search** across pages.
 
 ### Product polish
 
-- Dark gamer theme (`#0D0D0D` base, accent `#E10600`)
+- Dark gamer theme (`#0D0D0D` base, accent `#E10600`), plus light and “match Windows”. Missing `settings.json` theme stays dark. Text on panel surfaces targets at least 4.5:1; borders, focus, and status colors at least 3:1.
+- Applied-state checks run off the UI thread, are cached, and the page shows “Loading…” until they finish.
+- Startup dialogs and gate messages come from the language resources. Catalog text that is not a product name is translated.
 - **8 languages:** Türkçe (default), English, Deutsch, Español, 中文, Français, Română, Русский
-- Optional startup update check against [GitHub Releases](https://github.com/emirttac/WinCleaner/releases) (default **off**)
+- Optional startup update check against [GitHub Releases](https://github.com/emirttac/WinCleaner/releases) (default **off**). A downloaded installer runs only after its SHA256 matches `SHA256SUMS.txt`.
+- Releases are **unsigned**. The tag workflow publishes win-x64 only, plus `SHA256SUMS.txt` and an SPDX 2.3 file. An ARM64 PC still asks before a system write.
+- **Installer auto-prereqs:** Setup downloads and quietly installs **.NET 8 Desktop Runtime (x64)** and **VC++ 2015–2022 (x64)** when missing. The app also re-checks at launch for framework-dependent builds.
 - Crash and session logging under `%LocalAppData%\WinCleaner\`
-- Prerequisite helper: can download/install **.NET 8 Desktop Runtime** and **VC++ Redistributable** when missing
+- Headless profile apply via `--config` (see below)
 
-### Catalog size (v1.0.0)
+### Catalog size (v2.0.0)
 
 | Catalog | Entries | File |
 |---------|--------:|------|
-| Tweaks | 56 | `Catalogs/tweaks.json` |
+| Tweaks | 92 | `Catalogs/tweaks.json` |
 | Services | 28 | `Catalogs/services.json` |
-| Bloatware (AppX) | 39 | `Catalogs/apps.json` |
-| Winget installer apps | 26 | `Catalogs/apps_installer.json` |
+| Bloatware (AppX) | 46 | `Catalogs/apps.json` |
+| Winget installer apps | 158 | `Catalogs/apps_installer.json` |
 | Presets | 6 | `Catalogs/presets.json` |
 
-Tweak categories (approx.): Gaming 19 · Telemetry 12 · Win11 UI 10 · Network 7 · Visual 6 · Tools 2.  
-Roughly **5** tweaks require a separate anti-cheat confirmation dialog.
-
----
-
-## Screenshots
-
-> Add screenshots after the first public build — Dashboard · Gaming · Services · Presets · Settings.
+Roughly **5** tweaks require a separate anti-cheat confirmation dialog. AppX rows with a `storeId` support **Reinstall** via winget.
 
 ---
 
@@ -110,12 +107,12 @@ Roughly **5** tweaks require a separate anti-cheat confirmation dialog.
 |--|--|
 | **OS** | Windows 10 **21H2+** (build ≥ 19044) or Windows 11 (**x64**) |
 | **Privileges** | Administrator (UAC `requireAdministrator`) |
-| **Runtime (installer / FDD)** | [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) — Setup / app can download it if missing |
-| **VC++** | Microsoft Visual C++ 2015–2022 (x64) — same auto-install path |
+| **Runtime (installer / FDD)** | [.NET 8 Desktop Runtime](https://dotnet.microsoft.com/download/dotnet/8.0) — Setup downloads it if missing |
+| **VC++** | Microsoft Visual C++ 2015–2022 (x64) — Setup downloads it if missing |
 | **Dev build** | [.NET 8 SDK](https://dotnet.microsoft.com/download/dotnet/8.0) |
 | **Installer build** | [Inno Setup 6](https://jrsoftware.org/isinfo.php) |
 
-Portable builds are **self-contained** (runtime embedded) but still require a supported OS, admin rights, and VC++.
+Portable builds are **self-contained** (runtime embedded) but still require a supported OS and admin rights. VC++ is still checked at startup and can be auto-installed when missing.
 
 ---
 
@@ -123,17 +120,15 @@ Portable builds are **self-contained** (runtime embedded) but still require a su
 
 | Channel | Link |
 |---------|------|
-| **Installer (recommended)** | [Releases](https://github.com/emirttac/WinCleaner/releases) → `WinCleaner-Setup-x.y.z.exe` |
+| **Installer (recommended)** | [Releases](https://github.com/emirttac/WinCleaner/releases) → `WinCleaner-Setup-2.0.0.exe` |
 | **Portable** | Release assets or build via `scripts\publish-portable.ps1` → `publish\WinCleaner.exe` |
 | **Source** | Clone this repo or open [`SOURCE_CODES/`](SOURCE_CODES/) |
 
-Total download count (all Release assets) is shown live in the badge at the top of this README.
-
-The Inno Setup installer:
+The Inno Setup installer (`WinCleaner-Setup-2.0.0.exe`):
 
 1. Installs WinCleaner under Program Files  
-2. Downloads & installs **.NET 8 Desktop Runtime** and **VC++ Redistributable** when missing  
-3. Can ship the open-source tree under `SOURCE_CODES` next to the app
+2. On the Ready page, detects missing **.NET 8 Desktop Runtime** and **VC++ Redistributable**, downloads them from Microsoft, and installs quietly  
+3. Ships the open-source tree under `SOURCE_CODES` next to the app  
 
 > The Setup binary is currently **not Authenticode-signed**. Windows SmartScreen may warn on first run — use *More info → Run anyway* only if you trust the build (prefer downloading from this GitHub repo).
 
@@ -169,14 +164,37 @@ Requires [Inno Setup 6](https://jrsoftware.org/isinfo.php).
 powershell -ExecutionPolicy Bypass -File installer\build-installer.ps1
 ```
 
-Output: `publish\setup\WinCleaner-Setup-1.0.0.exe`  
-(Framework-dependent publish under `publish\installer`, then packaged by Inno.)
+Output: `publish\setup\WinCleaner-Setup-2.0.0.exe`  
+(Framework-dependent publish under `publish\installer`, then packaged by Inno. Missing runtimes are fetched at install time.)
 
 ### Refresh the open-source snapshot
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts\sync-source-codes.ps1
 ```
+
+---
+
+## Headless / config mode
+
+Apply a custom profile JSON without the full UI:
+
+```powershell
+WinCleaner.exe --config path\to\profile.json --apply --silent
+WinCleaner.exe --config path\to\profile.json --whatif
+WinCleaner.exe --config path\to\profile.json --apply --allow-unknown --log path\to\log.txt
+```
+
+| Flag | Meaning |
+|------|---------|
+| `--config <path>` | Profile JSON (schema v2 or v3) |
+| `--apply` | Apply accepted tweak IDs |
+| `--silent` | No summary MessageBox |
+| `--whatif` | Plan only |
+| `--allow-unknown` | Skip unknown IDs instead of rejecting the run |
+| `--log <path>` | Optional log path |
+
+Unknown IDs reject the run unless `--allow-unknown` is set.
 
 ---
 
@@ -200,17 +218,17 @@ WinCleaner.slnx
 ```
 JSON catalog  →  TweakActionFactory  →  IChangeAction  →  ActionExecutor
                       │                      │                  │
-                 risk + OS gates        apply / revert    restore point
+                 risk + OS gates        apply / revert    session checkpoint
                                                             + ChangeLog
                                                             + undo journal
 ```
 
 | Layer | Responsibility |
 |-------|----------------|
-| **UI** (`WinCleaner`) | MVVM (`CommunityToolkit.Mvvm`), pages, danger / anti-cheat dialogs |
+| **UI** (`WinCleaner`) | MVVM (`CommunityToolkit.Mvvm` + WPF-UI), pages, danger / anti-cheat dialogs |
 | **Core** (`WinCleaner.Core`) | Registry, services, AppX, elevated commands, health tools, executor |
 | **Data** (`WinCleaner.Data`) | Versioned catalogs + custom profile documents |
-| **Bootstrap** (`WinCleaner.Bootstrap`) | Alternate WinForms launcher for FDD + sidecar layouts (not used by current portable/Setup publish scripts) |
+| **Bootstrap** (`WinCleaner.Bootstrap`) | Alternate WinForms launcher for FDD + sidecar layouts |
 | **Safety** | Blocked hard-fail, Dangerous gate, restore points, session journal |
 
 Composition root: `AppServices` in `TweakActionFactory.cs` (manual wiring, no DI container).
@@ -219,7 +237,7 @@ Composition root: `AppServices` in `TweakActionFactory.cs` (manual wiring, no DI
 
 | Project | TFM | Depends on |
 |---------|-----|------------|
-| `WinCleaner` | `net8.0-windows` (WPF) | Core, Data, CommunityToolkit.Mvvm 8.4.2 |
+| `WinCleaner` | `net8.0-windows` (WPF) | Core, Data, CommunityToolkit.Mvvm 8.4.2, WPF-UI 4.3.0 |
 | `WinCleaner.Core` | `net8.0-windows` | Data, Registry / WMI / ServiceController |
 | `WinCleaner.Data` | `net8.0` | Embedded `Catalogs/*.json` |
 | `WinCleaner.Bootstrap` | `net8.0-windows` (WinForms) | Core (prereq install helpers) |
@@ -230,21 +248,19 @@ Composition root: `AppServices` in `TweakActionFactory.cs` (manual wiring, no DI
 | Nav key | ViewModel | View |
 |---------|-----------|------|
 | `dashboard` | `DashboardViewModel` | `DashboardView` |
-| `services` | `ServicesViewModel` | `ServicesView` |
-| `telemetry` / `gaming` / `win11` | `TweaksCategoryViewModel` | `TweaksView` |
+| `presets` | `PresetsViewModel` | `PresetsView` |
+| `gaming` / `telemetry` / `win11` | `TweaksCategoryViewModel` | `TweaksView` |
 | `bloatware` | `BloatwareViewModel` | `BloatwareView` |
 | `visual` | `VisualViewModel` | `VisualView` |
+| `services` | `ServicesViewModel` | `ServicesView` |
 | `network` | `NetworkViewModel` | `NetworkView` |
 | `tools` | `ToolsViewModel` | `ToolsView` |
 | `installer` | `PackageInstallerViewModel` | `PackageInstallerView` |
-| `presets` | `PresetsViewModel` | `PresetsView` |
 | `settings` | `SettingsViewModel` | `SettingsView` |
 
-Theme: `Themes/DarkRed.xaml`. Localization swaps `Resources/Strings.{lang}.xaml` at runtime (`tr` default).
+Theme: `Themes/DarkRed.xaml` + `Themes/Controls.xaml`. Localization swaps `Resources/Strings.{lang}.xaml` at runtime (`tr` default).
 
 ### Action types
-
-Catalog entries map to `IChangeAction` implementations:
 
 | Type | Class | Typical source |
 |------|-------|----------------|
@@ -262,16 +278,17 @@ Catalog entries map to `IChangeAction` implementations:
 |---------|------|
 | `ActionExecutor` | Apply / revert with risk gates, restore points, journaling |
 | `ChangeLogService` | Session audit + persistent undo journal |
-| `RestorePointManager` | System Restore checkpoints (WMI / PowerShell, ~10 min rate limit) |
+| `RestorePointManager` | One session checkpoint at startup (in-process gap ~10 min). Windows may still refuse a second point for 24 hours. |
 | `RegistryManager` | Hive read / write / delete |
 | `ServiceManager` | Service start-mode changes |
 | `AppxManager` | AppX list / remove; OneDrive uninstall helper |
 | `DnsChangerService` | DNS presets via WMI + flush |
-| `WingetInstallerService` | Silent `winget install --id …` |
+| `WingetInstallerService` | Silent `winget install` / `uninstall` / `upgrade` |
 | `SystemHealthService` | DISM / SFC, WinSxS, God Mode, Take Ownership, WU / network reset |
 | `UpdateService` | Compare assembly version to GitHub Releases API |
 | `PresetEngine` | Build preset / custom-profile action lists |
 | `PrerequisiteChecker` | Detect / download / install .NET Desktop + VC++ |
+| `ConfigSession` | Headless profile planning and apply |
 
 ---
 
@@ -279,7 +296,7 @@ Catalog entries map to `IChangeAction` implementations:
 
 | Control | Default | Behavior |
 |---------|---------|----------|
-| System Restore point | **On** | Created before changes (Windows rate-limits ~10 min) |
+| System Restore point | **On** | One checkpoint per app session, created at startup. Later tweaks do not create another point. Windows can skip a new point when one already exists in the last 24 hours. |
 | Allow dangerous actions | **Off** | Must enable in Settings |
 | Confirmation dialog | Required | Checkbox acknowledgment for Dangerous items |
 | Anti-cheat confirm | Flagged tweaks | Separate dialog for VBS / HPET / MMCSS-class items |
@@ -289,6 +306,16 @@ Catalog entries map to `IChangeAction` implementations:
 | OS gate | Enforced | `minBuild` / `win11Only` filtered by `OsCompatibility` |
 
 > The UI shows an **action preview**; it does not simulate registry writes without applying.
+
+### Undo matrix
+
+| Kind | What revert writes | Applies to |
+|------|--------------------|------------|
+| **Exact** | The value read before apply | Single and multi registry, service start type, scheduled task, startup Run entry. Visual-effect mask when the prior bytes were stored. Active power plan when its GUID was stored. |
+| **Scripted** | A fixed catalog script, not the previous machine value | Command tweaks (e.g. core parking, IPv6, folder discovery) |
+| **Defaulted** | A built-in Windows default, not the previous value | Visual-effect registry keys on best-performance revert; power plan falls back to High Performance when no GUID was stored |
+| **Scripted-enum** | The last detected preset name | DNS (adapter server lists are not restored) |
+| **None** | No journal undo | AppX remove/reinstall, OneDrive uninstall, DISM `/ResetBase`, Winsock reset, Windows Update folder rename |
 
 Session logs: `%LocalAppData%\WinCleaner\logs\session-*.json`  
 Undo journal: `%LocalAppData%\WinCleaner\undo_history.json`  
@@ -312,7 +339,7 @@ Publish a GitHub Release with a `vX.Y.Z` (or `X.Y.Z`) tag so clients can detect 
 
 ## Localization
 
-UI strings live in `src/WinCleaner/Resources/Strings.*.xaml` (~529 keys each; key parity enforced by unit tests).  
+UI strings live in `src/WinCleaner/Resources/Strings.*.xaml` (key parity enforced by unit tests).  
 Catalog display names / descriptions use `displayNameKey` / `descriptionKey` resolved through the same dictionaries.
 
 Regenerate XAML from JSON sources:

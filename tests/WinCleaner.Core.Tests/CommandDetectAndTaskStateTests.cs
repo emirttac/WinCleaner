@@ -45,47 +45,48 @@ public class CommandStateProbeTests
 public class TaskSchedulerParseTests
 {
     [Fact]
-    public void ParseScheduledTaskState_EnglishEnabled()
+    public void ParseScheduledTaskState_XmlEnabled()
     {
         const string output = """
-            Folder: \Microsoft\Windows\Customer Experience Improvement Program
-            HostName: PC
-            TaskName: \Microsoft\Windows\Customer Experience Improvement Program\Consolidator
-            Scheduled Task State: Enabled
+            <?xml version="1.0" encoding="UTF-16"?>
+            <Task version="1.2" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
+              <Settings>
+                <Enabled>true</Enabled>
+              </Settings>
+            </Task>
             """;
 
         Assert.Equal(TaskEnablement.Enabled, TaskSchedulerManager.ParseScheduledTaskState(output));
     }
 
     [Fact]
-    public void ParseScheduledTaskState_TurkishDisabled()
+    public void ParseScheduledTaskState_XmlDisabled()
     {
-        const string output = """
-            Klasör: \Microsoft\Windows\Customer Experience Improvement Program
-            Zamanlanmış Görev Durumu: Devre dışı
-            """;
-
+        const string output = "<Task><Settings><Enabled>false</Enabled></Settings></Task>";
         Assert.Equal(TaskEnablement.Disabled, TaskSchedulerManager.ParseScheduledTaskState(output));
     }
 
     [Fact]
-    public void ParseScheduledTaskState_TurkishEnabled()
-    {
-        const string output = "Zamanlanmış Görev Durumu: Etkin";
-        Assert.Equal(TaskEnablement.Enabled, TaskSchedulerManager.ParseScheduledTaskState(output));
-    }
-
-    [Fact]
-    public void LooksMissing_TurkishAndEnglish()
+    public void LooksMissing_AnyLanguageErrorWithoutTaskXml()
     {
         Assert.True(TaskSchedulerManager.LooksMissing("ERROR: The system cannot find the file specified."));
         Assert.True(TaskSchedulerManager.LooksMissing("HATA: Belirtilen görev bulunamadı."));
-        Assert.False(TaskSchedulerManager.LooksMissing("Scheduled Task State: Enabled"));
+        Assert.False(TaskSchedulerManager.LooksMissing("<Task><Settings><Enabled>true</Enabled></Settings></Task>"));
     }
 
     [Fact]
     public void ParseScheduledTaskState_UnknownDoesNotLookDisabled()
     {
-        Assert.Equal(TaskEnablement.Unknown, TaskSchedulerManager.ParseScheduledTaskState("HostName: PC\nTaskName: Foo"));
+        Assert.Equal(TaskEnablement.Unknown, TaskSchedulerManager.ParseScheduledTaskState("<Task><Settings></Settings></Task>"));
+    }
+
+    [Fact]
+    public void BcdTokens_DoNotTreatTranslatedYesAsEqual()
+    {
+        Assert.True(CommandStateProbe.TokensEqual("Yes", "yes"));
+        Assert.True(CommandStateProbe.TokensEqual("Legacy", "legacy"));
+        Assert.False(CommandStateProbe.TokensEqual("Evet", "yes"));
+        Assert.False(CommandStateProbe.TokensEqual("Ja", "yes"));
+        Assert.False(CommandStateProbe.TokensEqual("hayır", "no"));
     }
 }

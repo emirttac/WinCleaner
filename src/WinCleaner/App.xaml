@@ -1,6 +1,7 @@
 ﻿<Application x:Class="WinCleaner.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
              xmlns:vm="clr-namespace:WinCleaner.ViewModels"
              xmlns:views="clr-namespace:WinCleaner.Views"
              xmlns:conv="clr-namespace:WinCleaner.Converters">
@@ -8,12 +9,16 @@
   <Application.Resources>
     <ResourceDictionary>
       <ResourceDictionary.MergedDictionaries>
+        <ui:ThemesDictionary Theme="Dark"/>
+        <ui:ControlsDictionary/>
         <ResourceDictionary Source="Themes/DarkRed.xaml"/>
+        <ResourceDictionary Source="Themes/Controls.xaml"/>
         <ResourceDictionary Source="Resources/SocialIcons.xaml"/>
         <ResourceDictionary Source="Resources/Strings.tr.xaml"/>
       </ResourceDictionary.MergedDictionaries>
 
       <conv:RiskToBrushConverter x:Key="RiskToBrush"/>
+      <conv:RiskToBadgeTextConverter x:Key="RiskToBadgeText"/>
       <conv:BoolToVisibilityConverter x:Key="BoolToVis"/>
       <conv:NavEqualsConverter x:Key="NavEq"/>
 
@@ -46,6 +51,9 @@
       </DataTemplate>
       <DataTemplate DataType="{x:Type vm:SettingsViewModel}">
         <views:SettingsView/>
+      </DataTemplate>
+      <DataTemplate DataType="{x:Type vm:GlobalSearchViewModel}">
+        <views:GlobalSearchView/>
       </DataTemplate>
     </ResourceDictionary>
   </Application.Resources>

@@ -6,7 +6,7 @@
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "Google.Chrome",
-    "iconGlyph": "🌐",
+    "iconGlyph": "\ud83c\udf10",
     "iconKey": "chrome"
   },
   {
@@ -16,7 +16,7 @@
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "Mozilla.Firefox",
-    "iconGlyph": "🦊",
+    "iconGlyph": "\ud83e\udd8a",
     "iconKey": "firefox"
   },
   {
@@ -26,7 +26,7 @@
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "Microsoft.Edge",
-    "iconGlyph": "🔷",
+    "iconGlyph": "\ud83d\udd37",
     "iconKey": "edge"
   },
   {
@@ -36,7 +36,7 @@
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "Brave.Brave",
-    "iconGlyph": "🦁",
+    "iconGlyph": "\ud83e\udd81",
     "iconKey": "brave"
   },
   {
@@ -46,7 +46,7 @@
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Microsoft.VisualStudioCode",
-    "iconGlyph": "💻",
+    "iconGlyph": "\ud83d\udcbb",
     "iconKey": "vscode"
   },
   {
@@ -56,7 +56,7 @@
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Git.Git",
-    "iconGlyph": "⎇",
+    "iconGlyph": "\u2387",
     "iconKey": "git"
   },
   {
@@ -66,7 +66,7 @@
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "OpenJS.NodeJS.LTS",
-    "iconGlyph": "🟢",
+    "iconGlyph": "\ud83d\udfe2",
     "iconKey": "nodejs"
   },
   {
@@ -76,7 +76,7 @@
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Python.Python.3.12",
-    "iconGlyph": "🐍",
+    "iconGlyph": "\ud83d\udc0d",
     "iconKey": "python"
   },
   {
@@ -86,7 +86,7 @@
     "category": "Gaming",
     "categoryKey": "inst.cat.gaming",
     "wingetId": "Discord.Discord",
-    "iconGlyph": "💬",
+    "iconGlyph": "\ud83d\udcac",
     "iconKey": "discord"
   },
   {
@@ -96,7 +96,7 @@
     "category": "Gaming",
     "categoryKey": "inst.cat.gaming",
     "wingetId": "Valve.Steam",
-    "iconGlyph": "🎮",
+    "iconGlyph": "\ud83c\udfae",
     "iconKey": "steam"
   },
   {
@@ -106,7 +106,7 @@
     "category": "Gaming",
     "categoryKey": "inst.cat.gaming",
     "wingetId": "EpicGames.EpicGamesLauncher",
-    "iconGlyph": "🎯",
+    "iconGlyph": "\ud83c\udfaf",
     "iconKey": "epic"
   },
   {
@@ -116,7 +116,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "7zip.7zip",
-    "iconGlyph": "📦",
+    "iconGlyph": "\ud83d\udce6",
     "iconKey": "7zip"
   },
   {
@@ -126,7 +126,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "VideoLAN.VLC",
-    "iconGlyph": "▶",
+    "iconGlyph": "\u25b6",
     "iconKey": "vlc"
   },
   {
@@ -136,7 +136,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Notepad++.Notepad++",
-    "iconGlyph": "📝",
+    "iconGlyph": "\ud83d\udcdd",
     "iconKey": "notepadpp"
   },
   {
@@ -146,7 +146,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Microsoft.PowerToys",
-    "iconGlyph": "🧰",
+    "iconGlyph": "\ud83e\uddf0",
     "iconKey": "powertoys"
   },
   {
@@ -156,7 +156,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "ShareX.ShareX",
-    "iconGlyph": "📷",
+    "iconGlyph": "\ud83d\udcf7",
     "iconKey": "sharex"
   },
   {
@@ -166,7 +166,7 @@
     "category": "Communication",
     "categoryKey": "inst.cat.communication",
     "wingetId": "9NKSQGP7F2NH",
-    "iconGlyph": "💬",
+    "iconGlyph": "\ud83d\udcac",
     "iconKey": "whatsapp"
   },
   {
@@ -176,7 +176,7 @@
     "category": "Communication",
     "categoryKey": "inst.cat.communication",
     "wingetId": "Telegram.TelegramDesktop",
-    "iconGlyph": "✈️",
+    "iconGlyph": "\u2708\ufe0f",
     "iconKey": "telegram"
   },
   {
@@ -186,7 +186,7 @@
     "category": "Communication",
     "categoryKey": "inst.cat.communication",
     "wingetId": "Zoom.Zoom",
-    "iconGlyph": "📹",
+    "iconGlyph": "\ud83d\udcf9",
     "iconKey": "zoom"
   },
   {
@@ -196,7 +196,7 @@
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "Spotify.Spotify",
-    "iconGlyph": "🎵",
+    "iconGlyph": "\ud83c\udfb5",
     "iconKey": "spotify"
   },
   {
@@ -206,7 +206,7 @@
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "OBSProject.OBSStudio",
-    "iconGlyph": "🎥",
+    "iconGlyph": "\ud83c\udfa5",
     "iconKey": "obs"
   },
   {
@@ -216,7 +216,7 @@
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "Guru3D.Afterburner",
-    "iconGlyph": "🌡️",
+    "iconGlyph": "\ud83c\udf21\ufe0f",
     "iconKey": "afterburner"
   },
   {
@@ -226,7 +226,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "RARLab.WinRAR",
-    "iconGlyph": "📦",
+    "iconGlyph": "\ud83d\udce6",
     "iconKey": "winrar"
   },
   {
@@ -236,7 +236,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "voidtools.Everything",
-    "iconGlyph": "🔎",
+    "iconGlyph": "\ud83d\udd0e",
     "iconKey": "everything"
   },
   {
@@ -246,7 +246,7 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Rufus.Rufus",
-    "iconGlyph": "💾",
+    "iconGlyph": "\ud83d\udcbe",
     "iconKey": "rufus"
   },
   {
@@ -256,7 +256,1327 @@
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Adobe.Acrobat.Reader.64-bit",
-    "iconGlyph": "📄",
+    "iconGlyph": "\ud83d\udcc4",
     "iconKey": "acrobat"
+  },
+  {
+    "descriptionKey": "inst.terminal.desc",
+    "displayNameKey": "inst.terminal.name",
+    "id": "inst-terminal",
+    "category": "Developer",
+    "iconGlyph": "\ud83d\udda5\ufe0f",
+    "iconKey": "terminal",
+    "wingetId": "Microsoft.WindowsTerminal",
+    "categoryKey": "inst.cat.developer"
+  },
+  {
+    "descriptionKey": "inst.powershell.desc",
+    "displayNameKey": "inst.powershell.name",
+    "id": "inst-powershell",
+    "category": "Developer",
+    "iconGlyph": "\ud83d\udc99",
+    "iconKey": "powershell",
+    "wingetId": "Microsoft.PowerShell",
+    "categoryKey": "inst.cat.developer"
+  },
+  {
+    "descriptionKey": "inst.gh.desc",
+    "displayNameKey": "inst.gh.name",
+    "id": "inst-githubcli",
+    "category": "Developer",
+    "iconGlyph": "\ud83d\udc19",
+    "iconKey": "gh",
+    "wingetId": "GitHub.cli",
+    "categoryKey": "inst.cat.developer"
+  },
+  {
+    "descriptionKey": "inst.docker.desc",
+    "displayNameKey": "inst.docker.name",
+    "id": "inst-docker",
+    "category": "Developer",
+    "iconGlyph": "\ud83d\udc33",
+    "iconKey": "docker",
+    "wingetId": "Docker.DockerDesktop",
+    "categoryKey": "inst.cat.developer"
+  },
+  {
+    "descriptionKey": "inst.ohmyposh.desc",
+    "displayNameKey": "inst.ohmyposh.name",
+    "id": "inst-ohmyposh",
+    "category": "Developer",
+    "iconGlyph": "\u2728",
+    "iconKey": "ohmyposh",
+    "wingetId": "JanDeDobbeleer.OhMyPosh",
+    "categoryKey": "inst.cat.developer"
+  },
+  {
+    "descriptionKey": "inst.signal.desc",
+    "displayNameKey": "inst.signal.name",
+    "id": "inst-signal",
+    "category": "Communication",
+    "iconGlyph": "\ud83d\udd12",
+    "iconKey": "signal",
+    "wingetId": "OpenWhisperSystems.Signal",
+    "categoryKey": "inst.cat.communication"
+  },
+  {
+    "descriptionKey": "inst.slack.desc",
+    "displayNameKey": "inst.slack.name",
+    "id": "inst-slack",
+    "category": "Communication",
+    "iconGlyph": "\ud83d\udcbc",
+    "iconKey": "slack",
+    "wingetId": "SlackTechnologies.Slack",
+    "categoryKey": "inst.cat.communication"
+  },
+  {
+    "descriptionKey": "inst.thunderbird.desc",
+    "displayNameKey": "inst.thunderbird.name",
+    "id": "inst-thunderbird",
+    "category": "Communication",
+    "iconGlyph": "\ud83d\udce7",
+    "iconKey": "thunderbird",
+    "wingetId": "Mozilla.Thunderbird",
+    "categoryKey": "inst.cat.communication"
+  },
+  {
+    "descriptionKey": "inst.gog.desc",
+    "displayNameKey": "inst.gog.name",
+    "id": "inst-gog",
+    "category": "Gaming",
+    "iconGlyph": "\ud83c\udf0c",
+    "iconKey": "gog",
+    "wingetId": "GOG.Galaxy",
+    "categoryKey": "inst.cat.gaming"
+  },
+  {
+    "descriptionKey": "inst.ubisoft.desc",
+    "displayNameKey": "inst.ubisoft.name",
+    "id": "inst-ubisoft",
+    "category": "Gaming",
+    "iconGlyph": "\ud83c\udfae",
+    "iconKey": "ubisoft",
+    "wingetId": "Ubisoft.Connect",
+    "categoryKey": "inst.cat.gaming"
+  },
+  {
+    "descriptionKey": "inst.ea.desc",
+    "displayNameKey": "inst.ea.name",
+    "id": "inst-ea",
+    "category": "Gaming",
+    "iconGlyph": "\ud83c\udd70\ufe0f",
+    "iconKey": "ea",
+    "wingetId": "ElectronicArts.EADesktop",
+    "categoryKey": "inst.cat.gaming"
+  },
+  {
+    "descriptionKey": "inst.playnite.desc",
+    "displayNameKey": "inst.playnite.name",
+    "id": "inst-playnite",
+    "category": "Gaming",
+    "iconGlyph": "\ud83d\udd79\ufe0f",
+    "iconKey": "playnite",
+    "wingetId": "Playnite.Playnite",
+    "categoryKey": "inst.cat.gaming"
+  },
+  {
+    "descriptionKey": "inst.heroic.desc",
+    "displayNameKey": "inst.heroic.name",
+    "id": "inst-heroic",
+    "category": "Gaming",
+    "iconGlyph": "\ud83e\uddb8",
+    "iconKey": "heroic",
+    "wingetId": "HeroicGamesLauncher.HeroicGamesLauncher",
+    "categoryKey": "inst.cat.gaming"
+  },
+  {
+    "descriptionKey": "inst.gimp.desc",
+    "displayNameKey": "inst.gimp.name",
+    "id": "inst-gimp",
+    "category": "Media",
+    "iconGlyph": "\ud83c\udfa8",
+    "iconKey": "gimp",
+    "wingetId": "GIMP.GIMP.3",
+    "categoryKey": "inst.cat.media"
+  },
+  {
+    "descriptionKey": "inst.handbrake.desc",
+    "displayNameKey": "inst.handbrake.name",
+    "id": "inst-handbrake",
+    "category": "Media",
+    "iconGlyph": "\ud83c\udfac",
+    "iconKey": "handbrake",
+    "wingetId": "HandBrake.HandBrake",
+    "categoryKey": "inst.cat.media"
+  },
+  {
+    "descriptionKey": "inst.blender.desc",
+    "displayNameKey": "inst.blender.name",
+    "id": "inst-blender",
+    "category": "Media",
+    "iconGlyph": "\ud83c\udf00",
+    "iconKey": "blender",
+    "wingetId": "BlenderFoundation.Blender",
+    "categoryKey": "inst.cat.media"
+  },
+  {
+    "descriptionKey": "inst.cpuz.desc",
+    "displayNameKey": "inst.cpuz.name",
+    "id": "inst-cpuz",
+    "category": "Tools",
+    "iconGlyph": "\ud83d\udcdf",
+    "iconKey": "cpuz",
+    "wingetId": "CPUID.CPU-Z",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.gpuz.desc",
+    "displayNameKey": "inst.gpuz.name",
+    "id": "inst-gpuz",
+    "category": "Tools",
+    "iconGlyph": "\ud83d\uddbc\ufe0f",
+    "iconKey": "gpuz",
+    "wingetId": "TechPowerUp.GPU-Z",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.hwinfo.desc",
+    "displayNameKey": "inst.hwinfo.name",
+    "id": "inst-hwinfo",
+    "category": "Tools",
+    "iconGlyph": "\ud83d\udcca",
+    "iconKey": "hwinfo",
+    "wingetId": "REALiX.HWiNFO",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.wiztree.desc",
+    "displayNameKey": "inst.wiztree.name",
+    "id": "inst-wiztree",
+    "category": "Tools",
+    "iconGlyph": "\ud83c\udf33",
+    "iconKey": "wiztree",
+    "wingetId": "AntibodySoftware.WizTree",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.bitwarden.desc",
+    "displayNameKey": "inst.bitwarden.name",
+    "id": "inst-bitwarden",
+    "category": "Tools",
+    "iconGlyph": "\ud83d\udd11",
+    "iconKey": "bitwarden",
+    "wingetId": "Bitwarden.Bitwarden",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.keepassxc.desc",
+    "displayNameKey": "inst.keepassxc.name",
+    "id": "inst-keepassxc",
+    "category": "Tools",
+    "iconGlyph": "\ud83d\udee1\ufe0f",
+    "iconKey": "keepassxc",
+    "wingetId": "KeePassXCTeam.KeePassXC",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.qbittorrent.desc",
+    "displayNameKey": "inst.qbittorrent.name",
+    "id": "inst-qbittorrent",
+    "category": "Tools",
+    "iconGlyph": "\u2b07\ufe0f",
+    "iconKey": "qbittorrent",
+    "wingetId": "qBittorrent.qBittorrent",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.procexp.desc",
+    "displayNameKey": "inst.procexp.name",
+    "id": "inst-procexp",
+    "category": "Tools",
+    "iconGlyph": "\ud83d\udd2c",
+    "iconKey": "procexp",
+    "wingetId": "Microsoft.Sysinternals.ProcessExplorer",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.autoruns.desc",
+    "displayNameKey": "inst.autoruns.name",
+    "id": "inst-autoruns",
+    "category": "Tools",
+    "iconGlyph": "\u2699\ufe0f",
+    "iconKey": "autoruns",
+    "wingetId": "Microsoft.Sysinternals.Autoruns",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "descriptionKey": "inst.obsidian.desc",
+    "displayNameKey": "inst.obsidian.name",
+    "id": "inst-obsidian",
+    "category": "Tools",
+    "iconGlyph": "\ud83d\udc8e",
+    "iconKey": "obsidian",
+    "wingetId": "Obsidian.Obsidian",
+    "categoryKey": "inst.cat.tools"
+  },
+  {
+    "id": "inst-windirstat-windirstat",
+    "displayNameKey": "inst.extra.windirstatwindirstat.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "WinDirStat.WinDirStat",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-greenshot-greenshot",
+    "displayNameKey": "inst.extra.greenshotgreenshot.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Greenshot.Greenshot",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-flameshot-flameshot",
+    "displayNameKey": "inst.extra.flameshotflameshot.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Flameshot.Flameshot",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-putty-putty",
+    "displayNameKey": "inst.extra.puttyputty.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "PuTTY.PuTTY",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-winscp-winscp",
+    "displayNameKey": "inst.extra.winscpwinscp.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "WinSCP.WinSCP",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-filezilla-filezilla",
+    "displayNameKey": "inst.extra.filezillafilezilla.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "FileZilla.FileZilla",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-gimp-gimp",
+    "displayNameKey": "inst.extra.gimpgimp.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "GIMP.GIMP",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-kde-krita",
+    "displayNameKey": "inst.extra.kdekrita.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "KDE.Krita",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-inkscape-inkscape",
+    "displayNameKey": "inst.extra.inkscapeinkscape.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "Inkscape.Inkscape",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-audacity-audacity",
+    "displayNameKey": "inst.extra.audacityaudacity.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "Audacity.Audacity",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-clsid2-mpc-hc",
+    "displayNameKey": "inst.extra.clsid2mpchc.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "clsid2.mpc-hc",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-dotpdn-paintdotnet",
+    "displayNameKey": "inst.extra.dotpdnpaintdotnet.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "dotPDN.PaintDotNet",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-kde-kdenlive",
+    "displayNameKey": "inst.extra.kdekdenlive.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "KDE.Kdenlive",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-shotcut-shotcut",
+    "displayNameKey": "inst.extra.shotcutshotcut.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "Shotcut.Shotcut",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-darktable-darktable",
+    "displayNameKey": "inst.extra.darktabledarktable.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "darktable.darktable",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-calibre-calibre",
+    "displayNameKey": "inst.extra.calibrecalibre.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "calibre.calibre",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-sumatrapdf-sumatrapdf",
+    "displayNameKey": "inst.extra.sumatrapdfsumatrapdf.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "SumatraPDF.SumatraPDF",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-pdfsam-pdfsam",
+    "displayNameKey": "inst.extra.pdfsampdfsam.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "PDFsam.PDFsam",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-libreoffice-libreoffice",
+    "displayNameKey": "inst.extra.libreofficelibreoffice.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "LibreOffice.LibreOffice",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-onlyoffice-desktopeditors",
+    "displayNameKey": "inst.extra.onlyofficedesktopeditors.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "ONLYOFFICE.DesktopEditors",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-signal-signal",
+    "displayNameKey": "inst.extra.signalsignal.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Communication",
+    "categoryKey": "inst.cat.communication",
+    "wingetId": "Signal.Signal",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-element-element",
+    "displayNameKey": "inst.extra.elementelement.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Communication",
+    "categoryKey": "inst.cat.communication",
+    "wingetId": "Element.Element",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-prismlauncher-prismlauncher",
+    "displayNameKey": "inst.extra.prismlauncherprismlauncher.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Gaming",
+    "categoryKey": "inst.cat.gaming",
+    "wingetId": "PrismLauncher.PrismLauncher",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-foobar2000-foobar2000",
+    "displayNameKey": "inst.extra.foobar2000foobar2000.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "foobar2000.foobar2000",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-musicbee-musicbee",
+    "displayNameKey": "inst.extra.musicbeemusicbee.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "MusicBee.MusicBee",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-alcpu-coretemp",
+    "displayNameKey": "inst.extra.alcpucoretemp.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "ALCPU.CoreTemp",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-crystaldewworld-crystaldiskinfo",
+    "displayNameKey": "inst.extra.crystaldewworldcrystaldiskinfo.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "CrystalDewWorld.CrystalDiskInfo",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-crystaldewworld-crystaldiskmark",
+    "displayNameKey": "inst.extra.crystaldewworldcrystaldiskmark.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "CrystalDewWorld.CrystalDiskMark",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-balena-etcher",
+    "displayNameKey": "inst.extra.balenaetcher.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Balena.Etcher",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-ventoy-ventoy",
+    "displayNameKey": "inst.extra.ventoyventoy.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Ventoy.Ventoy",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-github-githubdesktop",
+    "displayNameKey": "inst.extra.githubgithubdesktop.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "GitHub.GitHubDesktop",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-golang-go",
+    "displayNameKey": "inst.extra.golanggo.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "GoLang.Go",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-rustlang-rustup",
+    "displayNameKey": "inst.extra.rustlangrustup.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Rustlang.Rustup",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-eclipseadoptium-temurin-21-jdk",
+    "displayNameKey": "inst.extra.eclipseadoptiumtemurin21jdk.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "EclipseAdoptium.Temurin.21.JDK",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-dotnet-sdk-8",
+    "displayNameKey": "inst.extra.microsoftdotnetsdk8.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Microsoft.DotNet.SDK.8",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-kubernetes-kubectl",
+    "displayNameKey": "inst.extra.kuberneteskubectl.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Kubernetes.kubectl",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-helm-helm",
+    "displayNameKey": "inst.extra.helmhelm.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Helm.Helm",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-hashicorp-terraform",
+    "displayNameKey": "inst.extra.hashicorpterraform.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Hashicorp.Terraform",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-azurecli",
+    "displayNameKey": "inst.extra.microsoftazurecli.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Microsoft.AzureCLI",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-amazon-awscli",
+    "displayNameKey": "inst.extra.amazonawscli.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Amazon.AWSCLI",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-postman-postman",
+    "displayNameKey": "inst.extra.postmanpostman.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Postman.Postman",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-dbeaver-dbeaver-community",
+    "displayNameKey": "inst.extra.dbeaverdbeavercommunity.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "DBeaver.DBeaver.Community",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-sqlite-sqlite",
+    "displayNameKey": "inst.extra.sqlitesqlite.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "SQLite.SQLite",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-neovim-neovim",
+    "displayNameKey": "inst.extra.neovimneovim.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Neovim.Neovim",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-visualstudio-2022-community",
+    "displayNameKey": "inst.extra.microsoftvisualstudio2022community.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Microsoft.VisualStudio.2022.Community",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-jetbrains-toolbox",
+    "displayNameKey": "inst.extra.jetbrainstoolbox.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "JetBrains.Toolbox",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-sublimehq-sublimetext-4",
+    "displayNameKey": "inst.extra.sublimehqsublimetext4.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "SublimeHQ.SublimeText.4",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-wiresharkfoundation-wireshark",
+    "displayNameKey": "inst.extra.wiresharkfoundationwireshark.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "WiresharkFoundation.Wireshark",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-wireguard-wireguard",
+    "displayNameKey": "inst.extra.wireguardwireguard.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "WireGuard.WireGuard",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-tailscale-tailscale",
+    "displayNameKey": "inst.extra.tailscaletailscale.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Tailscale.Tailscale",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-openvpntechnologies-openvpnconnect",
+    "displayNameKey": "inst.extra.openvpntechnologiesopenvpnconnect.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "OpenVPNTechnologies.OpenVPNConnect",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-klocman-bulkcrapuninstaller",
+    "displayNameKey": "inst.extra.klocmanbulkcrapuninstaller.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Klocman.BulkCrapUninstaller",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-m2team-nanazip",
+    "displayNameKey": "inst.extra.m2teamnanazip.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "M2Team.NanaZip",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-peazip-peazip",
+    "displayNameKey": "inst.extra.peazippeazip.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "PeaZip.PeaZip",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-vivaldi-vivaldi",
+    "displayNameKey": "inst.extra.vivaldivivaldi.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "Vivaldi.Vivaldi",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-opera-opera",
+    "displayNameKey": "inst.extra.operaopera.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "Opera.Opera",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-librewolf-librewolf",
+    "displayNameKey": "inst.extra.librewolflibrewolf.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "LibreWolf.LibreWolf",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-torproject-torbrowser",
+    "displayNameKey": "inst.extra.torprojecttorbrowser.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "TorProject.TorBrowser",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-thebrowsercompany-arc",
+    "displayNameKey": "inst.extra.thebrowsercompanyarc.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "TheBrowserCompany.Arc",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-notion-notion",
+    "displayNameKey": "inst.extra.notionnotion.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Notion.Notion",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-logseq-logseq",
+    "displayNameKey": "inst.extra.logseqlogseq.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Logseq.Logseq",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-joplin-joplin",
+    "displayNameKey": "inst.extra.joplinjoplin.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Joplin.Joplin",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-zotero-zotero",
+    "displayNameKey": "inst.extra.zoterozotero.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Zotero.Zotero",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-dropbox-dropbox",
+    "displayNameKey": "inst.extra.dropboxdropbox.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Dropbox.Dropbox",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-google-googledrive",
+    "displayNameKey": "inst.extra.googlegoogledrive.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Google.GoogleDrive",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-syncthing-syncthing",
+    "displayNameKey": "inst.extra.syncthingsyncthing.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Syncthing.Syncthing",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-yt-dlp-yt-dlp",
+    "displayNameKey": "inst.extra.ytdlpytdlp.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "yt-dlp.yt-dlp",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-jgraph-draw",
+    "displayNameKey": "inst.extra.jgraphdraw.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "JGraph.Draw",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-raspberrypifoundation-raspberrypiimager",
+    "displayNameKey": "inst.extra.raspberrypifoundationraspberrypiimager.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "RaspberryPiFoundation.RaspberryPiImager",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-pcmanager",
+    "displayNameKey": "inst.extra.microsoftpcmanager.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Microsoft.PCManager",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-bleachbit-bleachbit",
+    "displayNameKey": "inst.extra.bleachbitbleachbit.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "BleachBit.BleachBit",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-codesector-teracopy",
+    "displayNameKey": "inst.extra.codesectorteracopy.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "CodeSector.TeraCopy",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-proton-protonvpn",
+    "displayNameKey": "inst.extra.protonprotonvpn.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Proton.ProtonVPN",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-1password-1password",
+    "displayNameKey": "inst.extra.1password1password.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "1Password.1Password",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-standardnotes-standardnotes",
+    "displayNameKey": "inst.extra.standardnotesstandardnotes.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "StandardNotes.StandardNotes",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-ciderapp-cider",
+    "displayNameKey": "inst.extra.ciderappcider.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "ciderapp.Cider",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-strawberrymusicplayer-strawberry",
+    "displayNameKey": "inst.extra.strawberrymusicplayerstrawberry.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "StrawberryMusicPlayer.Strawberry",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-plex-plex",
+    "displayNameKey": "inst.extra.plexplex.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "Plex.Plex",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-anki-anki",
+    "displayNameKey": "inst.extra.ankianki.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Anki.Anki",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-rproject-r",
+    "displayNameKey": "inst.extra.rprojectr.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "RProject.R",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-posit-rstudio",
+    "displayNameKey": "inst.extra.positrstudio.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Posit.RStudio",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-julialang-julia",
+    "displayNameKey": "inst.extra.julialangjulia.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "JuliaLang.Julia",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-jqlang-jq",
+    "displayNameKey": "inst.extra.jqlangjq.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "jqlang.jq",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-sharkdp-fd",
+    "displayNameKey": "inst.extra.sharkdpfd.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "sharkdp.fd",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-sharkdp-bat",
+    "displayNameKey": "inst.extra.sharkdpbat.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "sharkdp.bat",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-bicep",
+    "displayNameKey": "inst.extra.microsoftbicep.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Microsoft.Bicep",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-pulumi-pulumi",
+    "displayNameKey": "inst.extra.pulumipulumi.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Pulumi.Pulumi",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-apache-maven",
+    "displayNameKey": "inst.extra.apachemaven.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Apache.Maven",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-gradle-gradle",
+    "displayNameKey": "inst.extra.gradlegradle.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Gradle.Gradle",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-jetbrains-intellijidea-community",
+    "displayNameKey": "inst.extra.jetbrainsintellijideacommunity.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "JetBrains.IntelliJIDEA.Community",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-jetbrains-pycharm-community",
+    "displayNameKey": "inst.extra.jetbrainspycharmcommunity.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "JetBrains.PyCharm.Community",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-kitware-cmake",
+    "displayNameKey": "inst.extra.kitwarecmake.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Kitware.CMake",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-ninja-build-ninja",
+    "displayNameKey": "inst.extra.ninjabuildninja.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Ninja-build.Ninja",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-vcpkg",
+    "displayNameKey": "inst.extra.microsoftvcpkg.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Microsoft.vcpkg",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-github-gitlfs",
+    "displayNameKey": "inst.extra.githubgitlfs.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "GitHub.GitLFS",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-axosoft-gitkraken",
+    "displayNameKey": "inst.extra.axosoftgitkraken.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Axosoft.GitKraken",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-amazon-corretto-21-jdk",
+    "displayNameKey": "inst.extra.amazoncorretto21jdk.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Amazon.Corretto.21.JDK",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-astral-sh-uv",
+    "displayNameKey": "inst.extra.astralshuv.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "astral-sh.uv",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-astral-sh-ruff",
+    "displayNameKey": "inst.extra.astralshruff.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "astral-sh.ruff",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-devtoys-app-devtoys",
+    "displayNameKey": "inst.extra.devtoysappdevtoys.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "DevToys-app.DevToys",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-lexikos-autohotkey",
+    "displayNameKey": "inst.extra.lexikosautohotkey.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Lexikos.AutoHotkey",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-powerautomatedesktop",
+    "displayNameKey": "inst.extra.microsoftpowerautomatedesktop.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Microsoft.PowerAutomateDesktop",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-irfanview-irfanview",
+    "displayNameKey": "inst.extra.irfanviewirfanview.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Media",
+    "categoryKey": "inst.cat.media",
+    "wingetId": "IrfanView.IrfanView",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-nilesoft-shell",
+    "displayNameKey": "inst.extra.nilesoftshell.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Tools",
+    "categoryKey": "inst.cat.tools",
+    "wingetId": "Nilesoft.Shell",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-microsoft-windbg",
+    "displayNameKey": "inst.extra.microsoftwindbg.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "Microsoft.WinDbg",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
+  },
+  {
+    "id": "inst-llvm-llvm",
+    "displayNameKey": "inst.extra.llvmllvm.name",
+    "descriptionKey": "inst.desc.winget",
+    "category": "Developer",
+    "categoryKey": "inst.cat.developer",
+    "wingetId": "LLVM.LLVM",
+    "iconGlyph": "\ud83d\udce6",
+    "iconKey": ""
   }
 ]

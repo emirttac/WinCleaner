@@ -1,0 +1,538 @@
+using WinCleaner.Core.Actions;
+using WinCleaner.Core.Compatibility;
+using WinCleaner.Core.Models;
+using WinCleaner.Core.Services;
+using WinCleaner.Data;
+
+namespace WinCleaner.Core.Tests;
+
+public class RiskParserTests
+{
+    [Theory]
+    [InlineData("Safe", RiskLevel.Safe)]
+    [InlineData("caution", RiskLevel.Caution)]
+    [InlineData("Dangerous", RiskLevel.Dangerous)]
+    [InlineData("BLOCKED", RiskLevel.Blocked)]
+    public void Parse_MapsExpectedValues(string input, RiskLevel expected)
+    {
+        Assert.Equal(expected, RiskParser.Parse(input));
+    }
+}
+
+public class CatalogLoaderTests
+{
+    [Fact]
+    public void LoadServices_ReturnsEntries()
+    {
+        var services = CatalogLoader.LoadServices();
+        Assert.NotEmpty(services);
+        Assert.Contains(services, s => s.ServiceName == "DiagTrack");
+        Assert.Contains(services, s => s.Risk == "Blocked");
+    }
+
+    [Fact]
+    public void LoadTweaks_ContainsGamingAndTelemetry()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        Assert.Contains(tweaks, t => t.Category == "Gaming");
+        Assert.Contains(tweaks, t => t.Category == "Telemetry");
+        Assert.Contains(tweaks, t => t.Id == "tweak-game-mode");
+    }
+
+    [Fact]
+    public void LoadPresets_ContainsGamer()
+    {
+        var presets = CatalogLoader.LoadPresets();
+        var gamer = Assert.Single(presets, p => p.Id == "preset-gamer");
+        Assert.NotEmpty(gamer.TweakIds);
+    }
+
+    [Fact]
+    public void LoadTweaks_ContainsWindows11UiCategory()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        Assert.Contains(tweaks, t => t.Id == "tweak-classic-context-menu" && t.Win11Only);
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-copilot");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-recall");
+        Assert.Contains(tweaks, t => t.Id == "tweak-start-iris");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-widgets");
+        Assert.Contains(tweaks, t => t.Id == "tweak-taskbar-left" && t.Win11Only);
+        Assert.Contains(tweaks, t => t.Id == "tweak-hide-taskview" && !t.Win11Only);
+        Assert.Contains(tweaks, t => t.Id == "tweak-explorer-thispc" && !t.Win11Only);
+        Assert.All(
+            tweaks.Where(t => t.Category == "Windows11UI" && t.Win11Only),
+            t => Assert.True(t.Win11Only));
+    }
+
+    [Fact]
+    public void LoadTweaks_ContainsCatalogExpansionEntries()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        Assert.Contains(tweaks, t => t.Id == "tweak-inking-typing" && t.Registries is { Count: 5 });
+        Assert.Contains(tweaks, t => t.Id == "tweak-feedback-frequency"
+            && t.Registries is { Count: 2 }
+            && t.Registries.Any(r => r.Name == "PeriodInNanoSeconds" && r.DeleteValueOnEnable)
+            && t.Registries.All(r => r.DeleteValueOnDisable));
+        Assert.Contains(tweaks, t => t.Id == "tweak-dark-mode" && t.Registries is { Count: 2 });
+        Assert.Contains(tweaks, t => t.Id == "tweak-core-parking" && t.Type == "command"
+            && t.Command!.DetectMode == "acIndexEquals" && t.Command.DetectValue == "100"
+            && t.Command.Arguments.Contains("CPMINCORES1", StringComparison.OrdinalIgnoreCase)
+            && t.Command.Arguments.Contains("setdcvalueindex", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(tweaks, t => t.Id == "tweak-nic-power-save" && t.Command!.DetectValue == "WC_NIC_POWER_OFF"
+            && t.Command.Arguments.Contains("-Physical", StringComparison.Ordinal)
+            && t.Command.DetectArguments!.Contains("WC_NIC_POWER_ON", StringComparison.Ordinal));
+        Assert.Contains(tweaks, t => t.Id == "tweak-network-throttling" && t.Risk == "Caution");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-ipv6" && t.RequiresReboot && t.Type == "command"
+            && t.Command!.DetectValue == "WC_IPV6_OFF"
+            && t.Command.Arguments.Contains("ms_tcpip6", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(tweaks, t => t.Id == "tweak-system-responsiveness" && t.Registry!.EnabledValue == "10");
+        Assert.Contains(tweaks, t => t.Id == "tweak-activity-history"
+            && t.Registries!.Any(r => r.Name == "EnableActivityFeed" && r.EnabledValue == "1"));
+        Assert.Contains(tweaks, t => t.Id == "tweak-location"
+            && t.Registries!.Any(r => r.Name == "SensorPermissionState"));
+        Assert.Contains(tweaks, t => t.Id == "tweak-start-iris"
+            && t.Registries is { Count: 4 }
+            && t.Registries.Count(r => r.Name == "HideRecommendedSection") == 2
+            && t.Registries.Any(r => r.Path.Contains("PolicyManager", StringComparison.OrdinalIgnoreCase)
+                && r.Name == "IsEducationEnvironment" && r.EnabledValue == "1"));
+        Assert.Contains(tweaks, t => t.Id == "tweak-visual-perf" && t.Type == "visualEffects");
+        Assert.Contains(tweaks, t => t.Id == "tweak-animations" && t.Type == "visualEffects");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-hpet"
+            && t.Command!.DetectMode == "present"
+            && string.IsNullOrWhiteSpace(t.Command.DetectValue)
+            && t.Command.Arguments.Contains("useplatformclock false", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(tweaks, t => t.Id == "tweak-search-icon-only"
+            && t.Registry!.DisabledValue == "0");
+        Assert.Contains(tweaks, t => t.Id == "tweak-lockscreen-ads"
+            && t.Registries is { Count: >= 6 }
+            && t.Registries.Any(r => r.Name == "SoftLandingEnabled"));
+    }
+
+    [Fact]
+    public void LoadTweaks_ContainsWinUtilParityEntries()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        Assert.Contains(tweaks, t => t.Id == "tweak-hibernation" && t.Type == "command"
+            && t.Command!.DetectValue == "WC_HIBER_OFF");
+        Assert.Contains(tweaks, t => t.Id == "tweak-wpbt" && t.Registry!.Name == "DisableWpbtExecution"
+            && t.Registry.DeleteValueOnDisable);
+        Assert.Contains(tweaks, t => t.Id == "tweak-end-task-taskbar" && t.Win11Only
+            && t.Registry!.Name == "TaskbarEndTask");
+        Assert.Contains(tweaks, t => t.Id == "tweak-home-gallery" && t.Registries is { Count: 2 });
+        Assert.Contains(tweaks, t => t.Id == "tweak-ipv4-preferred" && t.Registry!.EnabledValue == "32"
+            && t.RequiresReboot);
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-ipv6" && t.Command!.DetectValue == "WC_IPV6_OFF");
+        Assert.Contains(tweaks, t => t.Id == "tweak-teredo" && t.Command!.DetectValue == "WC_TEREDO_OFF");
+        Assert.Contains(tweaks, t => t.Id == "tweak-svchost-splitting" && t.Risk == "Dangerous");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-mpo" && t.Category == "Gaming"
+            && t.Registries!.Any(r => r.Name == "OverlayTestMode" && r.EnabledValue == "5"));
+        Assert.Contains(tweaks, t => t.Id == "tweak-long-paths" && t.Registry!.Name == "LongPathsEnabled");
+        Assert.Contains(tweaks, t => t.Id == "tweak-utc-time" && t.Registry!.ValueKind == "QWord");
+        Assert.True(tweaks.Count >= 80);
+    }
+
+    [Fact]
+    public void LoadTweaks_ContainsOptionalFeaturesAndWuDeferral()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        Assert.Contains(tweaks, t => t.Id == "tweak-feat-hyperv" && t.Command!.DetectValue == "WC_FEAT_ON"
+            && t.Command.Arguments.Contains("Microsoft-Hyper-V-All", StringComparison.Ordinal));
+        Assert.Contains(tweaks, t => t.Id == "tweak-feat-wsl" && t.RequiresReboot
+            && t.Command!.Arguments.Contains("Microsoft-Windows-Subsystem-Linux", StringComparison.Ordinal));
+        Assert.Contains(tweaks, t => t.Id == "tweak-feat-sandbox");
+        Assert.Contains(tweaks, t => t.Id == "tweak-feat-dotnet");
+        Assert.Contains(tweaks, t => t.Id == "tweak-feat-f8legacy" && t.Command!.FileName == "bcdedit"
+            && t.Command.DetectKey == "bootmenupolicy");
+        Assert.Contains(tweaks, t => t.Id == "tweak-wu-recommended" && t.Registries is { Count: >= 6 }
+            && t.Registries.Any(r => r.Name == "DeferFeatureUpdatesPeriodInDays" && r.EnabledValue == "365")
+            && t.Registries.Any(r => r.Name == "DeferQualityUpdatesPeriodInDays" && r.EnabledValue == "4"));
+        Assert.True(tweaks.Count >= 90);
+    }
+
+    [Fact]
+    public void LoadServices_ContainsExpansionEntries()
+    {
+        var services = CatalogLoader.LoadServices();
+        Assert.Contains(services, s => s.Id == "svc-pcasvc" && s.ServiceName == "PcaSvc");
+        Assert.Contains(services, s => s.Id == "svc-remoteregistry" && s.RecommendedStart == "Disabled");
+        Assert.Contains(services, s => s.Id == "svc-retaildemo" && s.Risk == "Safe");
+    }
+
+    [Fact]
+    public void LoadPresets_ContainsLaptopAndPrivacyMax()
+    {
+        var presets = CatalogLoader.LoadPresets();
+        var laptop = Assert.Single(presets, p => p.Id == "preset-laptop");
+        Assert.Contains("tweak-dark-mode", laptop.TweakIds);
+        Assert.Contains("svc-retaildemo", laptop.ServiceIds);
+
+        var privacy = Assert.Single(presets, p => p.Id == "preset-privacy-max");
+        Assert.Contains("tweak-inking-typing", privacy.TweakIds);
+        Assert.Contains("svc-lfsvc", privacy.ServiceIds);
+    }
+
+    [Fact]
+    public void LoadTweaks_CopilotAndRecall_HaveMinBuild()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        var copilot = Assert.Single(tweaks, t => t.Id == "tweak-disable-copilot");
+        Assert.Equal(22000, copilot.MinBuild);
+        Assert.True(copilot.Win11Only);
+        Assert.NotNull(copilot.RegistryVariants);
+        Assert.True(copilot.RegistryVariants!.Count >= 2);
+
+        var recall = Assert.Single(tweaks, t => t.Id == "tweak-disable-recall");
+        Assert.Equal(26100, recall.MinBuild);
+        Assert.True(recall.Win11Only);
+        Assert.Equal("command", recall.Type, ignoreCase: true);
+        Assert.NotNull(recall.Command);
+        // Apply must set both policies and disable the Recall optional feature.
+        Assert.Contains("DisableAIDataAnalysis", recall.Command!.Arguments);
+        Assert.Contains("AllowRecallEnablement", recall.Command.Arguments);
+        Assert.Contains("Disable-WindowsOptionalFeature", recall.Command.Arguments);
+        Assert.False(string.IsNullOrWhiteSpace(recall.Command.RevertArguments));
+        Assert.True(recall.Command.RequiresAdmin);
+        Assert.True(recall.RequiresReboot);
+    }
+
+    [Fact]
+    public void LoadTweaks_AntiCheatFlags_OnVbsHpetMmcss()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-vbs" && t.RequiresAntiCheatConfirm);
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-hpet" && t.RequiresAntiCheatConfirm);
+        Assert.Contains(tweaks, t => t.Id == "tweak-mmcss-gpu" && t.RequiresAntiCheatConfirm);
+        Assert.Contains(tweaks, t => t.Id == "tweak-mmcss-priority" && t.RequiresAntiCheatConfirm);
+        Assert.Contains(tweaks, t => t.Id == "tweak-mmcss-scheduling" && t.RequiresAntiCheatConfirm);
+    }
+
+    [Fact]
+    public void LoadTweaks_ContainsGamingHardwareTweaks()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-vbs" && t.RequiresReboot && t.Risk == "Caution");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-dynamic-tick" && t.Type == "command");
+        Assert.Contains(tweaks, t => t.Id == "tweak-disable-hpet" && t.Command!.DetectMode == "present");
+    }
+
+    [Fact]
+    public void LoadApps_ContainsWinUtilParityPackagesAndStoreIds()
+    {
+        var apps = CatalogLoader.LoadApps();
+        Assert.Contains(apps, a => a.Id == "app-crossdevice" && a.PackageName == "MicrosoftWindows.CrossDevice"
+            && a.StoreId == "9NTXGKQ8P7N0" && a.CanReinstall);
+        Assert.Contains(apps, a => a.Id == "app-paint" && a.PackageName == "Microsoft.Paint"
+            && a.CanReinstall);
+        Assert.Contains(apps, a => a.Id == "app-notepad" && a.PackageName == "Microsoft.WindowsNotepad");
+        Assert.Contains(apps, a => a.Id == "app-snip" && a.PackageName == "Microsoft.ScreenSketch");
+        Assert.Contains(apps, a => a.Id == "app-camera" && a.PackageName == "Microsoft.WindowsCamera");
+        Assert.Contains(apps, a => a.Id == "app-clock" && a.PackageName == "Microsoft.WindowsAlarms");
+        Assert.Contains(apps, a => a.Id == "app-soundrecorder");
+        Assert.Contains(apps, a => a.Id == "app-clipchamp" && a.StoreId == "9P1J8S7CCWWT");
+        Assert.True(apps.Count(a => a.CanReinstall) >= 25);
+        Assert.True(apps.Count >= 45);
+    }
+
+    [Fact]
+    public void LoadApps_MarksStoreCritical()
+    {
+        var apps = CatalogLoader.LoadApps();
+        var store = Assert.Single(apps, a => a.PackageName == "Microsoft.WindowsStore");
+        Assert.True(store.SystemCritical);
+    }
+
+    [Fact]
+    public void LoadApps_XboxAndTeamsHaveModernAliases()
+    {
+        var apps = CatalogLoader.LoadApps();
+
+        var xbox = Assert.Single(apps, a => a.Id == "app-xboxapp");
+        Assert.Contains("Microsoft.GamingApp", xbox.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("Microsoft.XboxApp", xbox.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.True(xbox.MatchesInstalledName("Microsoft.GamingApp"));
+        Assert.True(xbox.MatchesInstalledName("Microsoft.XboxApp"));
+        Assert.False(xbox.MatchesInstalledName("Microsoft.XboxGamingOverlay"));
+        Assert.False(xbox.MatchesInstalledName("Microsoft.XboxIdentityProvider"));
+
+        var teams = Assert.Single(apps, a => a.Id == "app-teams");
+        Assert.Contains("MSTeams", teams.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.Contains("MicrosoftTeams", teams.GetPackageNamePatterns(), StringComparer.OrdinalIgnoreCase);
+        Assert.True(teams.MatchesInstalledName("MSTeams"));
+        Assert.True(teams.MatchesInstalledName("MicrosoftTeams"));
+
+        var overlay = Assert.Single(apps, a => a.Id == "app-xboxgamingoverlay");
+        Assert.True(overlay.MatchesInstalledName("Microsoft.XboxGamingOverlay"));
+        Assert.True(overlay.MatchesInstalledName("Microsoft.XboxGameOverlay"));
+    }
+
+    [Fact]
+    public void LoadApps_ContainsWin11InboxBloat()
+    {
+        var apps = CatalogLoader.LoadApps();
+        Assert.Contains(apps, a => a.Id == "app-copilot" && a.PackageName == "Microsoft.Copilot");
+        Assert.Contains(apps, a => a.Id == "app-bingsearch" && a.PackageName == "Microsoft.BingSearch");
+        Assert.Contains(apps, a => a.Id == "app-outlook" && a.PackageName == "Microsoft.OutlookForWindows");
+        Assert.Contains(apps, a => a.Id == "app-devhome" && a.Win11Only);
+        Assert.Contains(apps, a => a.Id == "app-xboxtcui" && a.PackageName == "Microsoft.Xbox.TCUI");
+        Assert.Contains(apps, a => a.Id == "app-family" && a.PackageName == "MicrosoftCorporationII.MicrosoftFamily");
+        var widgets = Assert.Single(apps, a => a.Id == "app-widgets");
+        Assert.True(widgets.MatchesInstalledName("MicrosoftWindows.Client.WebExperience"));
+        Assert.True(widgets.MatchesInstalledName("Microsoft.WidgetsPlatformRuntime"));
+    }
+
+    [Fact]
+    public void LoadTweaks_Win11AndOneShotFixes()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+
+        var copilot = Assert.Single(tweaks, t => t.Id == "tweak-disable-copilot");
+        var v22631 = Assert.Single(copilot.RegistryVariants!, v => v.MinBuild == 22631);
+        Assert.True(v22631.Registries is { Count: >= 3 });
+        Assert.Contains(v22631.Registries!, r => r.Name == "ShowCopilotButton");
+        Assert.Contains(v22631.Registries!, r => r.Name == "TurnOffWindowsCopilot");
+
+        var widgets = Assert.Single(tweaks, t => t.Id == "tweak-disable-widgets");
+        Assert.True(widgets.Registries is { Count: 3 });
+        Assert.Contains(widgets.Registries!, r => r.Name == "TaskbarDa");
+        Assert.Contains(widgets.Registries!, r => r.Name == "AllowNewsAndInterests");
+        Assert.Contains(widgets.Registries!, r => r.Name == "EnableFeeds");
+
+        var bing = Assert.Single(tweaks, t => t.Id == "tweak-bing-search");
+        Assert.True(bing.Registries is { Count: 5 });
+        Assert.Contains(bing.Registries!, r => r.Name == "DisableSearchBoxSuggestions"
+            && r.Path.Contains("Policies\\Microsoft\\Windows\\Explorer", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(bing.Registries!, r => r.Name == "DisableWebSearch");
+        Assert.Contains(bing.Registries!, r => r.Name == "ConnectedSearchUseWeb");
+
+        var delivery = Assert.Single(tweaks, t => t.Id == "tweak-delivery-opt");
+        Assert.True(delivery.Registries is { Count: 2 });
+        Assert.Contains(delivery.Registries!, r => r.Path.Contains("Policies", StringComparison.OrdinalIgnoreCase));
+
+        var tcp = Assert.Single(tweaks, t => t.Id == "tweak-tcp-autotuning");
+        Assert.True(string.IsNullOrWhiteSpace(tcp.Command!.RevertArguments));
+        Assert.True(tcp.Command.RequiresAdmin);
+        Assert.True(tcp.Command.OneShot);
+
+        var dns = Assert.Single(tweaks, t => t.Id == "tweak-dns-flush");
+        Assert.True(string.IsNullOrWhiteSpace(dns.Command!.RevertArguments));
+        Assert.True(dns.Command.OneShot);
+
+        var mouse = Assert.Single(tweaks, t => t.Id == "tweak-mouse-accel");
+        Assert.True(mouse.Registries is { Count: 3 });
+        Assert.Contains(mouse.Registries!, r => r.Name == "MouseThreshold1" && r.EnabledValue == "0");
+        Assert.Contains(mouse.Registries!, r => r.Name == "MouseThreshold2" && r.EnabledValue == "0");
+
+        var nagle = Assert.Single(tweaks, t => t.Id == "tweak-nagle-ack");
+        Assert.True(nagle.Registry!.ApplyToAllSubkeys);
+        Assert.Equal("2", nagle.Registry.DisabledValue);
+        var nodelay = Assert.Single(tweaks, t => t.Id == "tweak-tcp-nodelay");
+        Assert.True(nodelay.Registry!.ApplyToAllSubkeys);
+    }
+
+    [Fact]
+    public void LoadTweaks_GameModeFsoVbsHags_UseCurrentWindowsKeys()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+
+        var gameMode = Assert.Single(tweaks, t => t.Id == "tweak-game-mode");
+        Assert.True(gameMode.Registries is { Count: 2 });
+        Assert.Contains(gameMode.Registries!, r => r.Name == "AllowAutoGameMode" && r.EnabledValue == "1");
+        Assert.Contains(gameMode.Registries!, r => r.Name == "AutoGameModeEnabled" && r.EnabledValue == "1");
+
+        var fso = Assert.Single(tweaks, t => t.Id == "tweak-fso");
+        Assert.Contains(fso.Registries!, r => r.Name == "GameDVR_FSEBehaviorMode" && r.EnabledValue == "2");
+        Assert.Contains(fso.Registries!, r => r.Name == "GameDVR_HonorUserFSEBehaviorMode" && r.EnabledValue == "1");
+        Assert.Contains(fso.Registries!, r => r.Name == "GameDVR_DXGIHonorFSEWindowsCompatible" && r.EnabledValue == "1");
+
+        var vbs = Assert.Single(tweaks, t => t.Id == "tweak-disable-vbs");
+        Assert.True(vbs.RequiresReboot);
+        Assert.Contains(vbs.Registries!, r => r.Name == "EnableVirtualizationBasedSecurity" && r.EnabledValue == "0");
+        Assert.Contains(vbs.Registries!, r => r.Path.Contains("WindowsHello", StringComparison.OrdinalIgnoreCase)
+            && r.Name == "Enabled" && r.EnabledValue == "0");
+        Assert.Contains(vbs.Registries!, r => r.Name == "WasEnabledBy" && r.EnabledValue == "0");
+
+        var hags = Assert.Single(tweaks, t => t.Id == "tweak-hags");
+        Assert.True(hags.RequiresReboot);
+        Assert.Equal("2", hags.Registry!.EnabledValue);
+
+        var telemetry = Assert.Single(tweaks, t => t.Id == "tweak-telemetry-allow");
+        Assert.True(telemetry.Registries is { Count: 4 });
+        Assert.Contains(telemetry.Registries!, r => r.Name == "AllowTelemetry");
+        Assert.Contains(telemetry.Registries!, r => r.Name == "Start_TrackProgs" && r.EnabledValue == "0");
+    }
+
+    [Fact]
+    public void LoadServices_TabletInputHasWin11Alias()
+    {
+        var tablet = Assert.Single(CatalogLoader.LoadServices(), s => s.Id == "svc-tabletinput");
+        Assert.Equal("TabletInputService", tablet.ServiceName);
+        Assert.Contains(tablet.GetServiceNames(), n => n.Equals("TextInputManagementService", StringComparison.OrdinalIgnoreCase));
+    }
+
+    [Fact]
+    public void Catalogs_HaveUniqueIds_AndCompleteSpecs_AndPresetRefsResolve()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        var services = CatalogLoader.LoadServices();
+        var apps = CatalogLoader.LoadApps();
+        var installers = CatalogLoader.LoadInstallerApps();
+        var presets = CatalogLoader.LoadPresets();
+
+        Assert.Equal(tweaks.Count, tweaks.Select(t => t.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(services.Count, services.Select(s => s.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(apps.Count, apps.Select(a => a.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+        Assert.Equal(installers.Count, installers.Select(a => a.Id).Distinct(StringComparer.OrdinalIgnoreCase).Count());
+
+        foreach (var t in tweaks)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(t.Id));
+            switch (t.Type.ToLowerInvariant())
+            {
+                case "registry":
+                    Assert.True(
+                        t.Registry is not null
+                        || t.Registries is { Count: > 0 }
+                        || t.RegistryVariants is { Count: > 0 },
+                        $"{t.Id} registry spec missing");
+                    break;
+                case "command":
+                    Assert.False(string.IsNullOrWhiteSpace(t.Command?.FileName), t.Id);
+                    Assert.False(string.IsNullOrWhiteSpace(t.Command?.Arguments), t.Id);
+                    break;
+                case "service":
+                    Assert.False(string.IsNullOrWhiteSpace(t.Service?.ServiceName), t.Id);
+                    break;
+                case "task":
+                    Assert.False(string.IsNullOrWhiteSpace(t.Task?.TaskPath), t.Id);
+                    break;
+                case "powerplan":
+                    Assert.NotNull(t.PowerPlan);
+                    break;
+                case "visualeffects":
+                    Assert.True(
+                        t.Id.Contains("visual", StringComparison.OrdinalIgnoreCase)
+                        || t.Id.Contains("animation", StringComparison.OrdinalIgnoreCase),
+                        t.Id);
+                    break;
+                default:
+                    Assert.Fail($"{t.Id} has unknown type '{t.Type}'");
+                    break;
+            }
+        }
+
+        var tweakIds = tweaks.Select(t => t.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var serviceIds = services.Select(s => s.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var preset in presets)
+        {
+            foreach (var id in preset.TweakIds)
+                Assert.True(tweakIds.Contains(id), $"preset {preset.Id} missing tweak {id}");
+            foreach (var id in preset.ServiceIds)
+                Assert.True(serviceIds.Contains(id), $"preset {preset.Id} missing service {id}");
+        }
+    }
+}
+
+public class OsCompatibilityTests
+{
+    [Fact]
+    public void Detect_ReturnsSupportedOs()
+    {
+        var os = OsCompatibility.Detect();
+        Assert.True(os.BuildNumber > 0);
+        Assert.False(string.IsNullOrWhiteSpace(os.DisplayName));
+    }
+
+    [Fact]
+    public void IsCompatible_RespectsMinBuild()
+    {
+        var win11 = new OsInfo
+        {
+            Family = OsFamily.Windows11,
+            BuildNumber = 22631,
+            DisplayName = "Win11",
+            VersionString = "10.0"
+        };
+        Assert.True(OsCompatibility.IsCompatible(22631, win11Only: true, win11));
+        Assert.False(OsCompatibility.IsCompatible(26100, win11Only: true, win11));
+    }
+
+    [Fact]
+    public void IsCompatible_RespectsWin11Only()
+    {
+        var win10 = new OsInfo
+        {
+            Family = OsFamily.Windows10,
+            BuildNumber = 19045,
+            DisplayName = "Win10",
+            VersionString = "10.0"
+        };
+        Assert.False(OsCompatibility.IsCompatible(null, win11Only: true, win10));
+        Assert.True(OsCompatibility.IsCompatible(null, win11Only: false, win10));
+    }
+}
+
+public class ChangeResultTests
+{
+    [Fact]
+    public void Ok_And_Fail_Helpers()
+    {
+        var ok = ChangeResult.Ok("a", "b", "msg");
+        Assert.True(ok.Success);
+        Assert.Equal("a", ok.OldValue);
+        Assert.Equal("b", ok.NewValue);
+
+        var fail = ChangeResult.Fail("nope");
+        Assert.False(fail.Success);
+        Assert.Equal("nope", fail.Message);
+    }
+}
+
+public class RegistryManagerValuesEqualTests
+{
+    [Fact]
+    public void ValuesEqual_DwordAcceptsUnsignedNegativeOne()
+    {
+        Assert.True(RegistryManager.ValuesEqual("-1", "4294967295", "DWord"));
+        Assert.True(RegistryManager.ValuesEqual("4294967295", "-1", "DWord"));
+        Assert.True(RegistryManager.ValuesEqual("255", "255", "DWord"));
+        Assert.False(RegistryManager.ValuesEqual(null, "0", "DWord"));
+        Assert.False(RegistryManager.ValuesEqual("1", "0", "DWord"));
+    }
+}
+
+public class ServiceNameMatcherTests
+{
+    [Fact]
+    public void IsInstanceOf_MatchesPerUserSuffix()
+    {
+        Assert.True(ServiceNameMatcher.IsInstanceOf("OneSyncSvc_1a2b3c", "OneSyncSvc"));
+        Assert.True(ServiceNameMatcher.IsInstanceOf("OneSyncSvc", "OneSyncSvc"));
+        Assert.False(ServiceNameMatcher.IsInstanceOf("CDPUserSvc_1a2b3c", "CDPSvc"));
+        Assert.False(ServiceNameMatcher.IsInstanceOf("XboxNetApiSvc", "Xbox"));
+    }
+
+    [Fact]
+    public void MatchLive_FindsPrefixedInstance()
+    {
+        var live = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ["OneSyncSvc_aabbcc"] = "hit"
+        };
+        Assert.Equal("hit", ServiceNameMatcher.MatchLive(live, ["OneSyncSvc"]));
+        Assert.Null(ServiceNameMatcher.MatchLive(live, ["CDPSvc"]));
+    }
+}
+
+public class PowerPlanLabelTests
+{
+    [Theory]
+    [InlineData("Power Scheme GUID: e9a42b02-d5df-448d-aa00-03f14749eb61  (Ultimate Performance)", true)]
+    [InlineData("Güç Şeması GUID: e9a42b02-d5df-448d-aa00-03f14749eb61  (Üst Düzey Performans)", true)]
+    [InlineData("Güç Şeması GUID: 11111111-2222-3333-4444-555555555555  (Üst Düzey Performans)", false)]
+    [InlineData("Power Scheme GUID: 8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c  (High performance)", false)]
+    [InlineData("Güç Şeması GUID: 381b4222-f694-41f0-9685-ff5bb260df2e  (Dengeli)", false)]
+    public void LabelLooksLikeUltimate_UsesSchemeGuid(string label, bool expected)
+    {
+        Assert.Equal(expected, PowerPlanManager.LabelLooksLikeUltimate(label));
+    }
+}

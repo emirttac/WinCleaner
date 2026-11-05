@@ -3,9 +3,18 @@ using System.Management;
 
 namespace WinCleaner.Core.Services;
 
+public enum RestorePointOutcome
+{
+    Created,
+    NotCreated,
+    ProtectionDisabled
+}
+
+public readonly record struct RestorePointRow(int Sequence, string Description);
+
 /// <summary>
-/// Creates at most one System Restore checkpoint per WinCleaner session.
-/// Per-tweak checkpoints hit Windows rate limits and can freeze the UI.
+/// Creates at most one System Restore checkpoint per WinCleaner session (at startup).
+/// Per-tweak checkpoints hit Windows rate limits and freeze the UI — never do that.
 /// </summary>
 public sealed class RestorePointManager
 {
@@ -46,32 +55,92 @@ public sealed class RestorePointManager
 
     public bool CreateRestorePoint(string description, bool ignoreMinInterval = false)
     {
-        if (!ignoreMinInterval)
+        if (!ignoreMinInterval && !ShouldCreateNow())
+            return HasSessionCheckpoint;
+
+        var outcome = CreateChecked(description);
+        return outcome == RestorePointOutcome.Created;
+    }
+
+    public static RestorePointOutcome LastOutcome { get; private set; }
+
+    public RestorePointOutcome CreateChecked(string description)
+    {
+        if (ProtectionOverride?.Invoke() == false)
         {
-            lock (Gate)
-            {
-                if (DateTimeOffset.UtcNow - _lastSuccess < MinInterval)
-                    return true; // skip; treat as ok so callers don't block
-            }
+            LastOutcome = RestorePointOutcome.ProtectionDisabled;
+            return LastOutcome;
         }
 
+        var before = ReadPoints();
+        bool apiOk;
         try
         {
-            var ok = CreateCoreOverride?.Invoke(description)
-                     ?? (TryWmi(description) || TryPowerShell(description));
-            if (ok)
-            {
-                lock (Gate)
-                    _lastSuccess = DateTimeOffset.UtcNow;
-                MarkSessionCheckpoint();
-            }
-            return ok;
+            apiOk = CreateCoreOverride?.Invoke(description) ?? (TryWmi(description) || TryPowerShell(description));
         }
-        catch
+        catch (Exception ex)
         {
-            return false;
+            System.Diagnostics.Trace.WriteLine("Restore point create failed: " + ex.Message);
+            apiOk = false;
+        }
+
+        if (ListOverride is null && CreateCoreOverride is not null)
+        {
+            if (!apiOk)
+            {
+                LastOutcome = RestorePointOutcome.NotCreated;
+                return LastOutcome;
+            }
+            lock (Gate)
+                _lastSuccess = DateTimeOffset.UtcNow;
+            MarkSessionCheckpoint();
+            LastOutcome = RestorePointOutcome.Created;
+            return LastOutcome;
+        }
+
+        var after = ReadPoints();
+        var created = after.Any(point =>
+            point.Description == description &&
+            !before.Any(previous => previous.Sequence == point.Sequence));
+        if (!created)
+        {
+            LastOutcome = RestorePointOutcome.NotCreated;
+            return LastOutcome;
+        }
+
+        lock (Gate)
+            _lastSuccess = DateTimeOffset.UtcNow;
+        MarkSessionCheckpoint();
+        LastOutcome = RestorePointOutcome.Created;
+        return LastOutcome;
+    }
+
+    private static IReadOnlyList<RestorePointRow> ReadPoints() =>
+        ListOverride?.Invoke() ?? ReadLivePoints();
+
+    private static IReadOnlyList<RestorePointRow> ReadLivePoints()
+    {
+        try
+        {
+            using var searcher = new ManagementObjectSearcher("root\\default", "SELECT SequenceNumber, Description FROM SystemRestore");
+            var rows = new List<RestorePointRow>();
+            foreach (ManagementObject item in searcher.Get())
+            {
+                var sequence = Convert.ToInt32(item["SequenceNumber"] ?? 0);
+                var description = item["Description"]?.ToString() ?? "";
+                rows.Add(new RestorePointRow(sequence, description));
+            }
+            return rows;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.WriteLine("Restore point list failed: " + ex.Message);
+            return Array.Empty<RestorePointRow>();
         }
     }
+
+    internal static Func<IReadOnlyList<RestorePointRow>>? ListOverride { get; set; }
+    internal static Func<bool>? ProtectionOverride { get; set; }
 
     /// <summary>User clicked "Create restore point" — always try, mark session on success.</summary>
     public Task<bool> CreateManualAsync(string description, CancellationToken cancellationToken = default) =>
@@ -116,9 +185,9 @@ public sealed class RestorePointManager
                 await CreateRestorePointAsync("WinCleaner", ignoreMinInterval: false, cancellationToken)
                     .ConfigureAwait(false);
             }
-            catch
+            catch (Exception ex)
             {
-                // Restore failure must not abort the tweak
+                System.Diagnostics.Trace.WriteLine("Session restore point failed: " + ex.Message);
             }
         }
         finally
@@ -138,6 +207,8 @@ public sealed class RestorePointManager
         lock (Gate)
             _lastSuccess = DateTimeOffset.MinValue;
         CreateCoreOverride = null;
+        ListOverride = null;
+        ProtectionOverride = null;
         MinInterval = TimeSpan.FromMinutes(10);
     }
 

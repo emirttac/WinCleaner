@@ -7,10 +7,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <ApplicationIcon>app.ico</ApplicationIcon>
     <AssemblyName>WinCleaner</AssemblyName>
     <RootNamespace>WinCleaner</RootNamespace>
-    <Version>1.0.0</Version>
+    <Version>2.0.0</Version>
     <AssemblyTitle>WinCleaner</AssemblyTitle>
     <Product>WinCleaner</Product>
     <Company>emirttac</Company>
@@ -25,6 +26,7 @@
 
   <ItemGroup>
     <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
+    <PackageReference Include="WPF-UI" Version="4.3.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -34,6 +36,10 @@
 
   <ItemGroup>
     <None Include="app.ico" Pack="false" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Resource Include="Assets\InstallerIcons\*.png" />
   </ItemGroup>
 
 </Project>

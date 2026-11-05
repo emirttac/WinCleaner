@@ -1,0 +1,125 @@
+[
+  {
+    "id": "preset-gamer",
+    "displayNameKey": "preset.gamer.name",
+    "descriptionKey": "preset.gamer.desc",
+    "tweakIds": [
+      "tweak-game-mode",
+      "tweak-game-bar",
+      "tweak-game-dvr",
+      "tweak-hags",
+      "tweak-ultimate-perf",
+      "tweak-fso",
+      "tweak-mmcss-gpu",
+      "tweak-mmcss-priority",
+      "tweak-mmcss-scheduling",
+      "tweak-bg-apps",
+      "tweak-mouse-accel",
+      "tweak-telemetry-allow",
+      "tweak-advertising-id",
+      "tweak-visual-perf",
+      "tweak-animations",
+      "tweak-qos"
+    ],
+    "serviceIds": [
+      "svc-diagtrack",
+      "svc-dmwappush",
+      "svc-sysmain"
+    ]
+  },
+  {
+    "id": "preset-balanced",
+    "displayNameKey": "preset.balanced.name",
+    "descriptionKey": "preset.balanced.desc",
+    "tweakIds": [
+      "tweak-game-mode",
+      "tweak-telemetry-allow",
+      "tweak-advertising-id",
+      "tweak-tailored",
+      "tweak-bing-search"
+    ],
+    "serviceIds": [
+      "svc-diagtrack",
+      "svc-dmwappush"
+    ]
+  },
+  {
+    "id": "preset-minimal",
+    "displayNameKey": "preset.minimal.name",
+    "descriptionKey": "preset.minimal.desc",
+    "tweakIds": [
+      "tweak-telemetry-allow",
+      "tweak-advertising-id",
+      "tweak-tailored",
+      "tweak-cortana",
+      "tweak-bing-search",
+      "tweak-location",
+      "tweak-activity-history",
+      "tweak-visual-perf",
+      "tweak-animations",
+      "tweak-transparency",
+      "tweak-bg-apps",
+      "tweak-delivery-opt"
+    ],
+    "serviceIds": [
+      "svc-diagtrack",
+      "svc-dmwappush",
+      "svc-wer",
+      "svc-sysmain",
+      "svc-wsearch"
+    ]
+  },
+  {
+    "id": "preset-laptop",
+    "displayNameKey": "preset.laptop.name",
+    "descriptionKey": "preset.laptop.desc",
+    "tweakIds": [
+      "tweak-game-mode",
+      "tweak-telemetry-allow",
+      "tweak-advertising-id",
+      "tweak-bg-apps",
+      "tweak-visual-perf",
+      "tweak-animations",
+      "tweak-dark-mode"
+    ],
+    "serviceIds": [
+      "svc-diagtrack",
+      "svc-dmwappush",
+      "svc-retaildemo"
+    ]
+  },
+  {
+    "id": "preset-privacy-max",
+    "displayNameKey": "preset.privacymax.name",
+    "descriptionKey": "preset.privacymax.desc",
+    "tweakIds": [
+      "tweak-telemetry-allow",
+      "tweak-advertising-id",
+      "tweak-tailored",
+      "tweak-cortana",
+      "tweak-bing-search",
+      "tweak-location",
+      "tweak-activity-history",
+      "tweak-task-ceip",
+      "tweak-task-usbceip",
+      "tweak-inking-typing",
+      "tweak-feedback-frequency",
+      "tweak-online-speech",
+      "tweak-lockscreen-ads"
+    ],
+    "serviceIds": [
+      "svc-diagtrack",
+      "svc-dmwappush",
+      "svc-wer",
+      "svc-lfsvc",
+      "svc-remoteregistry"
+    ]
+  },
+  {
+    "id": "preset-defaults",
+    "displayNameKey": "preset.defaults.name",
+    "descriptionKey": "preset.defaults.desc",
+    "tweakIds": [],
+    "serviceIds": []
+  }
+]

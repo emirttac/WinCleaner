@@ -8,7 +8,7 @@ namespace WinCleaner.Data;
 /// </summary>
 public sealed class CustomProfileDocument
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
 
     [JsonPropertyName("schemaVersion")]
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;

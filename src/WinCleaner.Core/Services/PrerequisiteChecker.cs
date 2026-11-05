@@ -38,6 +38,8 @@ public static class PrerequisiteChecker
     public const int MinBuild = 19044; // Windows 10 21H2
     public const string DotNetDesktopUrl = "https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe";
     public const string VcRedistUrl = "https://aka.ms/vs/17/release/vc_redist.x64.exe";
+    public const string VcRedistDetail =
+        "No NuGet package references a Visual C++ library. The framework-dependent publish has no vcruntime DLL. The self-contained publish includes vcruntime140_cor3.dll from the .NET runtime. If the VC++ 2015-2022 x64 runtime key is missing, WinCleaner can still install it quietly.";
 
     public static PrerequisiteCheckResult Check(bool includeDotNetIfFrameworkDependent = true)
     {
@@ -93,7 +95,7 @@ public static class PrerequisiteChecker
             issues.Add(new PrerequisiteIssue(
                 PrerequisiteKind.VcRedist,
                 "Visual C++ Redistributable missing",
-                "Microsoft Visual C++ 2015–2022 (x64) is required. WinCleaner can download and install it for you.",
+                VcRedistDetail,
                 VcRedistUrl,
                 "vc_redist.x64.exe",
                 CanAutoInstall: true));

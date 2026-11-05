@@ -9,10 +9,13 @@
 param(
     [string]$Configuration = "Release",
     [string]$Runtime = "win-x64",
-    [string]$Version = "1.0.0"
+    [string]$Version = "2.0.0"
 )
 
 $ErrorActionPreference = "Stop"
+if ($Runtime -eq "win-arm64") {
+    throw "win-arm64 is not published. There is no GitHub windows-11-arm runner and no documented VM. The x64 build stays. An ARM64 operating system still asks before a system write."
+}
 $Root = Split-Path -Parent $PSScriptRoot
 if (-not $Root) { $Root = (Resolve-Path "$PSScriptRoot\..").Path }
 
@@ -89,7 +92,7 @@ Write-Host "Setup ready:" -ForegroundColor Green
 Write-Host "  $($setup.FullName)"
 Write-Host "  Size: $([math]::Round($setup.Length / 1MB, 1)) MB"
 Write-Host ""
-Write-Host "Installer downloads missing deps at install time:"
+Write-Host "Installer auto-downloads missing deps at install time:"
 Write-Host "  - .NET 8 Desktop Runtime (x64)"
 Write-Host "  - VC++ 2015-2022 Redistributable (x64)"
 Write-Host "Updates: https://github.com/emirttac/WinCleaner/releases"

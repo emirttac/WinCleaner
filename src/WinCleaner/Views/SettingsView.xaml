@@ -1,73 +1,100 @@
 <UserControl x:Class="WinCleaner.Views.SettingsView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-  <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+  <ui:DynamicScrollViewer>
   <StackPanel>
     <TextBlock Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
     <TextBlock Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
 
-    <Border Style="{StaticResource CardBorderStyle}">
+    <ui:Card Margin="0,0,0,10" Padding="16">
       <StackPanel>
         <TextBlock Text="{DynamicResource set.language}" FontWeight="SemiBold" Margin="0,0,0,8"/>
         <ComboBox ItemsSource="{Binding Languages}"
                   SelectedItem="{Binding SelectedLanguage}"
                   DisplayMemberPath="DisplayName"
-                  Width="220"
-                  HorizontalAlignment="Left"/>
+                  Width="240"
+                  MinHeight="32"
+                  HorizontalAlignment="Left"
+                  AutomationProperties.Name="{DynamicResource set.language}"
+                  AutomationProperties.HelpText="{DynamicResource set.subtitle}"/>
       </StackPanel>
-    </Border>
+    </ui:Card>
 
-    <Border Style="{StaticResource CardBorderStyle}">
+    <ui:Card Margin="0,0,0,10" Padding="16">
+      <StackPanel>
+        <TextBlock Text="{DynamicResource set.theme}" FontWeight="SemiBold" Margin="0,0,0,8"/>
+        <ComboBox ItemsSource="{Binding Themes}"
+                  SelectedItem="{Binding SelectedTheme}"
+                  DisplayMemberPath="DisplayName"
+                  Width="240"
+                  MinHeight="32"
+                  HorizontalAlignment="Left"
+                  AutomationProperties.Name="{DynamicResource set.theme}"
+                  AutomationProperties.HelpText="{DynamicResource set.theme.system}"/>
+      </StackPanel>
+    </ui:Card>
+
+    <ui:Card Margin="0,0,0,10" Padding="16">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="{DynamicResource set.restore}" TextWrapping="Wrap" VerticalAlignment="Center"/>
-        <ToggleButton Grid.Column="1" Style="{StaticResource SwitchToggleStyle}" IsChecked="{Binding AutoRestorePoint, Mode=TwoWay}"/>
+        <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding AutoRestorePoint, Mode=TwoWay}"
+                         AutomationProperties.Name="{DynamicResource set.restore}"
+                         FocusVisualStyle="{StaticResource AppFocusVisual}"/>
       </Grid>
-    </Border>
+    </ui:Card>
 
-    <Border Style="{StaticResource CardBorderStyle}">
+    <ui:Card Margin="0,0,0,10" Padding="16">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="{DynamicResource set.dangerous}" TextWrapping="Wrap" VerticalAlignment="Center"/>
-        <ToggleButton Grid.Column="1" Style="{StaticResource SwitchToggleStyle}" IsChecked="{Binding AllowDangerous, Mode=TwoWay}"/>
+        <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding AllowDangerous, Mode=TwoWay}"
+                         AutomationProperties.Name="{DynamicResource set.dangerous}"
+                         FocusVisualStyle="{StaticResource AppFocusVisual}"/>
       </Grid>
-    </Border>
+    </ui:Card>
 
-    <Border Style="{StaticResource CardBorderStyle}">
+    <ui:Card Margin="0,0,0,10" Padding="16">
       <Grid>
         <Grid.ColumnDefinitions>
           <ColumnDefinition Width="*"/>
           <ColumnDefinition Width="Auto"/>
         </Grid.ColumnDefinitions>
         <TextBlock Text="{DynamicResource set.updates}" TextWrapping="Wrap" VerticalAlignment="Center"/>
-        <ToggleButton Grid.Column="1" Style="{StaticResource SwitchToggleStyle}" IsChecked="{Binding CheckUpdates, Mode=TwoWay}"/>
+        <ui:ToggleSwitch Grid.Column="1" IsChecked="{Binding CheckUpdates, Mode=TwoWay}"
+                         AutomationProperties.Name="{DynamicResource set.updates}"
+                         FocusVisualStyle="{StaticResource AppFocusVisual}"/>
       </Grid>
-    </Border>
+    </ui:Card>
 
-    <Border Style="{StaticResource CardBorderStyle}">
+    <ui:Card Margin="0,0,0,10" Padding="16">
       <StackPanel>
         <TextBlock Text="{DynamicResource set.logs}" FontWeight="SemiBold" Margin="0,0,0,8"/>
-        <TextBox Text="{Binding LogFolder, UpdateSourceTrigger=PropertyChanged}" Style="{StaticResource SearchBoxStyle}"/>
+        <ui:TextBox Text="{Binding LogFolder, UpdateSourceTrigger=PropertyChanged}"
+                    Icon="{ui:SymbolIcon Folder24}"/>
         <StackPanel Orientation="Horizontal" Margin="0,10,0,0">
-          <Button Content="{DynamicResource common.save}" Command="{Binding SaveLogFolderCommand}" Style="{StaticResource PrimaryButtonStyle}" Margin="0,0,8,0"/>
-          <Button Content="{DynamicResource set.openFolder}" Command="{Binding OpenLogFolderCommand}" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,8,0"/>
-          <Button Content="{DynamicResource set.exportReport}" Command="{Binding ExportChangeReportCommand}" Style="{StaticResource SecondaryButtonStyle}"/>
+          <ui:Button Content="{DynamicResource common.save}" Command="{Binding SaveLogFolderCommand}"
+                     Appearance="Primary" Icon="{ui:SymbolIcon Save24}" Margin="0,0,8,0"/>
+          <ui:Button Content="{DynamicResource set.openFolder}" Command="{Binding OpenLogFolderCommand}"
+                     Appearance="Secondary" Icon="{ui:SymbolIcon FolderOpen24}" Margin="0,0,8,0"/>
+          <ui:Button Content="{DynamicResource set.exportReport}" Command="{Binding ExportChangeReportCommand}"
+                     Appearance="Secondary" Icon="{ui:SymbolIcon DocumentArrowDown24}"/>
         </StackPanel>
       </StackPanel>
-    </Border>
+    </ui:Card>
 
-    <!-- Social links -->
-    <Border Style="{StaticResource CardBorderStyle}" Margin="0,8,0,16">
+    <ui:Card Margin="0,8,0,16" Padding="16">
       <StackPanel>
         <TextBlock Text="{DynamicResource set.social.title}" FontWeight="SemiBold" Margin="0,0,0,4"/>
         <TextBlock Text="{DynamicResource set.social.subtitle}"
-                   Foreground="{StaticResource TextMutedBrush}"
+                   Foreground="{DynamicResource TextMutedBrush}"
                    TextWrapping="Wrap"
                    Margin="0,0,0,12"/>
         <WrapPanel>
@@ -79,7 +106,7 @@
               <Image Source="{StaticResource YouTubeLogo}" Width="22" Height="22" Margin="0,0,10,0"/>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="{DynamicResource set.social.youtube}" FontWeight="SemiBold"/>
-                <TextBlock Text="@BiAltTab" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                <TextBlock Text="@BiAltTab" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
               </StackPanel>
             </StackPanel>
           </Button>
@@ -92,7 +119,7 @@
               <Image Source="{StaticResource InstagramLogo}" Width="22" Height="22" Margin="0,0,10,0"/>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="{DynamicResource set.social.instagram}" FontWeight="SemiBold"/>
-                <TextBlock Text="@emirttac" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                <TextBlock Text="@emirttac" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
               </StackPanel>
             </StackPanel>
           </Button>
@@ -105,13 +132,13 @@
               <Image Source="{StaticResource GitHubLogo}" Width="22" Height="22" Margin="0,0,10,0"/>
               <StackPanel VerticalAlignment="Center">
                 <TextBlock Text="{DynamicResource set.social.github}" FontWeight="SemiBold"/>
-                <TextBlock Text="emirttac" FontSize="11" Foreground="{StaticResource TextMutedBrush}"/>
+                <TextBlock Text="emirttac" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
               </StackPanel>
             </StackPanel>
           </Button>
         </WrapPanel>
       </StackPanel>
-    </Border>
+    </ui:Card>
   </StackPanel>
-  </ScrollViewer>
+  </ui:DynamicScrollViewer>
 </UserControl>

@@ -1,9 +1,16 @@
-using System.Diagnostics;
+using WinCleaner.Core.Abstractions;
 
 namespace WinCleaner.Core.Services;
 
 public sealed class TaskSchedulerManager
 {
+    private readonly IProcessRunner _processes;
+
+    public TaskSchedulerManager(IProcessRunner? processes = null)
+    {
+        _processes = processes ?? ProcessRunner.Shared;
+    }
+
     public void SetTaskEnabled(string taskPath, bool enabled)
     {
         var args = enabled
@@ -14,15 +21,15 @@ public sealed class TaskSchedulerManager
 
     public bool TaskExists(string taskPath)
     {
-        var output = RunSchtasks($"/Query /TN \"{taskPath}\" /FO LIST");
-        return !LooksMissing(output);
+        var output = RunSchtasks($"/Query /TN \"{taskPath}\" /XML");
+        return TryReadEnabled(output, out _);
     }
 
     public bool IsTaskEnabled(string taskPath)
     {
         try
         {
-            var output = RunSchtasks($"/Query /TN \"{taskPath}\" /FO LIST /V");
+            var output = RunSchtasks($"/Query /TN \"{taskPath}\" /XML");
             var state = ParseScheduledTaskState(output);
             return state switch
             {
@@ -42,177 +49,42 @@ public sealed class TaskSchedulerManager
     {
         if (string.IsNullOrWhiteSpace(output))
             return TaskEnablement.Unknown;
-        if (LooksMissing(output))
-            return TaskEnablement.Missing;
-
-        foreach (var raw in output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
-        {
-            var line = raw.Trim();
-            if (!LooksLikeStateLine(line))
-                continue;
-
-            var value = line.Contains(':') ? line[(line.IndexOf(':') + 1)..].Trim() : line;
-            var parsed = ClassifyStateToken(value);
-            if (parsed is TaskEnablement.Enabled or TaskEnablement.Disabled)
-                return parsed;
-        }
-
-        // Verbose listings can mention both words; prefer Disabled if it appears as a state token.
-        var disabledHit = false;
-        var enabledHit = false;
-        foreach (var raw in output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
-        {
-            var classified = ClassifyStateToken(raw.Trim());
-            if (classified == TaskEnablement.Disabled)
-                disabledHit = true;
-            else if (classified == TaskEnablement.Enabled)
-                enabledHit = true;
-        }
-
-        if (disabledHit && !enabledHit)
-            return TaskEnablement.Disabled;
-        if (enabledHit && !disabledHit)
-            return TaskEnablement.Enabled;
-
-        return TaskEnablement.Unknown;
+        if (TryReadEnabled(output, out var enabled))
+            return enabled ? TaskEnablement.Enabled : TaskEnablement.Disabled;
+        if (output.Contains("<Task", StringComparison.OrdinalIgnoreCase))
+            return TaskEnablement.Unknown;
+        return TaskEnablement.Missing;
     }
 
     internal static bool LooksMissing(string output)
     {
         if (string.IsNullOrWhiteSpace(output))
             return false;
-
-        ReadOnlySpan<string> needles =
-        [
-            "ERROR:",
-            "cannot find",
-            "cannot be found",
-            "does not exist",
-            "bulunamad",
-            "nicht gefunden",
-            "wurde nicht gefunden",
-            "introuvable",
-            "n'existe pas",
-            "no se encuentra",
-            "no se puede encontrar",
-            "не найден",
-            "не удается найти",
-            "找不到",
-            "nu a fost găsit",
-            "nu există"
-        ];
-
-        foreach (var n in needles)
-        {
-            if (output.Contains(n, StringComparison.OrdinalIgnoreCase))
-                return true;
-        }
-
-        return false;
+        return !output.Contains("<Task", StringComparison.OrdinalIgnoreCase);
     }
 
-    private static bool LooksLikeStateLine(string line)
+    internal static bool TryReadEnabled(string output, out bool enabled)
     {
-        ReadOnlySpan<string> prefixes =
-        [
-            "Scheduled Task State",
-            "Task State",
-            "Zamanlanmış Görev Durumu",
-            "Zamanlanmis Gorev Durumu",
-            "Status der geplanten Aufgabe",
-            "Geplanter Task-Status",
-            "État de la tâche",
-            "Etat de la tache",
-            "Estado de la tarea",
-            "Estado de la tarea programada",
-            "Состояние задачи",
-            "计划的任务状态",
-            "Starea activității planificate"
-        ];
+        enabled = false;
+        if (string.IsNullOrWhiteSpace(output))
+            return false;
 
-        foreach (var p in prefixes)
-        {
-            if (line.StartsWith(p, StringComparison.OrdinalIgnoreCase))
-                return true;
-        }
+        var match = System.Text.RegularExpressions.Regex.Match(
+            output,
+            @"<Enabled>\s*(true|false)\s*</Enabled>",
+            System.Text.RegularExpressions.RegexOptions.IgnoreCase | System.Text.RegularExpressions.RegexOptions.CultureInvariant);
+        if (!match.Success)
+            return false;
 
-        // Generic "State:" / "Durum:" / "Status:" lines that then hold Enabled/Disabled
-        if (line.StartsWith("State:", StringComparison.OrdinalIgnoreCase)
-            || line.StartsWith("Durum:", StringComparison.OrdinalIgnoreCase)
-            || line.StartsWith("Status:", StringComparison.OrdinalIgnoreCase)
-            || line.StartsWith("État:", StringComparison.OrdinalIgnoreCase)
-            || line.StartsWith("Etat:", StringComparison.OrdinalIgnoreCase))
-            return true;
-
-        return false;
+        enabled = match.Groups[1].Value.Equals("true", StringComparison.OrdinalIgnoreCase);
+        return true;
     }
 
-    private static TaskEnablement ClassifyStateToken(string text)
+    private string RunSchtasks(string args)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            return TaskEnablement.Unknown;
-
-        // Longer / disabled phrases first so "Devre dışı" is not parsed as something else.
-        ReadOnlySpan<string> disabled =
-        [
-            "devre dışı",
-            "devre disi",
-            "disabled",
-            "deaktiviert",
-            "désactivé",
-            "desactive",
-            "deshabilitado",
-            "desactivado",
-            "отключен",
-            "отключена",
-            "已禁用",
-            "dezactivat"
-        ];
-        foreach (var d in disabled)
-        {
-            if (text.Contains(d, StringComparison.OrdinalIgnoreCase))
-                return TaskEnablement.Disabled;
-        }
-
-        ReadOnlySpan<string> enabled =
-        [
-            "enabled",
-            "etkin",
-            "aktiviert",
-            "activé",
-            "active",
-            "habilitado",
-            "activado",
-            "включен",
-            "включена",
-            "已启用",
-            "activat"
-        ];
-        foreach (var e in enabled)
-        {
-            if (text.Contains(e, StringComparison.OrdinalIgnoreCase))
-                return TaskEnablement.Enabled;
-        }
-
-        return TaskEnablement.Unknown;
-    }
-
-    private static string RunSchtasks(string args)
-    {
-        var psi = new ProcessStartInfo
-        {
-            FileName = "schtasks.exe",
-            Arguments = args,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        using var proc = Process.Start(psi) ?? throw new InvalidOperationException("schtasks failed to start");
-        var stdout = proc.StandardOutput.ReadToEnd();
-        var stderr = proc.StandardError.ReadToEnd();
-        proc.WaitForExit(15000);
-        return stdout + Environment.NewLine + stderr;
+        var result = _processes.RunAsync(
+            new ProcessRequest("schtasks.exe", args, TimeSpan.FromSeconds(15))).GetAwaiter().GetResult();
+        return result.Stdout + Environment.NewLine + result.Stderr;
     }
 }
 
@@ -226,7 +98,13 @@ public enum TaskEnablement
 
 public sealed class PowerPlanManager
 {
+    private readonly IProcessRunner _processes;
     private const string UltimateGuid = "e9a42b02-d5df-448d-aa00-03f14749eb61";
+
+    public PowerPlanManager(IProcessRunner? processes = null)
+    {
+        _processes = processes ?? ProcessRunner.Shared;
+    }
 
     public void ActivateUltimatePerformance()
     {
@@ -243,10 +121,24 @@ public sealed class PowerPlanManager
     public bool IsUltimateActive()
     {
         var active = GetActiveScheme() ?? "";
-        if (active.Contains("Ultimate Performance", StringComparison.OrdinalIgnoreCase))
+        if (LabelLooksLikeUltimate(active))
             return true;
-        var guid = ExtractGuid(active);
-        return guid is not null && string.Equals(guid, UltimateGuid, StringComparison.OrdinalIgnoreCase);
+
+        var activeGuid = ExtractGuid(active);
+        if (activeGuid is not null && activeGuid.Equals(UltimateGuid, StringComparison.OrdinalIgnoreCase))
+            return true;
+
+        var listed = FindUltimateSchemeGuid();
+        return listed is not null
+               && activeGuid is not null
+               && listed.Equals(activeGuid, StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static bool LabelLooksLikeUltimate(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return false;
+        return text.Contains(UltimateGuid, StringComparison.OrdinalIgnoreCase);
     }
 
     private string? FindUltimateSchemeGuid()
@@ -255,8 +147,7 @@ public sealed class PowerPlanManager
         string? first = null;
         foreach (var raw in list.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
         {
-            if (!raw.Contains("Ultimate Performance", StringComparison.OrdinalIgnoreCase)
-                && !raw.Contains(UltimateGuid, StringComparison.OrdinalIgnoreCase))
+            if (!LabelLooksLikeUltimate(raw))
                 continue;
             var guid = ExtractGuid(raw);
             if (guid is null) continue;
@@ -300,21 +191,11 @@ public sealed class PowerPlanManager
         return m.Success ? m.Value : null;
     }
 
-    private static string RunPowerCfg(string args)
+    private string RunPowerCfg(string args)
     {
-        var psi = new ProcessStartInfo
-        {
-            FileName = "powercfg.exe",
-            Arguments = args,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        using var proc = Process.Start(psi) ?? throw new InvalidOperationException("powercfg failed");
-        var output = proc.StandardOutput.ReadToEnd();
-        proc.WaitForExit(15000);
-        return output;
+        var result = _processes.RunAsync(
+            new ProcessRequest("powercfg.exe", args, TimeSpan.FromSeconds(15))).GetAwaiter().GetResult();
+        return result.Stdout;
     }
 }
 
@@ -353,17 +234,26 @@ public sealed class TempCleanupService
         timeoutCts.CancelAfter(DefaultTimeoutMs);
         var ct = timeoutCts.Token;
 
+        var list = paths
+            .Where(p => !string.IsNullOrWhiteSpace(p))
+            .Distinct(StringComparer.OrdinalIgnoreCase)
+            .ToList();
+        var total = Math.Max(1, list.Count);
         long freed = 0;
-        foreach (var path in paths.Distinct(StringComparer.OrdinalIgnoreCase))
+        var index = 0;
+        foreach (var path in list)
         {
             if (ct.IsCancellationRequested)
                 break;
-            if (string.IsNullOrWhiteSpace(path) || !Directory.Exists(path))
+            index++;
+            if (!Directory.Exists(path))
                 continue;
             if (IsReparsePoint(path))
                 continue;
 
-            progress?.Report(path);
+            // "pct|path" so UI can parse percent + detail without a new progress type.
+            var pct = (int)Math.Round((index - 1) * 100.0 / total);
+            progress?.Report($"{pct}|{path}");
             try
             {
                 freed += CleanDirectory(path, depth: 0, progress, ct);
@@ -376,8 +266,11 @@ public sealed class TempCleanupService
             {
                 // Best-effort: skip folders that throw (locked, permission, long path)
             }
+
+            progress?.Report($"{(int)Math.Round(index * 100.0 / total)}|{path}");
         }
 
+        progress?.Report("100|");
         return freed;
     }
 

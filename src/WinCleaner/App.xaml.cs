@@ -1,8 +1,10 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
+using WinCleaner.Core.Actions;
 using WinCleaner.Core.Services;
+using WinCleaner.Data;
 using WinCleaner.Services;
 
 namespace WinCleaner;
@@ -23,9 +25,41 @@ public partial class App : Application
         AppDomain.CurrentDomain.UnhandledException += OnDomainUnhandledException;
         TaskScheduler.UnobservedTaskException += OnUnobservedTaskException;
 
+        var loc = new LocalizationService();
         try
         {
-            if (!await EnsurePrerequisitesAsync().ConfigureAwait(true))
+            loc.Initialize(AppSettings.Load().Language);
+        }
+        catch
+        {
+            loc.Initialize("tr");
+        }
+
+        if (ConfigArgs.TryParse(e.Args, out var config, out var configError))
+        {
+            if (config is null)
+            {
+                MessageBox.Show(configError ?? loc.Get("precheck.failed"), loc.Get("app.title"));
+                Shutdown(2);
+                return;
+            }
+
+            var known = CatalogLoader.LoadTweaks()
+                .Select(t => t.Id)
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            var outcome = await ConfigSession.RunAsync(config, known, ApplyConfigTweaksAsync).ConfigureAwait(true);
+            if (config.Silent || config.WhatIf || outcome.Rejected)
+            {
+                if (!config.Silent)
+                    MessageBox.Show(outcome.Summary, loc.Get("app.title"));
+                Shutdown(outcome.Rejected ? 2 : 0);
+                return;
+            }
+        }
+
+        try
+        {
+            if (!await EnsurePrerequisitesAsync(loc).ConfigureAwait(true))
             {
                 Shutdown(1);
                 return;
@@ -35,8 +69,8 @@ public partial class App : Application
         {
             AppLog.Crash("PrerequisiteCheck", ex);
             MessageBox.Show(
-                "Gereksinim kontrolü başarısız:\n" + ex.Message,
-                "WinCleaner",
+                loc.Get("precheck.failed") + Environment.NewLine + ex.Message,
+                loc.Get("app.title"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Error);
             Shutdown(1);
@@ -44,8 +78,8 @@ public partial class App : Application
         }
 
         MessageBox.Show(
-            "Bu program daha geliştirilme ve test aşamasındadır. Bazı ayarlar çalışmayabilir. Lütfen çalışmayan fonksiyonları Github sayfasındaki Issues kısmında bildirin. Programı hep beraber geliştirelim <3",
-            "WinCleaner",
+            loc.Get("startup.betaNotice"),
+            loc.Get("app.title"),
             MessageBoxButton.OK,
             MessageBoxImage.Information);
 
@@ -54,7 +88,7 @@ public partial class App : Application
         window.Show();
     }
 
-    private static async Task<bool> EnsurePrerequisitesAsync()
+    private static async Task<bool> EnsurePrerequisitesAsync(LocalizationService loc)
     {
         var result = PrerequisiteChecker.Check(includeDotNetIfFrameworkDependent: true);
         if (!result.HasBlockingIssues)
@@ -64,27 +98,25 @@ public partial class App : Application
         if (blocking.Count > 0)
         {
             var sb = new StringBuilder();
-            sb.AppendLine("WinCleaner açılamadı. Eksik / uyumsuz gereksinimler:");
+            sb.AppendLine(loc.Get("precheck.blockedIntro"));
             sb.AppendLine();
             foreach (var issue in blocking)
             {
                 sb.AppendLine("• " + issue.Title);
-                sb.AppendLine("  " + issue.Detail);
+                sb.AppendLine("  " + DetailOf(loc, issue));
                 sb.AppendLine();
             }
 
-            MessageBox.Show(sb.ToString().TrimEnd(), "WinCleaner — Gereksinimler",
+            MessageBox.Show(sb.ToString().TrimEnd(), loc.Get("precheck.title"),
                 MessageBoxButton.OK, MessageBoxImage.Warning);
             return false;
         }
 
         var installable = result.Installable.ToList();
-        var list = string.Join(Environment.NewLine, installable.Select(i => "• " + i.Title));
+        var list = string.Join(Environment.NewLine, installable.Select(i => "• " + i.Title + Environment.NewLine + DetailOf(loc, i)));
         var answer = MessageBox.Show(
-            "Eksik bileşenler bulundu:" + Environment.NewLine + Environment.NewLine + list +
-            Environment.NewLine + Environment.NewLine +
-            "Şimdi indirilip sessizce kurulsun mu?",
-            "WinCleaner — Gereksinimler",
+            loc.Get("precheck.installPrompt") + Environment.NewLine + Environment.NewLine + list,
+            loc.Get("precheck.title"),
             MessageBoxButton.YesNo,
             MessageBoxImage.Information);
 
@@ -98,8 +130,8 @@ public partial class App : Application
             if (!ok)
             {
                 MessageBox.Show(
-                    issue.Title + " kurulumu tamamlanamadı.",
-                    "WinCleaner",
+                    string.Format(loc.Get("precheck.installFailed"), issue.Title),
+                    loc.Get("app.title"),
                     MessageBoxButton.OK,
                     MessageBoxImage.Warning);
                 return false;
@@ -111,14 +143,39 @@ public partial class App : Application
         if (again.HasBlockingIssues)
         {
             MessageBox.Show(
-                "Kurulum bitti ancak bazı gereksinimler hâlâ eksik görünüyor. Bilgisayarı yeniden başlatıp WinCleaner’ı tekrar aç.",
-                "WinCleaner",
+                loc.Get("precheck.stillMissing"),
+                loc.Get("app.title"),
                 MessageBoxButton.OK,
                 MessageBoxImage.Information);
             return false;
         }
 
         return true;
+    }
+
+    private static string DetailOf(LocalizationService loc, PrerequisiteIssue issue)
+    {
+        if (issue.Kind != PrerequisiteKind.VcRedist)
+            return issue.Detail;
+        var text = loc.Get("precheck.vcredist.detail");
+        return text == "precheck.vcredist.detail" ? PrerequisiteChecker.VcRedistDetail : text;
+    }
+
+    private static async Task ApplyConfigTweaksAsync(IReadOnlyList<string> ids, CancellationToken cancellationToken)
+    {
+        var loc = new LocalizationService();
+        loc.Initialize(AppSettings.Load().Language);
+        var app = new AppServices(key => loc.Get(key));
+        var wanted = new HashSet<string>(ids, StringComparer.OrdinalIgnoreCase);
+        var actions = CatalogLoader.LoadTweaks()
+            .Where(t => wanted.Contains(t.Id))
+            .Select(t => app.ActionFactory.CreateFromTweak(t))
+            .Where(a => a is not null)
+            .Cast<IChangeAction>()
+            .ToList();
+        if (actions.Count == 0)
+            return;
+        await app.RunActionsAsync("config", actions, null, cancellationToken).ConfigureAwait(false);
     }
 
     protected override void OnExit(ExitEventArgs e)

@@ -56,7 +56,7 @@ public class LocalizationParityTests
             Assert.True(empty.Count == 0, $"{lang} empty values: {string.Join(", ", empty)}");
         }
 
-        Assert.Equal(529, en.Count);
+        Assert.Equal(903, en.Count);
     }
 
     [Fact]

@@ -1,361 +1,233 @@
 using CommunityToolkit.Mvvm.ComponentModel;
-
 using CommunityToolkit.Mvvm.Input;
-
 using System.Windows;
-
 using WinCleaner.Core.Actions;
-
 using WinCleaner.Core.Models;
-
 using WinCleaner.Core.Services;
-
 using WinCleaner.Services;
-
-
 
 namespace WinCleaner.ViewModels;
 
-
-
 public partial class TweakItemViewModel : ObservableObject
-
 {
-
     private readonly AppServices _app;
-
     private readonly LocalizationService _loc;
-
     private readonly string _titleKey;
-
     private readonly string _descriptionKey;
-
     private readonly Func<IChangeAction> _createAction;
-
     private readonly Func<Task<bool>>? _confirmDangerous;
-
     private readonly Func<Task<bool>>? _confirmAntiCheat;
-
-    private int _applyGate; // 0 = idle, 1 = busy (Interlocked)
-
-
+    private readonly Func<IReadOnlyList<IChangeAction>, string, Task>? _previewApply;
+    private readonly string? _blockReasonKey;
+    private int _applyGate;
 
     public TweakItemViewModel(
-
         string id,
-
         string titleKey,
-
         string descriptionKey,
-
         string category,
-
         RiskLevel risk,
-
         AppServices app,
-
         LocalizationService loc,
-
         Func<IChangeAction> createAction,
-
         bool isApplied = false,
-
         bool isEnabled = true,
-
         Func<Task<bool>>? confirmDangerous = null,
-
         bool requiresAntiCheatConfirm = false,
-
-        Func<Task<bool>>? confirmAntiCheat = null)
-
+        Func<Task<bool>>? confirmAntiCheat = null,
+        Func<IReadOnlyList<IChangeAction>, string, Task>? previewApply = null,
+        string? blockReasonKey = null,
+        bool stateKnown = true)
     {
-
         Id = id;
-
         _titleKey = titleKey;
-
         _descriptionKey = descriptionKey;
-
         Category = category;
-
         Risk = risk;
-
         RequiresAntiCheatConfirm = requiresAntiCheatConfirm;
-
         _app = app;
-
         _loc = loc;
-
         _createAction = createAction;
-
         _isApplied = isApplied;
-
-        IsEnabled = isEnabled && risk != RiskLevel.Blocked;
-
+        _isStateKnown = stateKnown;
+        _blockReasonKey = blockReasonKey;
+        IsEnabled = isEnabled && risk != RiskLevel.Blocked && blockReasonKey is null;
         _confirmDangerous = confirmDangerous;
-
         _confirmAntiCheat = confirmAntiCheat;
-
+        _previewApply = previewApply;
         RefreshLabels();
-
     }
-
-
 
     public string Id { get; }
-
     public string Category { get; }
-
     public RiskLevel Risk { get; }
-
     public bool RequiresAntiCheatConfirm { get; }
-
     public bool IsEnabled { get; }
-
-
+    public int ProbeStamp { get; private set; }
 
     [ObservableProperty] private string _title = "";
-
     [ObservableProperty] private string _description = "";
-
     [ObservableProperty] private string _riskLabel = "";
-
     [ObservableProperty] private bool _isApplied;
-
+    [ObservableProperty] private bool _isStateKnown;
     [ObservableProperty] private bool _isBusy;
-
     [ObservableProperty] private string? _statusMessage;
 
+    public bool CanToggle => IsEnabled && IsStateKnown && !IsBusy;
 
+    partial void OnIsStateKnownChanged(bool value) => OnPropertyChanged(nameof(CanToggle));
+    partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanToggle));
 
     public void RefreshLabels()
-
     {
-
         Title = _loc.Get(_titleKey);
-
         Description = _loc.Get(_descriptionKey);
-
+        if (!string.IsNullOrEmpty(_blockReasonKey))
+            Description += " " + _loc.Get(_blockReasonKey);
         RiskLabel = Risk switch
-
         {
-
             RiskLevel.Blocked => _loc.Get("common.risk.blocked"),
-
             RiskLevel.Dangerous => _loc.Get("common.risk.dangerous"),
-
             RiskLevel.Caution => _loc.Get("common.risk.caution"),
-
             _ => _loc.Get("common.risk.safe")
-
         };
-
     }
 
+    public bool MatchesSearch(string? query) =>
+        SearchKeywords.Matches(query, Title, Description, Category, Id);
 
-
-    public bool MatchesSearch(string? query)
-
+    public void SetAppliedSilent(bool value)
     {
-
-        if (string.IsNullOrWhiteSpace(query)) return true;
-
-        return Title.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-
-               Description.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-
-               Category.Contains(query, StringComparison.OrdinalIgnoreCase) ||
-
-               Id.Contains(query, StringComparison.OrdinalIgnoreCase);
-
+        IsApplied = value;
+        IsStateKnown = true;
+        _app.AppliedState.Set(Id, value);
     }
 
+    public void BumpProbeStamp() => ProbeStamp++;
 
-
-    public void SetAppliedSilent(bool value) => IsApplied = value;
-
-
+    public bool ReadAppliedFromSystem() => _createAction().IsApplied();
 
     /// <summary>
-
     /// Explicit command — do NOT apply from property-changed / TwoWay binding.
-
     /// DataTemplate load was writing false back into IsApplied and triggering system changes on tab switch.
-
     /// </summary>
-
     [RelayCommand]
-
     private async Task ToggleAsync()
-
     {
-
-        if (!IsEnabled || Risk == RiskLevel.Blocked) return;
-
+        if (!CanToggle || Risk == RiskLevel.Blocked) return;
         if (Interlocked.Exchange(ref _applyGate, 1) == 1) return;
 
-
-
         var desired = !IsApplied;
-
         var previous = IsApplied;
-
+        BumpProbeStamp();
         IsBusy = true;
-
-        IsApplied = desired; // optimistic UI update (OneWay binding refreshes)
-
-
+        IsApplied = desired;
 
         try
-
         {
+            var action = _createAction();
+            var needsPreview = desired && _previewApply is not null
+                && (Risk is RiskLevel.Caution or RiskLevel.Dangerous || RequiresAntiCheatConfirm);
+
+            if (needsPreview)
+            {
+                IsApplied = previous;
+                await _previewApply!(new[] { action }, Title).ConfigureAwait(true);
+                await RefreshAppliedFromSystemAsync(previous).ConfigureAwait(true);
+                return;
+            }
 
             if (desired && RequiresAntiCheatConfirm && _confirmAntiCheat is not null)
-
             {
-
                 if (!await _confirmAntiCheat().ConfigureAwait(true))
-
                 {
-
-                    IsApplied = previous;
-
+                    SetAppliedSilent(previous);
                     return;
-
                 }
-
             }
-
             else if (desired && Risk == RiskLevel.Dangerous && _confirmDangerous is not null)
-
             {
-
                 if (!await _confirmDangerous().ConfigureAwait(true))
-
                 {
-
-                    IsApplied = previous;
-
+                    SetAppliedSilent(previous);
                     return;
-
                 }
-
             }
-
-
-
-            var action = _createAction();
 
             if (!desired)
-
             {
-
                 if (!action.CanRevert)
-
                 {
-
-                    IsApplied = false;
-
+                    SetAppliedSilent(false);
                     return;
-
                 }
 
                 var journal = _app.ChangeLog.GetLatestRevertable(Id);
-
                 action.SeedPreviousState(journal?.OldValue);
-
             }
-
-
 
             var result = desired
+                ? await OperationHost.TrackAsync(_app.Operations, Title, token => _app.RunActionAsync(Title, action, false, token)).ConfigureAwait(true)
+                : await OperationHost.TrackAsync(_app.Operations, Title, token => _app.RunActionAsync(Title, action, true, token)).ConfigureAwait(true);
 
-                ? await _app.Executor.ExecuteAsync(action).ConfigureAwait(true)
-
-                : await _app.Executor.ExecuteAsync(action, isRevert: true).ConfigureAwait(true);
-
-
-
-            StatusMessage = result.Message;
-
+            StatusMessage = result.Message is null ? null : _loc.Get(result.Message);
             if (!result.Success)
-
             {
-
-                IsApplied = previous;
-
-                ShowMessage(result.Message ?? _loc.Get("msg.failed"), MessageBoxImage.Warning);
-
+                SetAppliedSilent(previous);
+                ShowMessage(_loc.Get(result.Message ?? "msg.failed"), MessageBoxImage.Warning);
             }
-
             else if (desired && (action.IsOneShot || !action.CanRevert))
-
             {
-
-                IsApplied = false;
-
-                ShowMessage(result.Message ?? _loc.Get("msg.oneShotOk"), MessageBoxImage.Information);
-
+                SetAppliedSilent(false);
+                ShowMessage(_loc.Get(result.Message ?? "msg.oneShotOk"), MessageBoxImage.Information);
             }
-
-            else if (desired && action.RequiresReboot)
-
+            else
             {
-
-                ShowMessage(_loc.Get("common.rebootRequired"), MessageBoxImage.Information);
-
+                SetAppliedSilent(desired);
+                if (desired && action.RequiresReboot)
+                    ShowMessage(_loc.Get("common.rebootRequired"), MessageBoxImage.Information);
             }
-
         }
-
         catch (Exception ex)
-
         {
-
-            IsApplied = previous;
-
+            SetAppliedSilent(previous);
             ShowMessage(ex.Message, MessageBoxImage.Error);
-
         }
-
         finally
-
         {
-
             IsBusy = false;
-
             Interlocked.Exchange(ref _applyGate, 0);
-
         }
-
     }
 
+    private async Task RefreshAppliedFromSystemAsync(bool fallback)
+    {
+        BumpProbeStamp();
+        var stamp = ProbeStamp;
+        bool applied;
+        try
+        {
+            applied = await Task.Run(ReadAppliedFromSystem).ConfigureAwait(true);
+        }
+        catch
+        {
+            applied = fallback;
+        }
 
+        if (ProbeStamp == stamp)
+            SetAppliedSilent(applied);
+    }
 
     private void ShowMessage(string message, MessageBoxImage icon)
-
     {
-
         var dispatcher = Application.Current?.Dispatcher;
-
         if (dispatcher is null)
-
             return;
 
-
-
         var title = _loc.Get("app.title");
-
         if (dispatcher.CheckAccess())
-
             MessageBox.Show(message, title, MessageBoxButton.OK, icon);
-
         else
-
             dispatcher.Invoke(() => MessageBox.Show(message, title, MessageBoxButton.OK, icon));
-
     }
-
 }
-
-

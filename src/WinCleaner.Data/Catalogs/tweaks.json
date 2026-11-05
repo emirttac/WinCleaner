@@ -6,15 +6,25 @@
     "category": "Gaming",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\GameBar",
-      "name": "AutoGameModeEnabled",
-      "valueKind": "DWord",
-      "enabledValue": "1",
-      "disabledValue": "0",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\GameBar",
+        "name": "AllowAutoGameMode",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\GameBar",
+        "name": "AutoGameModeEnabled",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-game-bar",
@@ -23,15 +33,33 @@
     "category": "Gaming",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
-      "name": "AppCaptureEnabled",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+        "name": "AppCaptureEnabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR",
+        "name": "HistoricalCaptureEnabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "System\\GameConfigStore",
+        "name": "GameDVR_Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-game-dvr",
@@ -48,7 +76,8 @@
       "enabledValue": "0",
       "disabledValue": "1",
       "applyMeansDisable": false
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-hags",
@@ -56,6 +85,7 @@
     "descriptionKey": "tweak.hags.desc",
     "category": "Gaming",
     "risk": "Caution",
+    "requiresReboot": true,
     "type": "registry",
     "registry": {
       "hive": "HKLM",
@@ -65,7 +95,8 @@
       "enabledValue": "2",
       "disabledValue": "1",
       "applyMeansDisable": false
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-ultimate-perf",
@@ -77,7 +108,8 @@
     "powerPlan": {
       "schemeGuid": "e9a42b02-d5df-448d-aa00-03f14749eb61",
       "enableUltimate": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-nagle-ack",
@@ -92,10 +124,12 @@
       "name": "TcpAckFrequency",
       "valueKind": "DWord",
       "enabledValue": "1",
-      "disabledValue": "0",
+      "disabledValue": "2",
       "applyMeansDisable": false,
-      "applyToAllSubkeys": true
-    }
+      "applyToAllSubkeys": true,
+      "deleteValueOnDisable": true
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-tcp-nodelay",
@@ -112,8 +146,10 @@
       "enabledValue": "1",
       "disabledValue": "0",
       "applyMeansDisable": false,
-      "applyToAllSubkeys": true
-    }
+      "applyToAllSubkeys": true,
+      "deleteValueOnDisable": true
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-fso",
@@ -122,15 +158,33 @@
     "category": "Gaming",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "System\\GameConfigStore",
-      "name": "GameDVR_FSEBehaviorMode",
-      "valueKind": "DWord",
-      "enabledValue": "2",
-      "disabledValue": "0",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "System\\GameConfigStore",
+        "name": "GameDVR_FSEBehaviorMode",
+        "valueKind": "DWord",
+        "enabledValue": "2",
+        "disabledValue": "0"
+      },
+      {
+        "hive": "HKCU",
+        "path": "System\\GameConfigStore",
+        "name": "GameDVR_HonorUserFSEBehaviorMode",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "hive": "HKCU",
+        "path": "System\\GameConfigStore",
+        "name": "GameDVR_DXGIHonorFSEWindowsCompatible",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-mmcss-gpu",
@@ -148,7 +202,8 @@
       "enabledValue": "8",
       "disabledValue": "2",
       "applyMeansDisable": false
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-mmcss-priority",
@@ -166,7 +221,8 @@
       "enabledValue": "6",
       "disabledValue": "2",
       "applyMeansDisable": false
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-mmcss-scheduling",
@@ -184,7 +240,8 @@
       "enabledValue": "High",
       "disabledValue": "Medium",
       "applyMeansDisable": false
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-bg-apps",
@@ -193,15 +250,25 @@
     "category": "Gaming",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
-      "name": "GlobalUserDisabled",
-      "valueKind": "DWord",
-      "enabledValue": "1",
-      "disabledValue": "0",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\BackgroundAccessApplications",
+        "name": "GlobalUserDisabled",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Search",
+        "name": "BackgroundAppGlobalToggle",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-mouse-accel",
@@ -235,7 +302,8 @@
         "enabledValue": "0",
         "disabledValue": "10"
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-disable-vbs",
@@ -246,15 +314,67 @@
     "requiresAntiCheatConfirm": true,
     "type": "registry",
     "requiresReboot": true,
-    "registry": {
-      "hive": "HKLM",
-      "path": "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity",
-      "name": "Enabled",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard",
+        "name": "EnableVirtualizationBasedSecurity",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity",
+        "name": "Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\HypervisorEnforcedCodeIntegrity",
+        "name": "WasEnabledBy",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "2",
+        "deleteValueOnDisable": true,
+        "optionalForDetect": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\DeviceGuard\\Scenarios\\WindowsHello",
+        "name": "Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true,
+        "optionalForDetect": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceGuard",
+        "name": "EnableVirtualizationBasedSecurity",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true,
+        "optionalForDetect": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DeviceGuard",
+        "name": "HypervisorEnforcedCodeIntegrity",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true,
+        "optionalForDetect": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-disable-dynamic-tick",
@@ -269,9 +389,9 @@
       "revertArguments": "/deletevalue disabledynamictick",
       "requiresAdmin": true,
       "detectKey": "disabledynamictick",
-      "detectMode": "equals",
-      "detectValue": "yes"
-    }
+      "detectMode": "present"
+    },
+    "reversibility": "Scripted"
   },
   {
     "id": "tweak-disable-hpet",
@@ -283,12 +403,13 @@
     "type": "command",
     "command": {
       "fileName": "bcdedit",
-      "arguments": "/deletevalue useplatformclock",
-      "revertArguments": "/set useplatformclock true",
+      "arguments": "/set useplatformclock false",
+      "revertArguments": "/deletevalue useplatformclock",
       "requiresAdmin": true,
       "detectKey": "useplatformclock",
-      "detectMode": "absent"
-    }
+      "detectMode": "present"
+    },
+    "reversibility": "Scripted"
   },
   {
     "id": "tweak-telemetry-allow",
@@ -297,15 +418,45 @@
     "category": "Telemetry",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKLM",
-      "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
-      "name": "AllowTelemetry",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "3",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DataCollection",
+        "name": "AllowTelemetry",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "3",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+        "name": "AllowTelemetry",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "3",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Wow6432Node\\Microsoft\\Windows\\CurrentVersion\\Policies\\DataCollection",
+        "name": "AllowTelemetry",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "3",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "Start_TrackProgs",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-advertising-id",
@@ -314,15 +465,27 @@
     "category": "Telemetry",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
-      "name": "Enabled",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\AdvertisingInfo",
+        "name": "Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\AdvertisingInfo",
+        "name": "DisabledByGroupPolicy",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "deleteValueOnDisable": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-tailored",
@@ -338,8 +501,10 @@
       "valueKind": "DWord",
       "enabledValue": "0",
       "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+      "applyMeansDisable": false,
+      "deleteValueOnDisable": true
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-cortana",
@@ -356,7 +521,8 @@
       "enabledValue": "0",
       "disabledValue": "1",
       "applyMeansDisable": false
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-bing-search",
@@ -381,8 +547,36 @@
         "valueKind": "DWord",
         "enabledValue": "1",
         "disabledValue": "0"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "name": "DisableSearchBoxSuggestions",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+        "name": "DisableWebSearch",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Search",
+        "name": "ConnectedSearchUseWeb",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-location",
@@ -391,15 +585,42 @@
     "category": "Telemetry",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKLM",
-      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
-      "name": "Value",
-      "valueKind": "String",
-      "enabledValue": "Deny",
-      "disabledValue": "Allow",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\CapabilityAccessManager\\ConsentStore\\location",
+        "name": "Value",
+        "valueKind": "String",
+        "enabledValue": "Deny",
+        "disabledValue": "Allow"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Sensor\\Overrides\\{BFA794E4-F964-4FDB-90F6-51056BFE4B44}",
+        "name": "SensorPermissionState",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SYSTEM\\Maps",
+        "name": "AutoUpdateEnabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\LocationAndSensors",
+        "name": "DisableLocation",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "deleteValueOnDisable": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-activity-history",
@@ -408,15 +629,36 @@
     "category": "Telemetry",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKLM",
-      "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
-      "name": "PublishUserActivities",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "registries": [
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "name": "EnableActivityFeed",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "name": "PublishUserActivities",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+        "name": "UploadUserActivities",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-visual-perf",
@@ -424,16 +666,8 @@
     "descriptionKey": "tweak.visualperf.desc",
     "category": "Visual",
     "risk": "Safe",
-    "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\VisualEffects",
-      "name": "VisualFXSetting",
-      "valueKind": "DWord",
-      "enabledValue": "2",
-      "disabledValue": "0",
-      "applyMeansDisable": false
-    }
+    "type": "visualEffects",
+    "reversibility": "Defaulted"
   },
   {
     "id": "tweak-animations",
@@ -441,16 +675,8 @@
     "descriptionKey": "tweak.animations.desc",
     "category": "Visual",
     "risk": "Safe",
-    "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Control Panel\\Desktop\\WindowMetrics",
-      "name": "MinAnimate",
-      "valueKind": "String",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+    "type": "visualEffects",
+    "reversibility": "Defaulted"
   },
   {
     "id": "tweak-transparency",
@@ -466,8 +692,10 @@
       "valueKind": "DWord",
       "enabledValue": "0",
       "disabledValue": "1",
-      "applyMeansDisable": false
-    }
+      "applyMeansDisable": false,
+      "restartExplorer": true
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-qos",
@@ -484,7 +712,8 @@
       "enabledValue": "0",
       "disabledValue": "20",
       "applyMeansDisable": false
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-tcp-autotuning",
@@ -498,7 +727,8 @@
       "arguments": "int tcp set global autotuninglevel=normal",
       "requiresAdmin": true,
       "oneShot": true
-    }
+    },
+    "reversibility": "None"
   },
   {
     "id": "tweak-dns-flush",
@@ -511,7 +741,8 @@
       "fileName": "ipconfig",
       "arguments": "/flushdns",
       "oneShot": true
-    }
+    },
+    "reversibility": "None"
   },
   {
     "id": "tweak-disable-netbios",
@@ -529,7 +760,8 @@
       "disabledValue": "0",
       "applyMeansDisable": false,
       "applyToAllSubkeys": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-delivery-opt",
@@ -545,7 +777,8 @@
         "name": "DODownloadMode",
         "valueKind": "DWord",
         "enabledValue": "0",
-        "disabledValue": "1"
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
       },
       {
         "hive": "HKLM",
@@ -553,9 +786,11 @@
         "name": "DODownloadMode",
         "valueKind": "DWord",
         "enabledValue": "0",
-        "disabledValue": "1"
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-wu-pause",
@@ -567,7 +802,8 @@
     "service": {
       "serviceName": "wuauserv",
       "desiredStart": "Disabled"
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-task-ceip",
@@ -579,7 +815,8 @@
     "task": {
       "taskPath": "\\Microsoft\\Windows\\Customer Experience Improvement Program\\Consolidator",
       "disable": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-task-usbceip",
@@ -591,7 +828,8 @@
     "task": {
       "taskPath": "\\Microsoft\\Windows\\Customer Experience Improvement Program\\UsbCeip",
       "disable": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-classic-context-menu",
@@ -611,7 +849,8 @@
       "deleteKeyOnDisable": true,
       "deleteKeyPath": "Software\\Classes\\CLSID\\{86ca1aa0-34aa-4e8b-a509-50c905bae2a2}",
       "restartExplorer": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-disable-copilot",
@@ -619,6 +858,13 @@
     "descriptionKey": "tweak.copilot.desc",
     "category": "Windows11UI",
     "risk": "Safe",
+    "skus": [
+      "Home",
+      "Pro",
+      "Enterprise",
+      "Education",
+      "LTSC"
+    ],
     "type": "registry",
     "win11Only": true,
     "minBuild": 22000,
@@ -667,7 +913,8 @@
           }
         ]
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-disable-recall",
@@ -675,6 +922,13 @@
     "descriptionKey": "tweak.recall.desc",
     "category": "Windows11UI",
     "risk": "Safe",
+    "skus": [
+      "Home",
+      "Pro",
+      "Enterprise",
+      "Education",
+      "LTSC"
+    ],
     "type": "command",
     "win11Only": true,
     "minBuild": 26100,
@@ -689,7 +943,8 @@
       "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $pol = Get-ItemProperty -Path 'HKLM:\\SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsAI' -ErrorAction SilentlyContinue; $polOk = ($pol -and $pol.AllowRecallEnablement -eq 0 -and $pol.DisableAIDataAnalysis -eq 1); $featOff = $true; try { $f = Get-WindowsOptionalFeature -Online -FeatureName 'Recall' -ErrorAction Stop; if ($f -and $f.State -eq 'Enabled') { $featOff = $false } } catch { }; if ($polOk -and $featOff) { 'WC_RECALL_OFF' } else { 'WC_RECALL_ON' }\"",
       "detectMode": "contains",
       "detectValue": "WC_RECALL_OFF"
-    }
+    },
+    "reversibility": "Scripted"
   },
   {
     "id": "tweak-start-iris",
@@ -699,16 +954,48 @@
     "risk": "Safe",
     "type": "registry",
     "win11Only": true,
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-      "name": "Start_IrisRecommendations",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "applyMeansDisable": false,
-      "restartExplorer": true
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "Start_IrisRecommendations",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "restartExplorer": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Start",
+        "name": "HideRecommendedSection",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "restartExplorer": true,
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
+        "name": "IsEducationEnvironment",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "restartExplorer": true,
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Explorer",
+        "name": "HideRecommendedSection",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "restartExplorer": true,
+        "deleteValueOnDisable": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-disable-widgets",
@@ -736,8 +1023,19 @@
         "enabledValue": "0",
         "disabledValue": "1",
         "restartExplorer": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Feeds",
+        "name": "EnableFeeds",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "restartExplorer": true,
+        "deleteValueOnDisable": true
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-inking-typing",
@@ -753,7 +1051,8 @@
         "name": "RestrictImplicitInkCollection",
         "valueKind": "DWord",
         "enabledValue": "1",
-        "disabledValue": "0"
+        "disabledValue": "0",
+        "deleteValueOnDisable": true
       },
       {
         "hive": "HKCU",
@@ -761,7 +1060,8 @@
         "name": "RestrictImplicitTextCollection",
         "valueKind": "DWord",
         "enabledValue": "1",
-        "disabledValue": "0"
+        "disabledValue": "0",
+        "deleteValueOnDisable": true
       },
       {
         "hive": "HKCU",
@@ -769,9 +1069,29 @@
         "name": "HarvestContacts",
         "valueKind": "DWord",
         "enabledValue": "0",
-        "disabledValue": "1"
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Personalization\\Settings",
+        "name": "AcceptedPrivacyPolicy",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Input\\TIPC",
+        "name": "Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-feedback-frequency",
@@ -780,15 +1100,28 @@
     "category": "Telemetry",
     "risk": "Safe",
     "type": "registry",
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Siuf\\Rules",
-      "name": "NumberOfSIUFInPeriod",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "deleteValueOnDisable": true
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Siuf\\Rules",
+        "name": "NumberOfSIUFInPeriod",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "deleteValueOnDisable": true
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Siuf\\Rules",
+        "name": "PeriodInNanoSeconds",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "0",
+        "deleteValueOnEnable": true,
+        "deleteValueOnDisable": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-online-speech",
@@ -803,8 +1136,10 @@
       "name": "HasAccepted",
       "valueKind": "DWord",
       "enabledValue": "0",
-      "disabledValue": "1"
-    }
+      "disabledValue": "1",
+      "deleteValueOnDisable": true
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-power-throttling",
@@ -820,7 +1155,8 @@
       "valueKind": "DWord",
       "enabledValue": "1",
       "disabledValue": "0"
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-system-responsiveness",
@@ -834,9 +1170,10 @@
       "path": "SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Multimedia\\SystemProfile",
       "name": "SystemResponsiveness",
       "valueKind": "DWord",
-      "enabledValue": "0",
+      "enabledValue": "10",
       "disabledValue": "20"
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-core-parking",
@@ -847,14 +1184,15 @@
     "type": "command",
     "command": {
       "fileName": "cmd",
-      "arguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 100 & powercfg /setactive SCHEME_CURRENT",
-      "revertArguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 5 & powercfg /setactive SCHEME_CURRENT",
+      "arguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 100 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 100 & powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 100 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 100 & powercfg /setactive SCHEME_CURRENT",
+      "revertArguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 5 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 5 & powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 5 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 5 & powercfg /setactive SCHEME_CURRENT",
       "requiresAdmin": true,
       "detectFileName": "powercfg",
       "detectArguments": "/query SCHEME_CURRENT SUB_PROCESSOR CPMINCORES",
       "detectMode": "acIndexEquals",
       "detectValue": "100"
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-dark-mode",
@@ -870,7 +1208,8 @@
         "name": "AppsUseLightTheme",
         "valueKind": "DWord",
         "enabledValue": "0",
-        "disabledValue": "1"
+        "disabledValue": "1",
+        "restartExplorer": true
       },
       {
         "hive": "HKCU",
@@ -878,9 +1217,11 @@
         "name": "SystemUsesLightTheme",
         "valueKind": "DWord",
         "enabledValue": "0",
-        "disabledValue": "1"
+        "disabledValue": "1",
+        "restartExplorer": true
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-lockscreen-ads",
@@ -905,8 +1246,58 @@
         "valueKind": "DWord",
         "enabledValue": "0",
         "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "name": "SubscribedContent-338388Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "name": "SubscribedContent-338389Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "name": "SubscribedContent-338393Enabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "name": "SystemPaneSuggestionsEnabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\ContentDeliveryManager",
+        "name": "SoftLandingEnabled",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\CloudContent",
+        "name": "DisableWindowsConsumerFeatures",
+        "valueKind": "DWord",
+        "enabledValue": "1",
+        "disabledValue": "0",
+        "deleteValueOnDisable": true
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-show-file-extensions",
@@ -931,10 +1322,11 @@
         "name": "Hidden",
         "valueKind": "DWord",
         "enabledValue": "1",
-        "disabledValue": "2",
+        "disabledValue": "0",
         "restartExplorer": true
       }
-    ]
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-taskbar-left",
@@ -952,7 +1344,8 @@
       "enabledValue": "0",
       "disabledValue": "1",
       "restartExplorer": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-hide-chat-icon",
@@ -962,15 +1355,28 @@
     "risk": "Safe",
     "type": "registry",
     "win11Only": true,
-    "registry": {
-      "hive": "HKCU",
-      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-      "name": "TaskbarMn",
-      "valueKind": "DWord",
-      "enabledValue": "0",
-      "disabledValue": "1",
-      "restartExplorer": true
-    }
+    "registries": [
+      {
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+        "name": "TaskbarMn",
+        "valueKind": "DWord",
+        "enabledValue": "0",
+        "disabledValue": "1",
+        "restartExplorer": true
+      },
+      {
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Windows Chat",
+        "name": "ChatIcon",
+        "valueKind": "DWord",
+        "enabledValue": "3",
+        "disabledValue": "1",
+        "restartExplorer": true,
+        "deleteValueOnDisable": true
+      }
+    ],
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-search-icon-only",
@@ -986,9 +1392,10 @@
       "name": "SearchboxTaskbarMode",
       "valueKind": "DWord",
       "enabledValue": "1",
-      "disabledValue": "2",
+      "disabledValue": "0",
       "restartExplorer": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-hide-taskview",
@@ -1006,7 +1413,8 @@
       "enabledValue": "0",
       "disabledValue": "1",
       "restartExplorer": true
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-explorer-thispc",
@@ -1022,8 +1430,10 @@
       "name": "LaunchTo",
       "valueKind": "DWord",
       "enabledValue": "1",
-      "disabledValue": "2"
-    }
+      "disabledValue": "2",
+      "deleteValueOnDisable": true
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-network-throttling",
@@ -1039,7 +1449,8 @@
       "valueKind": "DWord",
       "enabledValue": "-1",
       "disabledValue": "10"
-    }
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-disable-ipv6",
@@ -1047,16 +1458,19 @@
     "descriptionKey": "tweak.ipv6.desc",
     "category": "Network",
     "risk": "Caution",
-    "type": "registry",
+    "type": "command",
     "requiresReboot": true,
-    "registry": {
-      "hive": "HKLM",
-      "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
-      "name": "DisabledComponents",
-      "valueKind": "DWord",
-      "enabledValue": "255",
-      "disabledValue": "0"
-    }
+    "command": {
+      "fileName": "powershell",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $p='HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'; if (!(Test-Path $p)) { New-Item -Path $p -Force | Out-Null }; New-ItemProperty -Path $p -Name 'DisabledComponents' -Value 255 -PropertyType DWord -Force | Out-Null; Disable-NetAdapterBinding -Name * -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue; exit 0\"",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $p='HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters'; if (Test-Path $p) { New-ItemProperty -Path $p -Name 'DisabledComponents' -Value 0 -PropertyType DWord -Force | Out-Null }; Enable-NetAdapterBinding -Name * -ComponentID ms_tcpip6 -ErrorAction SilentlyContinue; exit 0\"",
+      "requiresAdmin": true,
+      "detectFileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; try { $v=(Get-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters' -Name DisabledComponents -ErrorAction Stop).DisabledComponents; if ($v -eq 255) { 'WC_IPV6_OFF' } else { 'WC_IPV6_ON' } } catch { 'WC_IPV6_ON' }\"",
+      "detectMode": "contains",
+      "detectValue": "WC_IPV6_OFF"
+    },
+    "reversibility": "Exact"
   },
   {
     "id": "tweak-nic-power-save",
@@ -1067,13 +1481,818 @@
     "type": "command",
     "command": {
       "fileName": "powershell",
-      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; Get-NetAdapter | Disable-NetAdapterPowerManagement\"",
-      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; Get-NetAdapter | Enable-NetAdapterPowerManagement\"",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $adapters = @(Get-NetAdapter -Physical -ErrorAction SilentlyContinue); if ($adapters.Count -eq 0) { exit 1 }; foreach ($a in $adapters) { try { Disable-NetAdapterPowerManagement -Name $a.Name -ErrorAction SilentlyContinue } catch {} }; exit 0\"",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; Get-NetAdapter -Physical -ErrorAction SilentlyContinue | ForEach-Object { try { Enable-NetAdapterPowerManagement -Name $_.Name -ErrorAction SilentlyContinue } catch {} }; exit 0\"",
       "requiresAdmin": true,
       "detectFileName": "powershell",
-      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; try { $n=@(Get-NetAdapter | Get-NetAdapterPowerManagement | Where-Object { $_.AllowComputerToTurnOffDevice -eq 'Enabled' }); if ($n.Count -eq 0) { 'WC_NIC_POWER_OFF' } else { 'WC_NIC_POWER_ON' } } catch { 'WC_NIC_POWER_ON' }\"",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; try { $adapters = @(Get-NetAdapter -Physical -ErrorAction Stop); if ($adapters.Count -eq 0) { 'WC_NIC_POWER_ON'; exit 0 }; $enabled = @(); foreach ($a in $adapters) { try { $pm = Get-NetAdapterPowerManagement -Name $a.Name -ErrorAction Stop; if ($null -ne $pm.AllowComputerToTurnOffDevice -and $pm.AllowComputerToTurnOffDevice -eq 'Enabled') { $enabled += $a.Name } } catch { 'WC_NIC_POWER_ON'; exit 0 } }; if ($enabled.Count -eq 0) { 'WC_NIC_POWER_OFF' } else { 'WC_NIC_POWER_ON' } } catch { 'WC_NIC_POWER_ON' }\"",
       "detectMode": "contains",
       "detectValue": "WC_NIC_POWER_OFF"
-    }
+    },
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-hibernation",
+    "displayNameKey": "tweak.hibernation.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Caution",
+    "command": {
+      "detectValue": "WC_HIBER_OFF",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; powercfg.exe /hibernate on; $p1='HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power'; if (Test-Path $p1) { New-ItemProperty -Path $p1 -Name HibernateEnabled -Value 1 -PropertyType DWord -Force | Out-Null }; $p2='HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings'; if (Test-Path $p2) { New-ItemProperty -Path $p2 -Name ShowHibernateOption -Value 1 -PropertyType DWord -Force | Out-Null }; exit 0\"",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; powercfg.exe /hibernate off; $p1='HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power'; if (!(Test-Path $p1)) { New-Item $p1 -Force | Out-Null }; New-ItemProperty -Path $p1 -Name HibernateEnabled -Value 0 -PropertyType DWord -Force | Out-Null; $p2='HKLM:\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Explorer\\FlyoutMenuSettings'; if (!(Test-Path $p2)) { New-Item $p2 -Force | Out-Null }; New-ItemProperty -Path $p2 -Name ShowHibernateOption -Value 0 -PropertyType DWord -Force | Out-Null; exit 0\"",
+      "requiresAdmin": true,
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; try { $v=(Get-ItemProperty -Path 'HKLM:\\System\\CurrentControlSet\\Control\\Session Manager\\Power' -Name HibernateEnabled -ErrorAction Stop).HibernateEnabled; if ($v -eq 0) { 'WC_HIBER_OFF' } else { 'WC_HIBER_ON' } } catch { 'WC_HIBER_ON' }\"",
+      "detectFileName": "powershell"
+    },
+    "descriptionKey": "tweak.hibernation.desc",
+    "requiresReboot": false,
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-wpbt",
+    "displayNameKey": "tweak.wpbt.name",
+    "registry": {
+      "deleteValueOnDisable": true,
+      "name": "DisableWpbtExecution",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Session Manager",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.wpbt.desc",
+    "type": "registry",
+    "risk": "Caution",
+    "category": "Telemetry",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-end-task-taskbar",
+    "displayNameKey": "tweak.endtask.name",
+    "win11Only": true,
+    "category": "Windows11UI",
+    "type": "registry",
+    "risk": "Safe",
+    "registry": {
+      "deleteValueOnDisable": true,
+      "name": "TaskbarEndTask",
+      "valueKind": "DWord",
+      "hive": "HKCU",
+      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced\\TaskbarDeveloperSettings",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.endtask.desc",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-device-metadata-network",
+    "displayNameKey": "tweak.devmeta.name",
+    "registry": {
+      "deleteValueOnDisable": true,
+      "name": "PreventDeviceMetadataFromNetwork",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Device Metadata",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.devmeta.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Telemetry",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-store-search-suggest",
+    "displayNameKey": "tweak.storesearch.name",
+    "descriptionKey": "tweak.storesearch.desc",
+    "command": {
+      "detectValue": "WC_STORE_SEARCH_OFF",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $db=Join-Path $env:LocalAppData 'Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db'; if (Test-Path $db) { icacls $db /grant '*S-1-1-0:(F)' | Out-Null }; exit 0\"",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $db=Join-Path $env:LocalAppData 'Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db'; if (Test-Path $db) { icacls $db /deny '*S-1-1-0:(F)' | Out-Null }; exit 0\"",
+      "requiresAdmin": false,
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $db=Join-Path $env:LocalAppData 'Packages\\Microsoft.WindowsStore_8wekyb3d8bbwe\\LocalState\\store.db'; if (-not (Test-Path $db)) { 'WC_STORE_SEARCH_ON'; exit 0 }; $acl=(icacls $db) -join \\\"`n\\\"; if ($acl -match 'Everyone:\\(N\\)' -or $acl -match 'Everyone:\\(D\\)' -or $acl -match '\\(DENY\\)') { 'WC_STORE_SEARCH_OFF' } else { 'WC_STORE_SEARCH_ON' }\"",
+      "detectFileName": "powershell"
+    },
+    "type": "command",
+    "risk": "Caution",
+    "category": "Telemetry",
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-explorer-folder-discovery",
+    "displayNameKey": "tweak.folderdiscovery.name",
+    "category": "Visual",
+    "type": "command",
+    "risk": "Caution",
+    "command": {
+      "detectValue": "WC_FOLDER_DISC_OFF",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $bags='HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags'; $bagMRU='HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU'; Remove-Item -Path $bags -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item -Path $bagMRU -Recurse -Force -ErrorAction SilentlyContinue; exit 0\"",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $bags='HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags'; $bagMRU='HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\BagMRU'; Remove-Item -Path $bags -Recurse -Force -ErrorAction SilentlyContinue; Remove-Item -Path $bagMRU -Recurse -Force -ErrorAction SilentlyContinue; $all='HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell'; if (!(Test-Path $all)) { New-Item -Path $all -Force | Out-Null }; New-ItemProperty -Path $all -Name FolderType -Value NotSpecified -PropertyType String -Force | Out-Null; exit 0\"",
+      "requiresAdmin": false,
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $p='HKCU:\\Software\\Classes\\Local Settings\\Software\\Microsoft\\Windows\\Shell\\Bags\\AllFolders\\Shell'; try { $v=(Get-ItemProperty -Path $p -Name FolderType -ErrorAction Stop).FolderType; if ($v -eq 'NotSpecified') { 'WC_FOLDER_DISC_OFF' } else { 'WC_FOLDER_DISC_ON' } } catch { 'WC_FOLDER_DISC_ON' }\"",
+      "detectFileName": "powershell"
+    },
+    "descriptionKey": "tweak.folderdiscovery.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-home-gallery",
+    "registries": [
+      {
+        "disabledValue": "1",
+        "name": "System.IsPinnedToNameSpaceTree",
+        "hive": "HKCU",
+        "restartExplorer": true,
+        "deleteValueOnDisable": true,
+        "path": "Software\\Classes\\CLSID\\{f874310e-b6b7-47dc-bc84-b9e6b38f5903}",
+        "valueKind": "DWord",
+        "enabledValue": "0"
+      },
+      {
+        "disabledValue": "1",
+        "name": "System.IsPinnedToNameSpaceTree",
+        "hive": "HKCU",
+        "restartExplorer": true,
+        "deleteValueOnDisable": true,
+        "path": "Software\\Classes\\CLSID\\{e88865ea-0e1c-4e20-9aa6-edcd0212c87c}",
+        "valueKind": "DWord",
+        "enabledValue": "0"
+      }
+    ],
+    "displayNameKey": "tweak.homegallery.name",
+    "win11Only": true,
+    "category": "Windows11UI",
+    "type": "registry",
+    "risk": "Caution",
+    "descriptionKey": "tweak.homegallery.desc",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-reserved-storage",
+    "displayNameKey": "tweak.reservedstorage.name",
+    "descriptionKey": "tweak.reservedstorage.desc",
+    "command": {
+      "detectValue": "WC_RSV_OFF",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; DISM.exe /Online /Set-ReservedStorageState /State:Enabled; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; exit 0\"",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; DISM.exe /Online /Set-ReservedStorageState /State:Disabled; if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }; exit 0\"",
+      "requiresAdmin": true,
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $o=DISM.exe /Online /Get-ReservedStorageState 2>&1 | Out-String; if ($o -match 'Disabled') { 'WC_RSV_OFF' } else { 'WC_RSV_ON' }\"",
+      "detectFileName": "powershell"
+    },
+    "type": "command",
+    "risk": "Caution",
+    "category": "Tools",
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-storage-sense",
+    "displayNameKey": "tweak.storagesense.name",
+    "registry": {
+      "name": "01",
+      "valueKind": "DWord",
+      "hive": "HKCU",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\StorageSense\\Parameters\\StoragePolicy",
+      "enabledValue": "0",
+      "disabledValue": "1"
+    },
+    "descriptionKey": "tweak.storagesense.desc",
+    "type": "registry",
+    "risk": "Caution",
+    "category": "Tools",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-ipv4-preferred",
+    "displayNameKey": "tweak.ipv4pref.name",
+    "category": "Network",
+    "type": "registry",
+    "risk": "Caution",
+    "registry": {
+      "name": "DisabledComponents",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SYSTEM\\CurrentControlSet\\Services\\Tcpip6\\Parameters",
+      "enabledValue": "32",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.ipv4pref.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-teredo",
+    "displayNameKey": "tweak.teredo.name",
+    "descriptionKey": "tweak.teredo.desc",
+    "command": {
+      "detectValue": "WC_TEREDO_OFF",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; netsh interface teredo set state default; exit 0\"",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; netsh interface teredo set state disabled; exit 0\"",
+      "requiresAdmin": true,
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $o=(netsh interface teredo show state) | Out-String; if ($o -match 'offline|disabled') { 'WC_TEREDO_OFF' } else { 'WC_TEREDO_ON' }\"",
+      "detectFileName": "powershell"
+    },
+    "type": "command",
+    "risk": "Caution",
+    "category": "Network",
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-utc-time",
+    "displayNameKey": "tweak.utctime.name",
+    "category": "Tools",
+    "type": "registry",
+    "risk": "Caution",
+    "registry": {
+      "name": "RealTimeIsUniversal",
+      "valueKind": "QWord",
+      "hive": "HKLM",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\TimeZoneInformation",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.utctime.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-svchost-splitting",
+    "displayNameKey": "tweak.svchostsplit.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Dangerous",
+    "command": {
+      "detectValue": "WC_SVCHOST_SPLIT_OFF",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control' -Name SvcHostSplitThresholdInKB -Value 3670016 -PropertyType DWord -Force | Out-Null; exit 0\"",
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $Memory=(Get-CimInstance Win32_PhysicalMemory | Measure-Object Capacity -Sum).Sum / 1KB; New-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control' -Name SvcHostSplitThresholdInKB -Value ([int64]$Memory) -PropertyType DWord -Force | Out-Null; exit 0\"",
+      "requiresAdmin": true,
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $def=3670016; try { $v=(Get-ItemProperty -Path 'HKLM:\\SYSTEM\\CurrentControlSet\\Control' -Name SvcHostSplitThresholdInKB -ErrorAction Stop).SvcHostSplitThresholdInKB; if ([int64]$v -gt $def) { 'WC_SVCHOST_SPLIT_OFF' } else { 'WC_SVCHOST_SPLIT_ON' } } catch { 'WC_SVCHOST_SPLIT_ON' }\"",
+      "detectFileName": "powershell"
+    },
+    "descriptionKey": "tweak.svchostsplit.desc",
+    "requiresReboot": true,
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-tray-notifications",
+    "displayNameKey": "tweak.traynotif.name",
+    "descriptionKey": "tweak.traynotif.desc",
+    "type": "registry",
+    "risk": "Caution",
+    "registries": [
+      {
+        "deleteValueOnDisable": true,
+        "name": "DisableNotificationCenter",
+        "valueKind": "DWord",
+        "hive": "HKCU",
+        "path": "Software\\Policies\\Microsoft\\Windows\\Explorer",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "name": "ToastEnabled",
+        "valueKind": "DWord",
+        "hive": "HKCU",
+        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\PushNotifications",
+        "enabledValue": "0",
+        "disabledValue": "1"
+      }
+    ],
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-long-paths",
+    "displayNameKey": "tweak.longpaths.name",
+    "registry": {
+      "name": "LongPathsEnabled",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\FileSystem",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.longpaths.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-verbose-logon",
+    "displayNameKey": "tweak.verboselogon.name",
+    "registry": {
+      "name": "VerboseStatus",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\System",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.verboselogon.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-bsod-verbose",
+    "displayNameKey": "tweak.bsodverbose.name",
+    "descriptionKey": "tweak.bsodverbose.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "registries": [
+      {
+        "name": "DisplayParameters",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "name": "DisableEmoticon",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\CrashControl",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      }
+    ],
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-numlock-startup",
+    "displayNameKey": "tweak.numlock.name",
+    "descriptionKey": "tweak.numlock.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "registries": [
+      {
+        "name": "InitialKeyboardIndicators",
+        "valueKind": "String",
+        "hive": "HKU",
+        "path": ".Default\\Control Panel\\Keyboard",
+        "enabledValue": "2",
+        "disabledValue": "0"
+      },
+      {
+        "name": "InitialKeyboardIndicators",
+        "valueKind": "String",
+        "hive": "HKCU",
+        "path": "Control Panel\\Keyboard",
+        "enabledValue": "2",
+        "disabledValue": "0"
+      }
+    ],
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-scrollbars-always",
+    "displayNameKey": "tweak.scrollbars.name",
+    "registry": {
+      "name": "DynamicScrollbars",
+      "valueKind": "DWord",
+      "hive": "HKCU",
+      "path": "Control Panel\\Accessibility",
+      "enabledValue": "0",
+      "disabledValue": "1"
+    },
+    "descriptionKey": "tweak.scrollbars.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-disable-sticky-keys",
+    "displayNameKey": "tweak.stickykeys.name",
+    "registry": {
+      "name": "Flags",
+      "valueKind": "DWord",
+      "hive": "HKCU",
+      "path": "Control Panel\\Accessibility\\StickyKeys",
+      "enabledValue": "58",
+      "disabledValue": "510"
+    },
+    "descriptionKey": "tweak.stickykeys.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-hide-settings-home",
+    "displayNameKey": "tweak.settingshome.name",
+    "win11Only": true,
+    "category": "Visual",
+    "type": "registry",
+    "risk": "Safe",
+    "registry": {
+      "deleteValueOnDisable": true,
+      "name": "SettingsPageVisibility",
+      "valueKind": "String",
+      "hive": "HKCU",
+      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Policies\\Explorer",
+      "enabledValue": "hide:home",
+      "disabledValue": "show:home"
+    },
+    "descriptionKey": "tweak.settingshome.desc",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-disable-lockscreen",
+    "displayNameKey": "tweak.lockscreen.name",
+    "registry": {
+      "deleteValueOnDisable": true,
+      "name": "NoLockScreen",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\Personalization",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.lockscreen.desc",
+    "type": "registry",
+    "risk": "Caution",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-s0-standby-network",
+    "displayNameKey": "tweak.s0standby.name",
+    "registry": {
+      "name": "ACSettingIndex",
+      "valueKind": "DWord",
+      "hive": "HKCU",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Power\\PowerSettings\\f15576e8-98b7-4186-b944-eafa664402d9",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.s0standby.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-s3-sleep",
+    "displayNameKey": "tweak.s3sleep.name",
+    "category": "Tools",
+    "type": "registry",
+    "risk": "Caution",
+    "registry": {
+      "deleteValueOnDisable": true,
+      "name": "PlatformAoAcOverride",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SYSTEM\\CurrentControlSet\\Control\\Power",
+      "enabledValue": "0",
+      "disabledValue": "1"
+    },
+    "descriptionKey": "tweak.s3sleep.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-battery-percentage",
+    "displayNameKey": "tweak.batterypercent.name",
+    "registry": {
+      "deleteValueOnDisable": true,
+      "name": "IsBatteryPercentageEnabled",
+      "valueKind": "DWord",
+      "hive": "HKCU",
+      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.batterypercent.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-disable-login-blur",
+    "displayNameKey": "tweak.loginblur.name",
+    "registry": {
+      "name": "DisableAcrylicBackgroundOnLogon",
+      "valueKind": "DWord",
+      "hive": "HKLM",
+      "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\System",
+      "enabledValue": "1",
+      "disabledValue": "0"
+    },
+    "descriptionKey": "tweak.loginblur.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-disable-window-snapping",
+    "displayNameKey": "tweak.windowsnap.name",
+    "registry": {
+      "name": "WindowArrangementActive",
+      "valueKind": "String",
+      "hive": "HKCU",
+      "path": "Control Panel\\Desktop",
+      "enabledValue": "0",
+      "disabledValue": "1"
+    },
+    "descriptionKey": "tweak.windowsnap.desc",
+    "type": "registry",
+    "risk": "Safe",
+    "category": "Visual",
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-disable-mpo",
+    "registries": [
+      {
+        "deleteValueOnDisable": true,
+        "name": "OverlayTestMode",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Microsoft\\Windows\\Dwm",
+        "enabledValue": "5",
+        "disabledValue": "0"
+      },
+      {
+        "deleteValueOnDisable": true,
+        "name": "DisableOverlays",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SYSTEM\\CurrentControlSet\\Control\\GraphicsDrivers",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      }
+    ],
+    "displayNameKey": "tweak.mpo.name",
+    "category": "Gaming",
+    "type": "registry",
+    "risk": "Caution",
+    "descriptionKey": "tweak.mpo.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-feat-hyperv",
+    "displayNameKey": "tweak.feathyperv.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Caution",
+    "skus": [
+      "Pro",
+      "Enterprise",
+      "Education",
+      "LTSC",
+      "Server"
+    ],
+    "requiresFeature": "Microsoft-Hyper-V-All",
+    "command": {
+      "detectValue": "WC_FEAT_ON",
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectFileName": "powershell",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('Microsoft-Hyper-V-All'); foreach($n in $names){ Disable-WindowsOptionalFeature -Online -FeatureName $n -NoRestart -ErrorAction SilentlyContinue | Out-Null }; exit 0\"",
+      "requiresAdmin": true,
+      "timeoutMs": 600000,
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $names=@('Microsoft-Hyper-V-All'); foreach($n in $names){ Enable-WindowsOptionalFeature -Online -FeatureName $n -All -NoRestart -ErrorAction Stop | Out-Null }; exit 0\"",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('Microsoft-Hyper-V-All'); $ok=$true; foreach($n in $names){ try { $f=Get-WindowsOptionalFeature -Online -FeatureName $n -ErrorAction Stop; if($f.State -ne 'Enabled'){ $ok=$false } } catch { $ok=$false } }; if($ok){ 'WC_FEAT_ON' } else { 'WC_FEAT_OFF' }\""
+    },
+    "descriptionKey": "tweak.feathyperv.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-feat-wsl",
+    "displayNameKey": "tweak.featwsl.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Caution",
+    "command": {
+      "detectValue": "WC_FEAT_ON",
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectFileName": "powershell",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('VirtualMachinePlatform','Microsoft-Windows-Subsystem-Linux'); foreach($n in $names){ Disable-WindowsOptionalFeature -Online -FeatureName $n -NoRestart -ErrorAction SilentlyContinue | Out-Null }; exit 0\"",
+      "requiresAdmin": true,
+      "timeoutMs": 600000,
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $names=@('VirtualMachinePlatform','Microsoft-Windows-Subsystem-Linux'); foreach($n in $names){ Enable-WindowsOptionalFeature -Online -FeatureName $n -All -NoRestart -ErrorAction Stop | Out-Null }; exit 0\"",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('VirtualMachinePlatform','Microsoft-Windows-Subsystem-Linux'); $ok=$true; foreach($n in $names){ try { $f=Get-WindowsOptionalFeature -Online -FeatureName $n -ErrorAction Stop; if($f.State -ne 'Enabled'){ $ok=$false } } catch { $ok=$false } }; if($ok){ 'WC_FEAT_ON' } else { 'WC_FEAT_OFF' }\""
+    },
+    "descriptionKey": "tweak.featwsl.desc",
+    "requiresReboot": true,
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-feat-sandbox",
+    "displayNameKey": "tweak.featsandbox.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Caution",
+    "skus": [
+      "Pro",
+      "Enterprise",
+      "Education",
+      "LTSC"
+    ],
+    "requiresFeature": "Containers-DisposableClientVM",
+    "command": {
+      "detectValue": "WC_FEAT_ON",
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectFileName": "powershell",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('Containers-DisposableClientVM'); foreach($n in $names){ Disable-WindowsOptionalFeature -Online -FeatureName $n -NoRestart -ErrorAction SilentlyContinue | Out-Null }; exit 0\"",
+      "requiresAdmin": true,
+      "timeoutMs": 600000,
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $names=@('Containers-DisposableClientVM'); foreach($n in $names){ Enable-WindowsOptionalFeature -Online -FeatureName $n -All -NoRestart -ErrorAction Stop | Out-Null }; exit 0\"",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('Containers-DisposableClientVM'); $ok=$true; foreach($n in $names){ try { $f=Get-WindowsOptionalFeature -Online -FeatureName $n -ErrorAction Stop; if($f.State -ne 'Enabled'){ $ok=$false } } catch { $ok=$false } }; if($ok){ 'WC_FEAT_ON' } else { 'WC_FEAT_OFF' }\""
+    },
+    "descriptionKey": "tweak.featsandbox.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-feat-dotnet",
+    "displayNameKey": "tweak.featdotnet.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Safe",
+    "command": {
+      "detectValue": "WC_FEAT_ON",
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectFileName": "powershell",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('NetFx4-AdvSrvs','NetFx3'); foreach($n in $names){ Disable-WindowsOptionalFeature -Online -FeatureName $n -NoRestart -ErrorAction SilentlyContinue | Out-Null }; exit 0\"",
+      "requiresAdmin": true,
+      "timeoutMs": 600000,
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $names=@('NetFx4-AdvSrvs','NetFx3'); foreach($n in $names){ Enable-WindowsOptionalFeature -Online -FeatureName $n -All -NoRestart -ErrorAction Stop | Out-Null }; exit 0\"",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('NetFx4-AdvSrvs','NetFx3'); $ok=$true; foreach($n in $names){ try { $f=Get-WindowsOptionalFeature -Online -FeatureName $n -ErrorAction Stop; if($f.State -ne 'Enabled'){ $ok=$false } } catch { $ok=$false } }; if($ok){ 'WC_FEAT_ON' } else { 'WC_FEAT_OFF' }\""
+    },
+    "descriptionKey": "tweak.featdotnet.desc",
+    "requiresReboot": true,
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-feat-legacymedia",
+    "displayNameKey": "tweak.featmedia.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Safe",
+    "command": {
+      "detectValue": "WC_FEAT_ON",
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectFileName": "powershell",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('WindowsMediaPlayer','MediaPlayback','DirectPlay','LegacyComponents'); foreach($n in $names){ Disable-WindowsOptionalFeature -Online -FeatureName $n -NoRestart -ErrorAction SilentlyContinue | Out-Null }; exit 0\"",
+      "requiresAdmin": true,
+      "timeoutMs": 600000,
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $names=@('WindowsMediaPlayer','MediaPlayback','DirectPlay','LegacyComponents'); foreach($n in $names){ Enable-WindowsOptionalFeature -Online -FeatureName $n -All -NoRestart -ErrorAction Stop | Out-Null }; exit 0\"",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('WindowsMediaPlayer','MediaPlayback','DirectPlay','LegacyComponents'); $ok=$true; foreach($n in $names){ try { $f=Get-WindowsOptionalFeature -Online -FeatureName $n -ErrorAction Stop; if($f.State -ne 'Enabled'){ $ok=$false } } catch { $ok=$false } }; if($ok){ 'WC_FEAT_ON' } else { 'WC_FEAT_OFF' }\""
+    },
+    "descriptionKey": "tweak.featmedia.desc",
+    "requiresReboot": true,
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-feat-nfs",
+    "displayNameKey": "tweak.featnfs.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Caution",
+    "skus": [
+      "Pro",
+      "Enterprise",
+      "Education",
+      "LTSC",
+      "Server"
+    ],
+    "requiresFeature": "ServicesForNFS-ClientOnly",
+    "command": {
+      "detectValue": "WC_FEAT_ON",
+      "detectMode": "contains",
+      "fileName": "powershell",
+      "detectFileName": "powershell",
+      "revertArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('ServicesForNFS-ClientOnly','ClientForNFS-Infrastructure','NFS-Administration'); foreach($n in $names){ Disable-WindowsOptionalFeature -Online -FeatureName $n -NoRestart -ErrorAction SilentlyContinue | Out-Null }; exit 0\"",
+      "requiresAdmin": true,
+      "timeoutMs": 600000,
+      "arguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='Stop'; $names=@('ServicesForNFS-ClientOnly','ClientForNFS-Infrastructure','NFS-Administration'); foreach($n in $names){ Enable-WindowsOptionalFeature -Online -FeatureName $n -All -NoRestart -ErrorAction Stop | Out-Null }; exit 0\"",
+      "detectArguments": "-NoProfile -ExecutionPolicy Bypass -Command \"$ErrorActionPreference='SilentlyContinue'; $names=@('ServicesForNFS-ClientOnly','ClientForNFS-Infrastructure','NFS-Administration'); $ok=$true; foreach($n in $names){ try { $f=Get-WindowsOptionalFeature -Online -FeatureName $n -ErrorAction Stop; if($f.State -ne 'Enabled'){ $ok=$false } } catch { $ok=$false } }; if($ok){ 'WC_FEAT_ON' } else { 'WC_FEAT_OFF' }\""
+    },
+    "descriptionKey": "tweak.featnfs.desc",
+    "requiresReboot": true,
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-feat-f8legacy",
+    "displayNameKey": "tweak.featf8.name",
+    "category": "Tools",
+    "type": "command",
+    "risk": "Caution",
+    "command": {
+      "detectMode": "equals",
+      "detectValue": "Legacy",
+      "detectKey": "bootmenupolicy",
+      "requiresAdmin": true,
+      "arguments": "/set {current} bootmenupolicy legacy",
+      "revertArguments": "/set {current} bootmenupolicy standard",
+      "fileName": "bcdedit"
+    },
+    "descriptionKey": "tweak.featf8.desc",
+    "requiresReboot": true,
+    "reversibility": "Scripted"
+  },
+  {
+    "id": "tweak-wu-recommended",
+    "displayNameKey": "tweak.wurecommended.name",
+    "descriptionKey": "tweak.wurecommended.desc",
+    "type": "registry",
+    "risk": "Caution",
+    "registries": [
+      {
+        "deleteValueOnDisable": true,
+        "name": "DeferFeatureUpdates",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "deleteValueOnDisable": true,
+        "name": "DeferFeatureUpdatesPeriodInDays",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+        "enabledValue": "365",
+        "disabledValue": "0"
+      },
+      {
+        "deleteValueOnDisable": true,
+        "name": "DeferQualityUpdates",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "deleteValueOnDisable": true,
+        "name": "DeferQualityUpdatesPeriodInDays",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+        "enabledValue": "4",
+        "disabledValue": "0"
+      },
+      {
+        "deleteValueOnDisable": true,
+        "name": "ExcludeWUDriversInQualityUpdate",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      },
+      {
+        "deleteValueOnDisable": true,
+        "name": "AUOptions",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\WindowsUpdate\\AU",
+        "enabledValue": "3",
+        "disabledValue": "4"
+      },
+      {
+        "deleteValueOnDisable": true,
+        "name": "DontSearchWindowsUpdate",
+        "valueKind": "DWord",
+        "hive": "HKLM",
+        "path": "SOFTWARE\\Policies\\Microsoft\\Windows\\DriverSearching",
+        "enabledValue": "1",
+        "disabledValue": "0"
+      }
+    ],
+    "category": "Tools",
+    "reversibility": "Exact"
   }
 ]

@@ -1,0 +1,116 @@
+<UserControl x:Class="WinCleaner.Views.PackageInstallerView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
+    <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
+
+    <ui:Card Grid.Row="2" Margin="0,0,0,10" Padding="16">
+        <Grid>
+          <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+          </Grid.ColumnDefinitions>
+          <StackPanel>
+            <TextBlock Text="{Binding WingetStatusText}" TextWrapping="Wrap"
+                       Foreground="{DynamicResource TextSecondaryBrush}" FontSize="12"/>
+            <ProgressBar Height="8" Margin="0,10,0,4"
+                         Minimum="0" Maximum="100"
+                         Value="{Binding OverallProgress}"
+                         IsIndeterminate="{Binding IsOverallIndeterminate}"
+                         Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVis}}"/>
+            <TextBlock Text="{Binding OverallProgressText}" FontSize="11"
+                       Foreground="{DynamicResource TextMutedBrush}"
+                       Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVis}}"/>
+          </StackPanel>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Top">
+            <ui:Button Content="{Binding RemediateWingetLabel}" Command="{Binding RemediateWingetCommand}"
+                       Appearance="Secondary" Margin="0,0,8,0"
+                       IsEnabled="{Binding CanRemediateWinget}"
+                       Visibility="{Binding CanRemediateWinget, Converter={StaticResource BoolToVis}}"/>
+            <ui:Button Content="{DynamicResource common.refresh}" Command="{Binding RefreshWingetStatusCommand}"
+                       Appearance="Secondary" Icon="{ui:SymbolIcon ArrowSync24}" Margin="0,0,8,0"
+                       IsEnabled="{Binding CanRefreshWinget}"/>
+            <ui:Button Content="{Binding InstallSelectedLabel}" Command="{Binding InstallSelectedCommand}"
+                       Appearance="Primary" Icon="{ui:SymbolIcon ArrowDownload24}" Margin="0,0,8,0"
+                       IsEnabled="{Binding CanInstall}"/>
+            <ui:Button Content="{DynamicResource inst.upgradeSelected}" Command="{Binding UpgradeSelectedCommand}"
+                       Appearance="Secondary" Icon="{ui:SymbolIcon ArrowSync24}" Margin="0,0,8,0"
+                       IsEnabled="{Binding CanInstall}"/>
+            <ui:Button Content="{Binding UninstallSelectedLabel}" Command="{Binding UninstallSelectedCommand}"
+                       Appearance="Danger" Icon="{ui:SymbolIcon Delete24}"
+                       IsEnabled="{Binding CanUninstall}"/>
+          </StackPanel>
+        </Grid>
+      </ui:Card>
+
+      <ItemsControl Grid.Row="3" ItemsSource="{Binding Categories}" Style="{StaticResource VirtualizingListStyle}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <StackPanel Margin="0,4,0,12">
+              <TextBlock Text="{Binding Title}" Style="{StaticResource SectionHeaderStyle}"/>
+              <ItemsControl ItemsSource="{Binding Apps}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <ui:Card Margin="0,0,0,10" Padding="14,12"
+                             Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
+                      <Grid>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="Auto"/>
+                          <ColumnDefinition Width="Auto"/>
+                          <ColumnDefinition Width="*"/>
+                          <ColumnDefinition Width="160"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center"
+                                  IsEnabled="{Binding CanSelect}"
+                                  Margin="0,0,12,0"/>
+                        <Border Grid.Column="1" Width="34" Height="34" CornerRadius="8"
+                                Background="#F2F2F2" Margin="0,0,12,0" VerticalAlignment="Center"
+                                ClipToBounds="True">
+                          <Grid>
+                            <TextBlock Text="{Binding IconGlyph}" FontSize="16"
+                                       HorizontalAlignment="Center" VerticalAlignment="Center"
+                                       Visibility="{Binding HasIconImage, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}"/>
+                            <Image Source="{Binding IconImage}" Width="22" Height="22"
+                                   Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                   Visibility="{Binding HasIconImage, Converter={StaticResource BoolToVis}}"/>
+                          </Grid>
+                        </Border>
+                        <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                          <TextBlock Text="{Binding WingetId}" FontSize="11"
+                                     Foreground="{DynamicResource TextMutedBrush}"/>
+                          <TextBlock Text="{Binding Description}" TextWrapping="Wrap" FontSize="12"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"/>
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" VerticalAlignment="Center">
+                          <TextBlock Text="{Binding StatusLabel}" FontSize="11" TextWrapping="Wrap"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" HorizontalAlignment="Right"/>
+                          <ProgressBar Height="6" Margin="0,8,0,0"
+                                       IsIndeterminate="{Binding IsProgressIndeterminate}"
+                                       Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"/>
+                        </StackPanel>
+                      </Grid>
+                    </ui:Card>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+  </Grid>
+</UserControl>

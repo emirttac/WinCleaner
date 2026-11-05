@@ -1,0 +1,7 @@
+command: dotnet build WinCleaner.slnx -c Release -warnaserror
+measured: 2026-11-05
+warnings: 0
+errors: 0
+
+TreatWarningsAsErrors is true in Directory.Build.props because this count was zero.
+Do not add a suppressions file to hide a new warning. Fix the warning or record a new measured count here in the same change.

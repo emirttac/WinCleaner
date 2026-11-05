@@ -1,0 +1,16 @@
+root = true
+
+[*]
+charset = utf-8
+end_of_line = crlf
+insert_final_newline = true
+indent_style = space
+indent_size = 4
+trim_trailing_whitespace = true
+
+[*.md]
+trim_trailing_whitespace = false
+
+# Keep the braces and usings the tree already uses. Style rewrites belong to the phase that edits the file.
+[*.cs]
+dotnet_diagnostic.IDE0005.severity = silent

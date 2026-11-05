@@ -1,0 +1,7 @@
+command: dotnet test tests/WinCleaner.Core.Tests/WinCleaner.Core.Tests.csproj -c Release --collect:"XPlat Code Coverage"
+measured: 2026-11-05
+WinCleaner.Core line-rate: 0.3213
+ActionExecutor ExecuteAsync state machine line-rate: 0.92
+ActionExecutor ExecuteManyAsync state machine line-rate: 0.8787
+
+CI does not fail the build on these numbers. Turn on a coverlet threshold only after Core line-rate is at least 0.70 and both ActionExecutor state machines stay at or above 0.90.

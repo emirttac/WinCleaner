@@ -24,7 +24,7 @@
     "descriptionKey": "svc.wer.desc",
     "category": "Telemetry",
     "risk": "Caution",
-    "recommendedStart": "Manual"
+    "recommendedStart": "Disabled"
   },
   {
     "id": "svc-xblauth",
@@ -195,7 +195,7 @@
     "descriptionKey": "svc.lfsvc.desc",
     "category": "Privacy",
     "risk": "Caution",
-    "recommendedStart": "Manual"
+    "recommendedStart": "Disabled"
   },
   {
     "id": "svc-remoteregistry",

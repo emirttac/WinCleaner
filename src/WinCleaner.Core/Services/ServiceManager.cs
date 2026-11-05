@@ -1,5 +1,6 @@
 using System.ServiceProcess;
 using Microsoft.Win32;
+using WinCleaner.Core.Abstractions;
 using WinCleaner.Core.Models;
 
 namespace WinCleaner.Core.Services;
@@ -13,8 +14,15 @@ public sealed class WindowsServiceInfo
     public ServiceStartMode StartType { get; init; }
 }
 
-public sealed class ServiceManager
+public sealed class ServiceManager : IServiceControl
 {
+    private readonly IProcessRunner _processes;
+
+    public ServiceManager(IProcessRunner? processes = null)
+    {
+        _processes = processes ?? ProcessRunner.Shared;
+    }
+
     public IReadOnlyList<WindowsServiceInfo> GetAllServices()
     {
         var result = new List<WindowsServiceInfo>();
@@ -48,19 +56,31 @@ public sealed class ServiceManager
         try
         {
             using var sc = new ServiceController(serviceName);
-            return new WindowsServiceInfo
-            {
-                ServiceName = sc.ServiceName,
-                DisplayName = sc.DisplayName,
-                Status = sc.Status,
-                StartType = sc.StartType,
-                Description = GetDescription(sc.ServiceName)
-            };
+            return ToInfo(sc);
         }
         catch
         {
-            return null;
+            // Per-user services are registered as TemplateName_hex (e.g. OneSyncSvc_1a2b3c).
         }
+
+        foreach (var sc in ServiceController.GetServices())
+        {
+            try
+            {
+                if (ServiceNameMatcher.IsInstanceOf(sc.ServiceName, serviceName))
+                    return ToInfo(sc);
+            }
+            catch
+            {
+                // skip inaccessible instance
+            }
+            finally
+            {
+                sc.Dispose();
+            }
+        }
+
+        return null;
     }
 
     public string ResolveExistingName(string primary, IEnumerable<string>? aliases = null)
@@ -90,24 +110,82 @@ public sealed class ServiceManager
             _ => "demand"
         };
 
-        RunSc($"config \"{serviceName}\" start= {mode}");
+        Exception? last = null;
+        var ok = 0;
+        foreach (var name in ExpandTargets(serviceName))
+        {
+            try
+            {
+                RunSc($"config \"{name}\" start= {mode}");
+                ok++;
+            }
+            catch (Exception ex)
+            {
+                last = ex;
+            }
+        }
+
+        if (ok == 0)
+            throw last ?? new InvalidOperationException($"Service {serviceName} not found.");
     }
 
     public void Start(string serviceName)
     {
-        using var sc = new ServiceController(serviceName);
-        if (sc.Status == ServiceControllerStatus.Running) return;
-        sc.Start();
-        sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+        Exception? last = null;
+        var startedOrRunning = false;
+        foreach (var name in ExpandTargets(serviceName))
+        {
+            try
+            {
+                using var sc = new ServiceController(name);
+                if (sc.Status == ServiceControllerStatus.Running)
+                {
+                    startedOrRunning = true;
+                    continue;
+                }
+
+                sc.Start();
+                sc.WaitForStatus(ServiceControllerStatus.Running, TimeSpan.FromSeconds(30));
+                startedOrRunning = true;
+            }
+            catch (Exception ex)
+            {
+                last = ex;
+                System.Diagnostics.Trace.WriteLine($"Service start failed for {name}: {ex.Message}");
+            }
+        }
+
+        if (!startedOrRunning && last is not null)
+            throw last;
     }
 
     public void Stop(string serviceName)
     {
-        using var sc = new ServiceController(serviceName);
-        if (sc.Status == ServiceControllerStatus.Stopped) return;
-        if (!sc.CanStop) throw new InvalidOperationException($"Service {serviceName} cannot be stopped.");
-        sc.Stop();
-        sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
+        Exception? last = null;
+        var stopped = false;
+        foreach (var name in ExpandTargets(serviceName))
+        {
+            try
+            {
+                using var sc = new ServiceController(name);
+                if (sc.Status == ServiceControllerStatus.Stopped)
+                {
+                    stopped = true;
+                    continue;
+                }
+                if (!sc.CanStop) continue;
+                sc.Stop();
+                sc.WaitForStatus(ServiceControllerStatus.Stopped, TimeSpan.FromSeconds(30));
+                stopped = true;
+            }
+            catch (Exception ex)
+            {
+                last = ex;
+            }
+        }
+
+        if (!stopped && last is not null)
+            throw last;
     }
 
     public ServiceStartMode GetStartType(string serviceName)
@@ -115,6 +193,36 @@ public sealed class ServiceManager
         using var sc = new ServiceController(serviceName);
         return sc.StartType;
     }
+
+    public IReadOnlyList<string> ExpandTargets(string serviceName)
+    {
+        var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase) { serviceName };
+        foreach (var sc in ServiceController.GetServices())
+        {
+            try
+            {
+                if (sc.ServiceName.Equals(serviceName, StringComparison.OrdinalIgnoreCase)
+                    || ServiceNameMatcher.IsInstanceOf(sc.ServiceName, serviceName))
+                    names.Add(sc.ServiceName);
+            }
+            finally
+            {
+                sc.Dispose();
+            }
+        }
+
+        return names.ToList();
+    }
+
+    private static WindowsServiceInfo ToInfo(ServiceController sc) =>
+        new()
+        {
+            ServiceName = sc.ServiceName,
+            DisplayName = sc.DisplayName,
+            Status = sc.Status,
+            StartType = sc.StartType,
+            Description = GetDescription(sc.ServiceName)
+        };
 
     private static string GetDescription(string serviceName)
     {
@@ -129,25 +237,58 @@ public sealed class ServiceManager
         }
     }
 
-    private static void RunSc(string args)
+    private void RunSc(string args)
     {
-        var psi = new System.Diagnostics.ProcessStartInfo
+        var result = _processes.RunAsync(
+            new ProcessRequest("sc.exe", args, TimeSpan.FromSeconds(15))).GetAwaiter().GetResult();
+        if (result.TimedOut || result.Cancelled || result.ExitCode is null)
+            throw new InvalidOperationException("sc.exe timed out.");
+        if (result.ExitCode != 0)
+            throw new InvalidOperationException($"sc.exe failed ({result.ExitCode}): {result.Stderr} {result.Stdout}".Trim());
+    }
+}
+
+/// <summary>
+/// Matches catalog SCM names to live services, including per-user instances (Name_hex).
+/// </summary>
+public static class ServiceNameMatcher
+{
+    public static bool IsInstanceOf(string liveName, string catalogName)
+    {
+        if (string.IsNullOrWhiteSpace(liveName) || string.IsNullOrWhiteSpace(catalogName))
+            return false;
+        if (liveName.Equals(catalogName, StringComparison.OrdinalIgnoreCase))
+            return true;
+        return liveName.StartsWith(catalogName + "_", StringComparison.OrdinalIgnoreCase);
+    }
+
+    public static TValue? MatchLive<TValue>(
+        IReadOnlyDictionary<string, TValue> live,
+        IEnumerable<string> catalogNames)
+        where TValue : class
+    {
+        var names = new List<string>();
+        foreach (var name in catalogNames)
         {
-            FileName = "sc.exe",
-            Arguments = args,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        };
-        using var proc = System.Diagnostics.Process.Start(psi)
-            ?? throw new InvalidOperationException("Failed to start sc.exe");
-        proc.WaitForExit(15000);
-        if (proc.ExitCode != 0)
-        {
-            var err = proc.StandardError.ReadToEnd();
-            var output = proc.StandardOutput.ReadToEnd();
-            throw new InvalidOperationException($"sc.exe failed ({proc.ExitCode}): {err} {output}".Trim());
+            if (string.IsNullOrWhiteSpace(name)) continue;
+            names.Add(name.Trim());
         }
+
+        foreach (var name in names)
+        {
+            if (live.TryGetValue(name, out var exact))
+                return exact;
+        }
+
+        foreach (var name in names)
+        {
+            foreach (var kv in live)
+            {
+                if (IsInstanceOf(kv.Key, name))
+                    return kv.Value;
+            }
+        }
+
+        return null;
     }
 }

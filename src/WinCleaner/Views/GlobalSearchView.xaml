@@ -1,0 +1,161 @@
+<UserControl x:Class="WinCleaner.Views.GlobalSearchView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+             xmlns:vm="clr-namespace:WinCleaner.ViewModels">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
+    <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
+
+    <TextBlock Grid.Row="2" Text="{Binding EmptyText}"
+                 Margin="0,24,0,0"
+                 FontSize="14"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 TextWrapping="Wrap"
+                 Visibility="{Binding HasResults, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}"/>
+
+      <ItemsControl Grid.Row="3" ItemsSource="{Binding Sections}" Style="{StaticResource VirtualizingListStyle}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="{x:Type vm:SearchSectionViewModel}">
+            <StackPanel Margin="0,0,0,18">
+              <DockPanel Margin="0,0,0,10">
+                <ui:Button DockPanel.Dock="Right"
+                           Content="{DynamicResource search.openCategory}"
+                           Appearance="Secondary"
+                           Command="{Binding DataContext.OpenSectionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                           CommandParameter="{Binding NavKey}"/>
+                <TextBlock VerticalAlignment="Center" FontSize="15" FontWeight="SemiBold">
+                  <Run Text="{Binding Title, Mode=OneWay}"/>
+                  <Run Text=" · " Foreground="{DynamicResource TextMutedBrush}"/>
+                  <Run Text="{Binding Count, Mode=OneWay}" Foreground="{DynamicResource TextMutedBrush}"/>
+                </TextBlock>
+              </DockPanel>
+
+              <ItemsControl ItemsSource="{Binding Items}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <VirtualizingStackPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.Resources>
+                  <DataTemplate DataType="{x:Type vm:TweakItemViewModel}">
+                    <ui:Card Margin="0,0,0,8" Padding="14">
+                      <Grid>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="*"/>
+                          <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                          <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                            <Border Style="{StaticResource RiskBadgeStyle}"
+                                    Background="{Binding Risk, Converter={StaticResource RiskToBrush}}">
+                              <TextBlock Text="{Binding RiskLabel}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding Risk, Converter={StaticResource RiskToBadgeText}}"/>
+                            </Border>
+                          </StackPanel>
+                          <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}"
+                                     TextWrapping="Wrap" Margin="0,4,0,0" FontSize="12" LineHeight="18"
+                                     MaxHeight="54" TextTrimming="CharacterEllipsis"
+                                     ToolTip="{Binding Description}"/>
+                        </StackPanel>
+                        <ui:ToggleSwitch Grid.Column="1"
+                                         IsChecked="{Binding IsApplied, Mode=OneWay}"
+                                         IsEnabled="{Binding CanToggle}"
+                                         Command="{Binding ToggleCommand}"
+                                         AutomationProperties.Name="{Binding Title}"
+                                         AutomationProperties.HelpText="{Binding Description}"
+                                         FocusVisualStyle="{StaticResource AppFocusVisual}"
+                                         VerticalAlignment="Center"/>
+                      </Grid>
+                    </ui:Card>
+                  </DataTemplate>
+
+                  <DataTemplate DataType="{x:Type vm:ServiceRowViewModel}">
+                    <ui:Card Margin="0,0,0,8" Padding="14">
+                      <Grid>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="*"/>
+                          <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <StackPanel>
+                          <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                            <Border Style="{StaticResource RiskBadgeStyle}"
+                                    Background="{Binding Risk, Converter={StaticResource RiskToBrush}}">
+                              <TextBlock Text="{Binding RiskLabel}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding Risk, Converter={StaticResource RiskToBadgeText}}"/>
+                            </Border>
+                          </StackPanel>
+                          <TextBlock Text="{Binding ServiceName}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                          <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"
+                                     FontSize="12" LineHeight="18" MaxHeight="54"
+                                     TextTrimming="CharacterEllipsis" ToolTip="{Binding Description}"/>
+                        </StackPanel>
+                        <ui:ToggleSwitch Grid.Column="1"
+                                         IsChecked="{Binding IsDisabled, Mode=OneWay}"
+                                         IsEnabled="{Binding IsEnabled}"
+                                         Command="{Binding ToggleCommand}"
+                                         VerticalAlignment="Center"/>
+                      </Grid>
+                    </ui:Card>
+                  </DataTemplate>
+
+                  <DataTemplate DataType="{x:Type vm:AppRowViewModel}">
+                    <ui:Card Margin="0,0,0,8" Padding="14">
+                      <Grid>
+                        <Grid.ColumnDefinitions>
+                          <ColumnDefinition Width="Auto"/>
+                          <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}"
+                                  VerticalAlignment="Top" Margin="0,2,12,0"/>
+                        <StackPanel Grid.Column="1">
+                          <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                          <TextBlock Text="{Binding PackageName}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                          <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                     Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"
+                                     FontSize="12" MaxHeight="54" TextTrimming="CharacterEllipsis"
+                                     ToolTip="{Binding Description}"/>
+                        </StackPanel>
+                      </Grid>
+                    </ui:Card>
+                  </DataTemplate>
+
+                  <DataTemplate DataType="{x:Type vm:InstallerAppItemViewModel}">
+                    <ui:Card Margin="0,0,0,8" Padding="14">
+                      <StackPanel>
+                        <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                        <TextBlock Text="{Binding WingetId}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"
+                                   FontSize="12" MaxHeight="54" TextTrimming="CharacterEllipsis"
+                                   ToolTip="{Binding Description}"/>
+                      </StackPanel>
+                    </ui:Card>
+                  </DataTemplate>
+
+                  <DataTemplate DataType="{x:Type vm:PresetRowViewModel}">
+                    <ui:Card Margin="0,0,0,8" Padding="14">
+                      <StackPanel>
+                        <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                        <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                                   Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"
+                                   FontSize="12" MaxHeight="54" TextTrimming="CharacterEllipsis"
+                                   ToolTip="{Binding Description}"/>
+                      </StackPanel>
+                    </ui:Card>
+                  </DataTemplate>
+                </ItemsControl.Resources>
+              </ItemsControl>
+            </StackPanel>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+  </Grid>
+</UserControl>

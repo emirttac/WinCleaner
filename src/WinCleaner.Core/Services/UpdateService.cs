@@ -14,7 +14,9 @@ public sealed record UpdateCheckResult(
     string? LatestVersion,
     string? ReleaseUrl,
     string? ReleaseName,
-    string? ErrorMessage);
+    string? ErrorMessage,
+    string? InstallerUrl = null,
+    string? ChecksumUrl = null);
 
 /// <summary>
 /// Checks GitHub Releases API for a newer version than the running assembly.
@@ -87,6 +89,11 @@ public sealed class UpdateService
             var currentNormalized = NormalizeVersion(current);
             var updateAvailable = IsNewer(latestNormalized, currentNormalized);
 
+            var installer = release.Assets?.FirstOrDefault(a =>
+                a.Name?.EndsWith(".exe", StringComparison.OrdinalIgnoreCase) == true);
+            var checksum = release.Assets?.FirstOrDefault(a =>
+                string.Equals(a.Name, "SHA256SUMS.txt", StringComparison.OrdinalIgnoreCase));
+
             return new UpdateCheckResult(
                 Success: true,
                 UpdateAvailable: updateAvailable,
@@ -94,7 +101,9 @@ public sealed class UpdateService
                 LatestVersion: latestRaw,
                 ReleaseUrl: release.HtmlUrl,
                 ReleaseName: release.Name,
-                ErrorMessage: null);
+                ErrorMessage: null,
+                InstallerUrl: installer?.BrowserDownloadUrl,
+                ChecksumUrl: checksum?.BrowserDownloadUrl);
         }
         catch (OperationCanceledException)
         {
@@ -104,6 +113,63 @@ public sealed class UpdateService
         {
             return new UpdateCheckResult(false, false, current, null, null, null, ex.Message);
         }
+    }
+
+    internal static bool ReleaseHashAllowsRun(string? expectedSha256, string actualSha256)
+    {
+        if (string.IsNullOrWhiteSpace(expectedSha256) || string.IsNullOrWhiteSpace(actualSha256))
+            return false;
+        return string.Equals(expectedSha256.Trim(), actualSha256.Trim(), StringComparison.OrdinalIgnoreCase);
+    }
+
+    internal static bool TryReadHash(string sumsText, string fileName, out string hash)
+    {
+        hash = "";
+        foreach (var raw in sumsText.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
+        {
+            var line = raw.Trim();
+            var parts = line.Split((char[]?)null, 2, StringSplitOptions.RemoveEmptyEntries);
+            if (parts.Length != 2)
+                continue;
+            if (!parts[1].Trim().Equals(fileName, StringComparison.OrdinalIgnoreCase))
+                continue;
+            hash = parts[0].Trim();
+            return hash.Length > 0;
+        }
+
+        return false;
+    }
+
+    public async Task<(bool CanRun, string? Path, string? Error)> DownloadVerifiedInstallerAsync(
+        UpdateCheckResult check,
+        CancellationToken ct = default)
+    {
+        if (string.IsNullOrWhiteSpace(check.InstallerUrl) || string.IsNullOrWhiteSpace(check.ChecksumUrl))
+            return (false, null, "set.updateNoHash");
+
+        var fileName = Path.GetFileName(new Uri(check.InstallerUrl).AbsolutePath);
+        var folder = Path.Combine(Path.GetTempPath(), "WinCleaner", "updates");
+        Directory.CreateDirectory(folder);
+        var filePath = Path.Combine(folder, fileName);
+
+        var sums = await Http.GetStringAsync(check.ChecksumUrl, ct).ConfigureAwait(false);
+        if (!TryReadHash(sums, fileName, out var expected))
+            return (false, null, "set.updateNoHash");
+
+        await using (var remote = await Http.GetStreamAsync(check.InstallerUrl, ct).ConfigureAwait(false))
+        await using (var local = new FileStream(filePath, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            await remote.CopyToAsync(local, ct).ConfigureAwait(false);
+        }
+
+        var actual = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(await File.ReadAllBytesAsync(filePath, ct).ConfigureAwait(false)));
+        if (!ReleaseHashAllowsRun(expected, actual))
+        {
+            File.Delete(filePath);
+            return (false, null, "set.updateHashMismatch");
+        }
+
+        return (true, filePath, null);
     }
 
     internal static string NormalizeVersion(string value)
@@ -149,5 +215,17 @@ public sealed class UpdateService
 
         [JsonPropertyName("name")]
         public string? Name { get; set; }
+
+        [JsonPropertyName("assets")]
+        public List<GitHubAssetDto>? Assets { get; set; }
+    }
+
+    private sealed class GitHubAssetDto
+    {
+        [JsonPropertyName("name")]
+        public string? Name { get; set; }
+
+        [JsonPropertyName("browser_download_url")]
+        public string? BrowserDownloadUrl { get; set; }
     }
 }

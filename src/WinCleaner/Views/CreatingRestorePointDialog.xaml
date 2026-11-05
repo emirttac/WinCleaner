@@ -1,0 +1,58 @@
+<ui:FluentWindow x:Class="WinCleaner.Views.CreatingRestorePointDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml"
+        Title="{DynamicResource restore.cardTitle}"
+        Height="260" Width="440"
+        WindowStartupLocation="CenterOwner"
+        ResizeMode="NoResize"
+        WindowStyle="None"
+        AllowsTransparency="False"
+        ShowInTaskbar="False"
+        Topmost="True"
+        ExtendsContentIntoTitleBar="False"
+        WindowBackdropType="None"
+        Background="{DynamicResource BgPanelBrush}">
+  <Border BorderBrush="{DynamicResource BorderBrush}" BorderThickness="1" Background="{DynamicResource BgPanelBrush}">
+    <Grid Margin="28">
+      <Grid.RowDefinitions>
+        <RowDefinition Height="Auto"/>
+        <RowDefinition Height="*"/>
+      </Grid.RowDefinitions>
+
+      <TextBlock Text="{DynamicResource restore.cardTitle}"
+                 FontSize="14" FontWeight="SemiBold"
+                 HorizontalAlignment="Center"
+                 Foreground="{DynamicResource TextSecondaryBrush}"
+                 Margin="0,0,0,18"
+                 IsHitTestVisible="False"/>
+
+      <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center">
+        <Grid Width="56" Height="56" HorizontalAlignment="Center" Margin="0,0,0,18"
+              IsHitTestVisible="False">
+          <Ellipse x:Name="PulseRing" Width="56" Height="56" Stroke="{DynamicResource AccentBrush}"
+                   StrokeThickness="2" Opacity="0.35">
+            <Ellipse.RenderTransform>
+              <ScaleTransform x:Name="PulseScale" CenterX="28" CenterY="28" ScaleX="1" ScaleY="1"/>
+            </Ellipse.RenderTransform>
+          </Ellipse>
+          <ui:ProgressRing IsIndeterminate="True" Width="40" Height="40"
+                           HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+
+        <TextBlock x:Name="MessageText"
+                   Text="{DynamicResource restore.creating}"
+                   FontSize="16" FontWeight="SemiBold"
+                   TextAlignment="Center" TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextPrimaryBrush}"
+                   IsHitTestVisible="False"/>
+        <TextBlock x:Name="HintText"
+                   Text="{DynamicResource restore.warnBody}"
+                   Margin="0,10,0,0" FontSize="12"
+                   TextAlignment="Center" TextWrapping="Wrap"
+                   Foreground="{DynamicResource TextSecondaryBrush}"
+                   IsHitTestVisible="False"/>
+      </StackPanel>
+    </Grid>
+  </Border>
+</ui:FluentWindow>

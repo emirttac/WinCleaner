@@ -60,6 +60,28 @@ public class CustomProfileDocumentTests
     }
 
     [Fact]
+    public void ReleaseHash_BlocksRunWithoutAMatch()
+    {
+        Assert.False(new AppSettings().CheckUpdatesOnStartup);
+        Assert.False(UpdateService.ReleaseHashAllowsRun(null, "abc"));
+        Assert.False(UpdateService.ReleaseHashAllowsRun("abc", "def"));
+        Assert.True(UpdateService.ReleaseHashAllowsRun("ABC", "abc"));
+        Assert.True(UpdateService.TryReadHash("abc  WinCleaner.exe\n", "WinCleaner.exe", out var hash));
+        Assert.Equal("abc", hash);
+        Assert.False(UpdateService.TryReadHash("abc  other.exe\n", "WinCleaner.exe", out _));
+    }
+
+    [Fact]
+    public void EnglishVcRedistSentence_MatchesTheChecker()
+    {
+        var dir = new DirectoryInfo(AppContext.BaseDirectory);
+        while (dir is not null && !File.Exists(Path.Combine(dir.FullName, "src", "WinCleaner", "Resources", "Strings.en.xaml")))
+            dir = dir.Parent;
+        var text = File.ReadAllText(Path.Combine(dir!.FullName, "src", "WinCleaner", "Resources", "Strings.en.xaml"));
+        Assert.Contains(PrerequisiteChecker.VcRedistDetail, text);
+    }
+
+    [Fact]
     public void LegacyFields_ResolveDisplayName()
     {
         var profile = new CustomProfileDocument

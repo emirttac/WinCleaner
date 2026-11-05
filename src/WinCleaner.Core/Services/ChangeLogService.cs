@@ -1,5 +1,7 @@
 using System.Text.Json;
+using WinCleaner.Core.Abstractions;
 using WinCleaner.Core.Actions;
+using WinCleaner.Core.Operations;
 
 namespace WinCleaner.Core.Services;
 
@@ -10,6 +12,10 @@ public sealed class AppSettings
     public bool AllowDangerousActions { get; set; } = false;
     public string? LogFolder { get; set; }
     public bool CheckUpdatesOnStartup { get; set; } = false;
+    /// <summary>Off, SessionOnce, BeforeIrreversible, or BeforeEachBatch. Missing JSON stays SessionOnce.</summary>
+    public string RestorePointPolicy { get; set; } = "SessionOnce";
+    /// <summary>Dark, Light, or System. Missing JSON stays Dark.</summary>
+    public string Theme { get; set; } = "Dark";
 
     private static string SettingsPath =>
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
@@ -48,6 +54,12 @@ public sealed class AppSettings
         Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "WinCleaner");
 }
 
+public sealed class JournalDocument
+{
+    public int SchemaVersion { get; set; } = 2;
+    public List<ChangeLogEntry> Entries { get; set; } = [];
+}
+
 public sealed class ChangeLogService
 {
     private readonly List<ChangeLogEntry> _session = new();
@@ -57,12 +69,14 @@ public sealed class ChangeLogService
     private readonly object _lock = new();
 
     public ChangeLogService(AppSettings settings)
+        : this(settings.GetDataFolder(), settings.GetLogFolder())
     {
-        var folder = settings.GetLogFolder();
-        Directory.CreateDirectory(folder);
-        _sessionFile = Path.Combine(folder, $"session-{DateTime.Now:yyyyMMdd-HHmmss}.json");
+    }
 
-        var dataFolder = settings.GetDataFolder();
+    internal ChangeLogService(string dataFolder, string logFolder)
+    {
+        Directory.CreateDirectory(logFolder);
+        _sessionFile = Path.Combine(logFolder, $"session-{DateTime.Now:yyyyMMdd-HHmmss}.json");
         Directory.CreateDirectory(dataFolder);
         _journalFile = Path.Combine(dataFolder, "undo_history.json");
         LoadJournal();
@@ -95,6 +109,16 @@ public sealed class ChangeLogService
     }
 
     /// <summary>Persisted revertable applies, newest first (one entry per ActionId).</summary>
+    public IReadOnlyList<ChangeLogEntry> GetPartialEntries()
+    {
+        lock (_lock)
+        {
+            return _journal
+                .Where(e => e.ErrorCode == GateCodes.Partial)
+                .ToList();
+        }
+    }
+
     public IReadOnlyList<ChangeLogEntry> GetRevertableEntries()
     {
         lock (_lock)
@@ -113,7 +137,7 @@ public sealed class ChangeLogService
             _session.Add(entry);
             PersistSession();
 
-            if (entry.CanRevert && entry.Success)
+            if ((entry.CanRevert && entry.Success) || entry.ErrorCode == GateCodes.Partial)
             {
                 // Keep latest revertable state per action id.
                 _journal.RemoveAll(e => string.Equals(e.ActionId, entry.ActionId, StringComparison.OrdinalIgnoreCase));
@@ -230,16 +254,33 @@ public sealed class ChangeLogService
                 return;
 
             var json = File.ReadAllText(_journalFile);
-            var loaded = JsonSerializer.Deserialize<List<ChangeLogEntry>>(json);
+            List<ChangeLogEntry>? loaded = null;
+            using (var doc = JsonDocument.Parse(json))
+            {
+                if (doc.RootElement.ValueKind == JsonValueKind.Array)
+                    loaded = JsonSerializer.Deserialize<List<ChangeLogEntry>>(json);
+                else if (doc.RootElement.ValueKind == JsonValueKind.Object)
+                    loaded = JsonSerializer.Deserialize<JournalDocument>(json)?.Entries;
+            }
+
             if (loaded is null)
                 return;
 
             _journal.Clear();
             _journal.AddRange(loaded.Where(e => e.CanRevert && e.Success));
         }
-        catch
+        catch (Exception ex)
         {
-            // Corrupt journal must not block startup.
+            System.Diagnostics.Trace.WriteLine("Journal load failed: " + ex.Message);
+            try
+            {
+                if (File.Exists(_journalFile))
+                    File.Move(_journalFile, _journalFile + ".bad", overwrite: true);
+            }
+            catch (Exception moveEx)
+            {
+                System.Diagnostics.Trace.WriteLine("Journal backup failed: " + moveEx.Message);
+            }
         }
     }
 
@@ -251,7 +292,7 @@ public sealed class ChangeLogService
 
     private void PersistJournal()
     {
-        var json = JsonSerializer.Serialize(_journal, new JsonSerializerOptions { WriteIndented = true });
+        var json = JsonSerializer.Serialize(new JournalDocument { SchemaVersion = 2, Entries = _journal }, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(_journalFile, json);
     }
 }
@@ -261,27 +302,68 @@ public sealed class ActionExecutor
     private readonly ChangeLogService _log;
     private readonly RestorePointManager _restore;
     private readonly AppSettings _settings;
+    private readonly SnapshotStore _snapshots;
+    private readonly IActionGate _gate;
+    private readonly ISystemInfo _system;
+    private readonly IFeatureProbe _features;
+    private readonly Func<bool> _isAdmin;
 
-    public ActionExecutor(ChangeLogService log, RestorePointManager restore, AppSettings settings)
+    public ActionExecutor(
+        ChangeLogService log,
+        RestorePointManager restore,
+        AppSettings settings,
+        SnapshotStore snapshots,
+        ISystemInfo? system = null,
+        IActionGate? gate = null,
+        IFeatureProbe? features = null,
+        Func<bool>? isAdministrator = null)
     {
         _log = log;
         _restore = restore;
         _settings = settings;
+        _snapshots = snapshots;
+        _system = system ?? new MachineSystemInfo();
+        _gate = gate ?? new ActionGateChain();
+        _features = features ?? new OpenFeatureProbe();
+        _isAdmin = isAdministrator ?? PrivilegeHelper.IsAdministrator;
     }
 
-    public async Task<ChangeResult> ExecuteAsync(IChangeAction action, bool isRevert = false, CancellationToken ct = default)
+    public IConfirmationService? Confirmation { get; set; }
+
+    internal async Task<ChangeResult> ExecuteAsync(IChangeAction action, bool isRevert = false, CancellationToken ct = default)
     {
-        if (action.Risk == Models.RiskLevel.Blocked)
-            return ChangeResult.Fail("This action is blocked because it can break the system.");
+        return await ExecuteCoreAsync(action, isRevert, new GateSession { Arm64Confirmed = Arm64Lease.IsConfirmed }, ct).ConfigureAwait(false);
+    }
 
-        if (action.Risk == Models.RiskLevel.Dangerous && !_settings.AllowDangerousActions && !isRevert)
-            return ChangeResult.Fail("Dangerous actions are disabled in Settings.");
+    private async Task<ChangeResult> ExecuteCoreAsync(
+        IChangeAction action,
+        bool isRevert,
+        GateSession session,
+        CancellationToken ct)
+    {
+        if (!isRevert
+            && string.Equals(_settings.RestorePointPolicy, "BeforeIrreversible", StringComparison.OrdinalIgnoreCase)
+            && !action.CanRevert
+            && !await ConfirmMissingRestorePointAsync(ct).ConfigureAwait(false))
+            return Journal(action, false, ChangeResult.FailCode(RestoreCode()));
 
-        // One restore point per session — never per tweak (Windows rate-limits and can hang).
-        if (!isRevert)
+        var antiCheatOk = false;
+        while (true)
         {
-            await _restore.EnsureSessionCheckpointAsync(_settings.AutoRestorePoint, warnIfMissing: true, ct)
-                .ConfigureAwait(false);
+            var decision = _gate.Decide(BuildContext(action, isRevert, session.Arm64Confirmed, antiCheatOk));
+            if (decision.Kind == GateKind.Allow)
+                break;
+            if (decision.Kind == GateKind.Deny)
+                return Journal(action, isRevert, ChangeResult.FailCode(decision.ErrorCode ?? GateCodes.Blocked));
+
+            var accepted = Confirmation is not null &&
+                           await Confirmation.ConfirmAsync(decision.ErrorCode ?? "", ct).ConfigureAwait(false);
+            if (!accepted)
+                return Journal(action, isRevert, ChangeResult.FailCode(decision.ErrorCode ?? GateCodes.AntiCheat));
+            if (decision.ErrorCode == GateCodes.Arm64)
+                session.Arm64Confirmed = true;
+            if (decision.ErrorCode == GateCodes.AntiCheat)
+                antiCheatOk = true;
         }
 
         ChangeResult result;
@@ -299,6 +381,38 @@ public sealed class ActionExecutor
             result = ChangeResult.Fail(ex.Message);
         }
 
+        if (!isRevert && result.ErrorCode == "gate.irreversibleConfirm" && action is CommandChangeAction command)
+        {
+            if (!await ConfirmMissingRestorePointAsync(ct).ConfigureAwait(false))
+                return Journal(action, false, ChangeResult.FailCode(RestoreCode()));
+            command.AcceptIrreversible();
+            try
+            {
+                result = await action.ApplyAsync(ct).ConfigureAwait(false);
+            }
+            catch (Exception ex)
+            {
+                result = ChangeResult.Fail(ex.Message);
+            }
+        }
+
+        return Journal(action, isRevert, result);
+    }
+
+    private async Task<bool> ConfirmMissingRestorePointAsync(CancellationToken ct)
+    {
+        var outcome = _restore.CreateChecked("WinCleaner");
+        if (outcome == RestorePointOutcome.Created)
+            return true;
+        var code = outcome == RestorePointOutcome.ProtectionDisabled ? "gate.protectionOff" : "gate.noNewPoint";
+        return Confirmation is not null && await Confirmation.ConfirmAsync(code, ct).ConfigureAwait(false);
+    }
+
+    private static string RestoreCode() =>
+        RestorePointManager.LastOutcome == RestorePointOutcome.ProtectionDisabled ? "gate.protectionOff" : "gate.noNewPoint";
+
+    private ChangeResult Journal(IChangeAction action, bool isRevert, ChangeResult result)
+    {
         _log.Append(new ChangeLogEntry
         {
             ActionId = action.Id,
@@ -309,6 +423,7 @@ public sealed class ActionExecutor
             CanRevert = action.CanRevert && result.Success && !isRevert,
             Success = result.Success,
             Message = result.Message,
+            ErrorCode = result.ErrorCode,
             Category = action.Category
         });
 
@@ -318,26 +433,103 @@ public sealed class ActionExecutor
         return result;
     }
 
-    public async Task<IReadOnlyList<ChangeResult>> ExecuteManyAsync(
+    private ActionGateContext BuildContext(IChangeAction action, bool isRevert, bool arm64Confirmed, bool antiCheatConfirmed = false)
+    {
+        var feature = action.Constraints.RequiresFeature;
+        return new ActionGateContext
+        {
+            Action = action,
+            IsRevert = isRevert,
+            AllowDangerous = _settings.AllowDangerousActions,
+            IsAdministrator = _isAdmin(),
+            System = _system,
+            DependencyAvailable = string.IsNullOrWhiteSpace(feature) || _features.IsAvailable(feature),
+            Arm64Confirmed = arm64Confirmed,
+            AntiCheatConfirmed = antiCheatConfirmed
+        };
+    }
+
+    private sealed class GateSession
+    {
+        public bool Arm64Confirmed { get; set; }
+    }
+
+    internal async Task<IReadOnlyList<ChangeResult>> ExecuteManyAsync(
         IEnumerable<IChangeAction> actions,
         IProgress<string>? progress = null,
-        CancellationToken ct = default)
+        CancellationToken ct = default,
+        string? snapshotName = null)
     {
         var results = new List<ChangeResult>();
+        var snapshotItems = new List<SnapshotItem>();
         var list = actions.ToList();
-
-        if (list.Count > 0 && _settings.AutoRestorePoint && !_restore.HasSessionCheckpoint)
+        if (list.Count > 0
+            && string.Equals(_settings.RestorePointPolicy, "BeforeEachBatch", StringComparison.OrdinalIgnoreCase)
+            && !await ConfirmMissingRestorePointAsync(ct).ConfigureAwait(false))
         {
-            progress?.Report("Creating restore point...");
-            await _restore.EnsureSessionCheckpointAsync(_settings.AutoRestorePoint, warnIfMissing: true, ct)
-                .ConfigureAwait(false);
+            foreach (var action in list)
+                results.Add(Journal(action, false, ChangeResult.FailCode(RestoreCode())));
+            return results;
+        }
+
+        var session = new GateSession { Arm64Confirmed = Arm64Lease.IsConfirmed };
+        if (list.Count > 0 && _system.OsArch == System.Runtime.InteropServices.Architecture.Arm64 && !session.Arm64Confirmed)
+        {
+            var accepted = Confirmation is not null &&
+                           await Confirmation.ConfirmAsync(GateCodes.Arm64, ct).ConfigureAwait(false);
+            if (!accepted)
+            {
+                foreach (var action in list)
+                    results.Add(Journal(action, false, ChangeResult.FailCode(GateCodes.Arm64)));
+                return results;
+            }
+
+            session.Arm64Confirmed = true;
         }
 
         foreach (var action in list)
         {
             ct.ThrowIfCancellationRequested();
+
+            if (!action.IsOneShot)
+            {
+                try
+                {
+                    if (action.IsApplied())
+                    {
+                        results.Add(ChangeResult.Ok(null, null, "exec.alreadyApplied"));
+                        continue;
+                    }
+                }
+                catch (Exception ex)
+                {
+                    System.Diagnostics.Trace.WriteLine($"IsApplied failed for {action.Id}: {ex.Message}");
+                }
+            }
+
             progress?.Report(action.DisplayName);
-            results.Add(await ExecuteAsync(action, false, ct).ConfigureAwait(false));
+            var result = await ExecuteCoreAsync(action, false, session, ct).ConfigureAwait(false);
+            results.Add(result);
+            if (!result.Success)
+                continue;
+
+            snapshotItems.Add(new SnapshotItem
+            {
+                ActionId = action.Id,
+                DisplayName = action.DisplayName,
+                OldValue = result.OldValue,
+                NewValue = result.NewValue,
+                CanRevert = action.CanRevert,
+                Risk = action.Risk.ToString()
+            });
+        }
+
+        if (snapshotItems.Count > 0)
+        {
+            _snapshots.Append(
+                snapshotName ?? $"Manual · {DateTime.Now:HH:mm}",
+                snapshotItems,
+                _restore.HasSessionCheckpoint);
         }
 
         return results;

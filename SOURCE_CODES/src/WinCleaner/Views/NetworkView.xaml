@@ -1,0 +1,104 @@
+<UserControl x:Class="WinCleaner.Views.NetworkView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
+    <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
+
+    <ui:Card Grid.Row="2" Margin="0,0,0,10" Padding="16">
+        <StackPanel>
+          <StackPanel Orientation="Horizontal" Margin="0,0,0,6">
+            <ui:SymbolIcon Symbol="Globe24" FontSize="16" Margin="0,0,8,0"
+                           Foreground="{DynamicResource SystemAccentColorSecondaryBrush}"
+                           VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding DnsTitle}" Style="{StaticResource CardTitleStyle}"/>
+          </StackPanel>
+          <TextBlock Text="{Binding DnsDescription}" TextWrapping="Wrap"
+                     Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,0,0,12" FontSize="12"/>
+          <StackPanel Orientation="Horizontal">
+            <ComboBox ItemsSource="{Binding DnsOptions}"
+                      SelectedItem="{Binding SelectedDnsOption}"
+                      DisplayMemberPath="DisplayName"
+                      Width="320" MinHeight="32"
+                      VerticalContentAlignment="Center"
+                      IsEnabled="{Binding CanChangeDns}"/>
+            <ui:Button Content="{Binding DnsApplyLabel}" Command="{Binding ApplyDnsCommand}"
+                       Appearance="Primary" Icon="{ui:SymbolIcon Checkmark24}" Margin="10,0,0,0"
+                       IsEnabled="{Binding CanChangeDns}"/>
+            <ui:Button Content="{Binding FlushDnsLabel}" Command="{Binding FlushDnsCommand}"
+                       Appearance="Secondary" Icon="{ui:SymbolIcon ArrowSync24}" Margin="8,0,0,0"
+                       IsEnabled="{Binding CanChangeDns}"/>
+            <ui:Button Content="{DynamicResource net.dns.latency}" Command="{Binding MeasureDnsLatencyCommand}"
+                       Appearance="Secondary" Margin="8,0,0,0"
+                       IsEnabled="{Binding CanChangeDns}"/>
+          </StackPanel>
+          <ui:TextBox Margin="0,10,0,0" PlaceholderText="{DynamicResource net.dns.custom}"
+                      Text="{Binding CustomDns, UpdateSourceTrigger=PropertyChanged}"/>
+          <ui:TextBox Margin="0,8,0,0" PlaceholderText="{DynamicResource net.dns.adapter}"
+                      Text="{Binding AdapterFilter, UpdateSourceTrigger=PropertyChanged}"/>
+          <TextBlock Text="{Binding DnsStatus}" TextWrapping="Wrap" Margin="0,10,0,0"
+                     Foreground="{DynamicResource TextMutedBrush}" FontSize="11"/>
+        </StackPanel>
+      </ui:Card>
+
+      <TextBlock Grid.Row="3" Text="{Binding TweaksSectionTitle}" Style="{StaticResource SectionHeaderStyle}"/>
+      <ui:InfoBar Grid.Row="4"
+                  Title="{DynamicResource common.loading}"
+                  IsOpen="True"
+                  IsClosable="False"
+                  Severity="Informational"
+                  Margin="0,0,0,10"
+                  Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
+      <ItemsControl Grid.Row="5" ItemsSource="{Binding Items}" Style="{StaticResource VirtualizingListStyle}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <ui:Card Margin="0,0,0,10" Padding="16">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="*"/>
+                  <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                    <Border Style="{StaticResource RiskBadgeStyle}"
+                            Background="{Binding Risk, Converter={StaticResource RiskToBrush}}">
+                      <TextBlock Text="{Binding RiskLabel}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding Risk, Converter={StaticResource RiskToBadgeText}}"/>
+                    </Border>
+                  </StackPanel>
+                  <TextBlock Text="{Binding Description}" Foreground="{DynamicResource TextSecondaryBrush}" TextWrapping="Wrap" Margin="0,6,0,0"
+                             FontSize="12" LineHeight="18"
+                             ToolTip="{Binding Description}"/>
+                </StackPanel>
+                <ui:ToggleSwitch Grid.Column="1"
+                                 IsChecked="{Binding IsApplied, Mode=OneWay}"
+                                 IsEnabled="{Binding CanToggle}"
+                                 Command="{Binding ToggleCommand}"
+                                 AutomationProperties.Name="{Binding Title}"
+                                 AutomationProperties.HelpText="{Binding Description}"
+                                 FocusVisualStyle="{StaticResource AppFocusVisual}"
+                                 VerticalAlignment="Center"/>
+              </Grid>
+            </ui:Card>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+
+      <ui:InfoBar Grid.Row="6" Message="{Binding Tips}"
+                  IsOpen="True"
+                  IsClosable="False"
+                  Severity="Informational"
+                  Margin="0,8,0,0"
+                  Visibility="{Binding Tips, Converter={StaticResource BoolToVis}}"/>
+  </Grid>
+</UserControl>

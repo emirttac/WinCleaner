@@ -14,6 +14,7 @@ public sealed class CommandProgressWindow : Window
     private readonly TextBox _log;
     private readonly Button _closeButton;
     private readonly TextBlock _status;
+    private readonly ProgressBar _progress;
     private readonly StringBuilder _buffer = new();
     private bool _completed;
 
@@ -30,14 +31,26 @@ public sealed class CommandProgressWindow : Window
 
         var root = new DockPanel { Margin = new Thickness(16) };
 
+        var header = new StackPanel { Margin = new Thickness(0, 0, 0, 10) };
         _status = new TextBlock
         {
             Text = "Running…",
-            Margin = new Thickness(0, 0, 0, 10),
+            Margin = new Thickness(0, 0, 0, 8),
             FontWeight = FontWeights.SemiBold
         };
-        DockPanel.SetDock(_status, Dock.Top);
-        root.Children.Add(_status);
+        _progress = new ProgressBar
+        {
+            Height = 10,
+            Minimum = 0,
+            Maximum = 100,
+            IsIndeterminate = true,
+            Foreground = TryFindResource("AccentBrush") as Brush
+                ?? new SolidColorBrush(Color.FromRgb(0xE1, 0x06, 0x00))
+        };
+        header.Children.Add(_status);
+        header.Children.Add(_progress);
+        DockPanel.SetDock(header, Dock.Top);
+        root.Children.Add(header);
 
         _closeButton = new Button
         {
@@ -92,6 +105,8 @@ public sealed class CommandProgressWindow : Window
             _completed = true;
             _status.Text = statusText
                 ?? (success ? "Completed." : "Finished with errors.");
+            _progress.IsIndeterminate = false;
+            _progress.Value = success ? 100 : _progress.Value;
             _closeButton.IsEnabled = true;
             _closeButton.Content = "Close";
         }

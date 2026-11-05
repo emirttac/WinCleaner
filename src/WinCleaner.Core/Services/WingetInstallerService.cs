@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Text;
+using WinCleaner.Core.Abstractions;
 
 namespace WinCleaner.Core.Services;
 
@@ -29,6 +30,13 @@ public sealed record WingetInstallResult(
 /// </summary>
 public sealed class WingetInstallerService
 {
+    private readonly IProcessRunner _processes;
+
+    public WingetInstallerService(IProcessRunner? processes = null)
+    {
+        _processes = processes ?? ProcessRunner.Shared;
+    }
+
     public async Task<WingetAvailability> CheckAvailabilityAsync(CancellationToken ct = default)
     {
         try
@@ -159,10 +167,62 @@ public sealed class WingetInstallerService
         }
     }
 
+    public async Task<WingetInstallResult> UpgradeAsync(
+        string wingetId,
+        IProgress<string>? progress = null,
+        CancellationToken ct = default) =>
+        await RunWingetPackageCommandAsync(wingetId, "upgrade", "installing", progress, ct).ConfigureAwait(false);
+
+    public async Task<IReadOnlySet<string>> FindInstalledAsync(
+        IEnumerable<string> wingetIds,
+        CancellationToken ct = default)
+    {
+        var found = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var exe = ResolveWingetPath();
+        if (exe is null)
+            return found;
+
+        var run = await RunProcessAsync(exe, "list --accept-source-agreements", ct, timeoutMs: 120_000).ConfigureAwait(false);
+        var text = run.StdOut + Environment.NewLine + run.StdErr;
+        foreach (var id in wingetIds)
+        {
+            if (string.IsNullOrWhiteSpace(id))
+                continue;
+            if (text.Contains(id, StringComparison.OrdinalIgnoreCase))
+                found.Add(id);
+        }
+
+        return found;
+    }
+
     public async Task<WingetInstallResult> InstallAsync(
         string wingetId,
         IProgress<string>? progress = null,
-        CancellationToken ct = default)
+        CancellationToken ct = default) =>
+        await RunWingetPackageCommandAsync(
+            wingetId,
+            "install",
+            progressPhase: "installing",
+            progress,
+            ct).ConfigureAwait(false);
+
+    public async Task<WingetInstallResult> UninstallAsync(
+        string wingetId,
+        IProgress<string>? progress = null,
+        CancellationToken ct = default) =>
+        await RunWingetPackageCommandAsync(
+            wingetId,
+            "uninstall",
+            progressPhase: "installing",
+            progress,
+            ct).ConfigureAwait(false);
+
+    private async Task<WingetInstallResult> RunWingetPackageCommandAsync(
+        string wingetId,
+        string verb,
+        string progressPhase,
+        IProgress<string>? progress,
+        CancellationToken ct)
     {
         if (string.IsNullOrWhiteSpace(wingetId))
             return Fail(WingetInstallStatus.Failed, "Winget ID is empty.");
@@ -173,17 +233,21 @@ public sealed class WingetInstallerService
                 "winget was not found. Install «App Installer» from the Microsoft Store.");
 
         progress?.Report("starting");
-        var args =
-            $"install --id {Quote(wingetId)} -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity";
+        var args = verb.Equals("uninstall", StringComparison.OrdinalIgnoreCase)
+            ? $"uninstall --id {Quote(wingetId)} -e --silent --disable-interactivity --accept-source-agreements"
+            : $"install --id {Quote(wingetId)} -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity";
+
+        if (verb.Equals("upgrade", StringComparison.OrdinalIgnoreCase))
+            args = $"upgrade --id {Quote(wingetId)} -e --silent --accept-package-agreements --accept-source-agreements --disable-interactivity";
 
         try
         {
-            progress?.Report("installing");
+            progress?.Report(progressPhase);
             var run = await RunProcessAsync(exe, args, ct, timeoutMs: 30 * 60 * 1000).ConfigureAwait(false);
             var combined = (run.StdOut + Environment.NewLine + run.StdErr).Trim();
 
             // winget exit codes: 0 success; -1978335189 / 0x8A15002B already installed (varies by version)
-            if (run.Success || IsAlreadyInstalled(run.ExitCode, combined))
+            if (run.Success || IsAlreadyInstalled(run.ExitCode, combined) || IsAlreadyAbsent(run.ExitCode, combined, verb))
             {
                 var status = IsAlreadyInstalled(run.ExitCode, combined)
                     ? WingetInstallStatus.AlreadyInstalled
@@ -206,6 +270,17 @@ public sealed class WingetInstallerService
             progress?.Report("failed");
             return Fail(WingetInstallStatus.Failed, ex.Message);
         }
+    }
+
+    private static bool IsAlreadyAbsent(int exitCode, string output, string verb)
+    {
+        if (!verb.Equals("uninstall", StringComparison.OrdinalIgnoreCase))
+            return false;
+        // Common winget codes / messages for "no installed package found"
+        if (exitCode is -1978335212 or unchecked((int)0x8A150014))
+            return true;
+        return output.Contains("No installed package found", StringComparison.OrdinalIgnoreCase)
+               || output.Contains("not installed", StringComparison.OrdinalIgnoreCase);
     }
 
     private static WingetInstallResult Fail(WingetInstallStatus status, string message) =>
@@ -242,72 +317,22 @@ public sealed class WingetInstallerService
     private static string Truncate(string s, int max) =>
         s.Length <= max ? s : s[..max] + "…";
 
-    private static async Task<(bool Success, int ExitCode, string StdOut, string StdErr, string? ErrorMessage)> RunProcessAsync(
+    private async Task<(bool Success, int ExitCode, string StdOut, string StdErr, string? ErrorMessage)> RunProcessAsync(
         string fileName,
         string arguments,
         CancellationToken ct,
         int timeoutMs = 60000)
     {
-        var psi = new ProcessStartInfo
-        {
-            FileName = fileName,
-            Arguments = arguments,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardErrorEncoding = Encoding.UTF8
-        };
-
-        using var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
-        var stdout = new StringBuilder();
-        var stderr = new StringBuilder();
-        var tcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        process.OutputDataReceived += (_, e) =>
-        {
-            if (e.Data is not null) stdout.AppendLine(e.Data);
-        };
-        process.ErrorDataReceived += (_, e) =>
-        {
-            if (e.Data is not null) stderr.AppendLine(e.Data);
-        };
-        process.Exited += (_, _) =>
-        {
-            try { tcs.TrySetResult(process.ExitCode); }
-            catch (Exception ex) { tcs.TrySetException(ex); }
-        };
-
         try
         {
-            if (!process.Start())
-                return (false, -1, "", "", $"Failed to start {fileName}");
-
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            await using (ct.Register(() =>
-            {
-                try
-                {
-                    if (!process.HasExited)
-                        process.Kill(entireProcessTree: true);
-                }
-                catch { }
-                tcs.TrySetCanceled(ct);
-            }).ConfigureAwait(false))
-            {
-                var completed = await Task.WhenAny(tcs.Task, Task.Delay(timeoutMs, ct)).ConfigureAwait(false);
-                if (completed != tcs.Task)
-                {
-                    try { process.Kill(entireProcessTree: true); } catch { }
-                    return (false, -1, stdout.ToString(), stderr.ToString(), "winget timed out.");
-                }
-
-                var code = await tcs.Task.ConfigureAwait(false);
-                return (code == 0, code, stdout.ToString(), stderr.ToString(), null);
-            }
+            var result = await _processes.RunAsync(
+                new ProcessRequest(fileName, arguments, TimeSpan.FromMilliseconds(timeoutMs)),
+                ct).ConfigureAwait(false);
+            if (result.Cancelled)
+                throw new OperationCanceledException(ct);
+            if (result.TimedOut || result.ExitCode is null)
+                return (false, -1, result.Stdout, result.Stderr, "winget timed out.");
+            return (result.ExitCode == 0, result.ExitCode.Value, result.Stdout, result.Stderr, null);
         }
         catch (OperationCanceledException)
         {
@@ -315,7 +340,7 @@ public sealed class WingetInstallerService
         }
         catch (Exception ex)
         {
-            return (false, -1, stdout.ToString(), stderr.ToString(), ex.Message);
+            return (false, -1, "", "", ex.Message);
         }
     }
 }

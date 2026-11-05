@@ -1,0 +1,9 @@
+# VC++ measurement, 5 Nov 2026
+
+`dotnet list package --include-transitive` for WinCleaner and WinCleaner.Core shows managed packages only. None is a native Visual C++ library.
+
+Framework-dependent `win-x64` publish (`--self-contained false`, not a single file): no `vcruntime*.dll`.
+
+Self-contained `win-x64` publish (`--self-contained true`, not a single file): `vcruntime140_cor3.dll` from the .NET runtime.
+
+The separate VC++ 2015-2022 x64 check stays. Installer and portable use the same sentence, `PrerequisiteChecker.VcRedistDetail`. The quiet install stays.

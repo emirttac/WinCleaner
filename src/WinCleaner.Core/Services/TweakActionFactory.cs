@@ -1,6 +1,7 @@
 using WinCleaner.Core.Actions;
 using WinCleaner.Core.Compatibility;
 using WinCleaner.Core.Models;
+using WinCleaner.Core.Operations;
 using WinCleaner.Data;
 
 namespace WinCleaner.Core.Services;
@@ -15,6 +16,7 @@ public sealed class TweakActionFactory
     private readonly PowerPlanManager _power;
     private readonly AppxManager _appx;
     private readonly TaskSchedulerManager _tasks;
+    private readonly WingetInstallerService _winget;
     private readonly Func<string, string> _localize;
     private readonly OsInfo _os;
 
@@ -25,7 +27,8 @@ public sealed class TweakActionFactory
         AppxManager appx,
         TaskSchedulerManager tasks,
         Func<string, string> localize,
-        OsInfo os)
+        OsInfo os,
+        WingetInstallerService? winget = null)
     {
         _registry = registry;
         _services = services;
@@ -34,6 +37,7 @@ public sealed class TweakActionFactory
         _tasks = tasks;
         _localize = localize;
         _os = os;
+        _winget = winget ?? new WingetInstallerService();
     }
 
     public IChangeAction? CreateFromTweak(TweakCatalogEntry entry)
@@ -45,6 +49,8 @@ public sealed class TweakActionFactory
 
         return entry.Type.ToLowerInvariant() switch
         {
+            "visualeffects" =>
+                CreateVisualEffectsAction(entry, name, desc, risk),
             "registry" when resolved.Registries is { Count: > 0 } =>
                 new MultiRegistryChangeAction(resolved, name, desc, _registry),
             "registry" when resolved.Registry is not null =>
@@ -52,13 +58,27 @@ public sealed class TweakActionFactory
             "powerplan" =>
                 new PowerPlanChangeAction(entry.Id, name, desc, risk, _power),
             "command" when entry.Command is not null =>
-                new CommandChangeAction(entry.Id, name, desc, entry.Category, risk, entry.Command, _localize, entry.RequiresReboot, entry.RequiresAntiCheatConfirm),
+                new CommandChangeAction(entry.Id, name, desc, entry.Category, risk, entry.Command, _localize, entry.RequiresReboot, entry.RequiresAntiCheatConfirm, ActionConstraints.From(entry.Skus, entry.Archs, entry.RequiresFeature)),
             "service" when entry.Service is not null =>
                 CreateServiceAction(entry.Id, name, desc, entry.Category, risk, entry.Service.ServiceName, entry.Service.DesiredStart),
             "task" when entry.Task is not null =>
                 new TaskDisableAction(entry.Id, name, desc, entry.Task.TaskPath, _tasks),
             _ => null
         };
+    }
+
+    private IChangeAction CreateVisualEffectsAction(
+        TweakCatalogEntry entry,
+        string name,
+        string desc,
+        RiskLevel risk)
+    {
+        var mode = entry.Id.Contains("animation", StringComparison.OrdinalIgnoreCase)
+            ? VisualEffectsChangeAction.Mode.DisableAnimations
+            : VisualEffectsChangeAction.Mode.BestPerformance;
+
+        return new VisualEffectsChangeAction(
+            entry.Id, name, desc, entry.Category, risk, mode, _registry);
     }
 
     /// <summary>Picks the registry spec matching the current OS build from registryVariants.</summary>
@@ -119,7 +139,21 @@ public sealed class TweakActionFactory
 
     public AppxRemoveAction CreateAppxRemove(AppCatalogEntry entry) =>
         new(entry.Id, _localize(entry.DisplayNameKey), _localize(entry.DescriptionKey),
-            RiskParser.Parse(entry.Risk), entry.GetPackageNamePatterns(), _appx);
+            RiskParser.Parse(entry.Risk), entry.GetPackageNamePatterns(), _appx, entry.SystemCritical);
+
+    public AppxInstallAction? CreateAppxInstall(AppCatalogEntry entry)
+    {
+        var installId = entry.GetInstallId();
+        if (string.IsNullOrWhiteSpace(installId))
+            return null;
+        return new AppxInstallAction(
+            entry.Id + "-install",
+            _localize(entry.DisplayNameKey),
+            _localize(entry.DescriptionKey),
+            RiskParser.Parse(entry.Risk),
+            installId,
+            _winget);
+    }
 
     public OneDriveUninstallAction CreateOneDriveUninstall() => new(_appx, _localize);
 }
@@ -163,6 +197,7 @@ public sealed class PresetEngine
         {
             if (!tweaks.TryGetValue(id, out var tweak)) continue;
             if (!OsCompatibility.IsCompatible(tweak.MinBuild, tweak.Win11Only, _os)) continue;
+            if (!CatalogAccess.Allows(tweak, _os.Sku, System.Runtime.InteropServices.RuntimeInformation.OSArchitecture)) continue;
             var action = _factory.CreateFromTweak(tweak);
             if (action is not null) actions.Add(action);
         }
@@ -238,10 +273,15 @@ public sealed class AppServices
     public SystemHealthService SystemHealth { get; } = new();
     public DnsChangerService Dns { get; } = new();
     public WingetInstallerService Winget { get; } = new();
+    public RegistryTransfer RegistryTransfer { get; } = new(ProcessRunner.Shared);
     public ChangeLogService ChangeLog { get; }
+    public SnapshotStore Snapshots { get; }
     public ActionExecutor Executor { get; }
+    public IOperationRunner Operations { get; }
+    public SessionLineLog SessionLog { get; }
     public TweakActionFactory ActionFactory { get; private set; } = null!;
     public PresetEngine Presets { get; private set; } = null!;
+    public AppliedStateCache AppliedState { get; } = new();
 
     public AppServices(Func<string, string> localize)
     {
@@ -249,17 +289,54 @@ public sealed class AppServices
         Os = OsCompatibility.Detect();
         Hardware = SystemInfoService.Collect(Os);
         ChangeLog = new ChangeLogService(Settings);
-        Executor = new ActionExecutor(ChangeLog, RestorePoints, Settings);
+        Snapshots = new SnapshotStore(Settings);
+        Executor = new ActionExecutor(ChangeLog, RestorePoints, Settings, Snapshots);
+        SessionLog = new SessionLineLog(Settings.GetLogFolder());
+        Operations = new OperationRunner(SessionLog, new MachineSystemInfo(), () => Executor.Confirmation);
         SetLocalizer(localize);
     }
 
+    public Task<OperationResult> RunActionsAsync(
+        string name,
+        IReadOnlyList<IChangeAction> actions,
+        string? snapshotName,
+        CancellationToken cancellationToken = default) =>
+        Operations.EnqueueAsync(new OperationRequest(name, true, async ctx =>
+        {
+            var progress = new Progress<string>(text => ctx.Progress.Report(new OperationStep(text, null)));
+            var results = await Executor.ExecuteManyAsync(actions, progress, ctx.Token, snapshotName).ConfigureAwait(false);
+            var failed = results.Where(r => !r.Success).Select(r => r.Message ?? r.ErrorCode).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
+            if (failed.Count > 0)
+                throw new InvalidOperationException(string.Join(Environment.NewLine, failed));
+        }), cancellationToken);
+
+    public Task<OperationResult> RunActionAsync(
+        string name,
+        IChangeAction action,
+        bool isRevert = false,
+        CancellationToken cancellationToken = default) =>
+        Operations.EnqueueAsync(new OperationRequest(name, true, async ctx =>
+        {
+            ctx.Progress.Report(new OperationStep(name, null));
+            var result = await Executor.ExecuteAsync(action, isRevert, ctx.Token).ConfigureAwait(false);
+            if (!result.Success)
+                throw new InvalidOperationException(result.Message ?? result.ErrorCode ?? name);
+        }), cancellationToken);
+
+    public Task<OperationResult> RunWorkAsync(
+        string name,
+        bool writesSystem,
+        Func<OperationContext, Task> body,
+        CancellationToken cancellationToken = default) =>
+        Operations.EnqueueAsync(new OperationRequest(name, writesSystem, body), cancellationToken);
+
     public void SetLocalizer(Func<string, string> localize)
     {
-        ActionFactory = new TweakActionFactory(Registry, Services, PowerPlans, Appx, Tasks, localize, Os);
+        ActionFactory = new TweakActionFactory(Registry, Services, PowerPlans, Appx, Tasks, localize, Os, Winget);
         Presets = new PresetEngine(ActionFactory, Executor, Os);
     }
 
-    /// <summary>Ensure a single session restore point exists before system-changing tools.</summary>
+    /// <summary>Ensure a single session restore point exists (used at startup; not before each tweak).</summary>
     public Task EnsureSessionRestoreAsync(CancellationToken ct = default) =>
-        RestorePoints.EnsureSessionCheckpointAsync(Settings.AutoRestorePoint, warnIfMissing: true, ct);
+        RestorePoints.EnsureSessionCheckpointAsync(Settings.AutoRestorePoint, warnIfMissing: false, ct);
 }

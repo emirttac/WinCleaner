@@ -59,6 +59,24 @@ public class AppCatalogMatchingTests
         Assert.True(apps["app-store"].MatchesAnyInstalled(installed));
         Assert.False(apps["app-people"].MatchesAnyInstalled(installed));
         Assert.False(apps["app-paint3d"].MatchesAnyInstalled(installed));
+        Assert.True(apps["app-paint"].MatchesAnyInstalled(installed));
         Assert.False(apps["app-xboxapp"].MatchesInstalledName("Microsoft.XboxGamingOverlay"));
+    }
+
+    [Fact]
+    public void GetInstallId_PrefersWingetIdOverStoreId()
+    {
+        var entry = new AppCatalogEntry
+        {
+            PackageName = "Microsoft.Paint",
+            StoreId = "9PCFS5B6T72H",
+            WingetId = "9PCFS5B6T72H"
+        };
+        Assert.Equal("9PCFS5B6T72H", entry.GetInstallId());
+        Assert.True(entry.CanReinstall);
+
+        var noId = new AppCatalogEntry { PackageName = "Microsoft.Xbox.TCUI" };
+        Assert.Null(noId.GetInstallId());
+        Assert.False(noId.CanReinstall);
     }
 }

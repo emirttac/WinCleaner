@@ -1,0 +1,66 @@
+<UserControl x:Class="WinCleaner.Views.ServicesView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
+    <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
+
+    <DockPanel Grid.Row="2" Margin="0,0,0,12">
+      <ui:Button DockPanel.Dock="Right" Content="{DynamicResource common.disableAll}"
+                 Command="{Binding DisableCategoryCommand}" Appearance="Secondary" Margin="8,0,0,0"/>
+      <ui:Button DockPanel.Dock="Right" Content="{DynamicResource common.refresh}"
+                 Command="{Binding ReloadCommand}" Appearance="Secondary"
+                 Icon="{ui:SymbolIcon ArrowSync24}"/>
+      <ComboBox ItemsSource="{Binding Categories}" SelectedItem="{Binding SelectedCategory}"
+                Width="220" MinHeight="32" HorizontalAlignment="Left"
+                AutomationProperties.Name="{DynamicResource nav.services}"/>
+    </DockPanel>
+
+    <ItemsControl Grid.Row="3" ItemsSource="{Binding Items}" Style="{StaticResource VirtualizingListStyle}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <ui:Card Margin="0,0,0,10" Padding="16">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <StackPanel>
+                <StackPanel Orientation="Horizontal">
+                  <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
+                  <Border Style="{StaticResource RiskBadgeStyle}"
+                          Background="{Binding Risk, Converter={StaticResource RiskToBrush}}">
+                    <TextBlock Text="{Binding RiskLabel}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding Risk, Converter={StaticResource RiskToBadgeText}}"/>
+                  </Border>
+                </StackPanel>
+                <TextBlock Text="{Binding ServiceName}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"
+                           FontSize="12" LineHeight="18"
+                           ToolTip="{Binding Description}"/>
+                <TextBlock FontSize="11" Foreground="{DynamicResource TextMutedBrush}" Margin="0,4,0,0"
+                           Text="{Binding StatusLine, Mode=OneWay}"/>
+              </StackPanel>
+              <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                <TextBlock Text="{DynamicResource svc.disable}" FontSize="10"
+                           Foreground="{DynamicResource TextMutedBrush}" HorizontalAlignment="Center" Margin="0,0,0,4"/>
+                <ui:ToggleSwitch IsChecked="{Binding IsDisabled, Mode=OneWay}"
+                                 IsEnabled="{Binding IsEnabled}"
+                                 Command="{Binding ToggleCommand}"
+                                 AutomationProperties.Name="{Binding Title}"
+                                 AutomationProperties.HelpText="{Binding Description}"
+                                 FocusVisualStyle="{StaticResource AppFocusVisual}"/>
+              </StackPanel>
+            </Grid>
+          </ui:Card>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </Grid>
+</UserControl>

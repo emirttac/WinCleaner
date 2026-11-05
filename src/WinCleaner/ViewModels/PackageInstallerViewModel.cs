@@ -1,7 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Windows;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using WinCleaner.Core.Operations;
 using WinCleaner.Core.Services;
 using WinCleaner.Data;
 using WinCleaner.Services;
@@ -12,7 +15,6 @@ public partial class PackageInstallerViewModel : ObservableObject
 {
     private readonly AppServices _app;
     private readonly LocalizationService _loc;
-    private CancellationTokenSource? _installCts;
 
     public PackageInstallerViewModel(AppServices app, LocalizationService loc)
     {
@@ -29,6 +31,7 @@ public partial class PackageInstallerViewModel : ObservableObject
     [ObservableProperty] private string _title = "";
     [ObservableProperty] private string _subtitle = "";
     [ObservableProperty] private string _installSelectedLabel = "";
+    [ObservableProperty] private string _uninstallSelectedLabel = "";
     [ObservableProperty] private string _wingetStatusText = "";
     [ObservableProperty] private string _remediateWingetLabel = "";
     [ObservableProperty] private bool _wingetAvailable;
@@ -39,6 +42,7 @@ public partial class PackageInstallerViewModel : ObservableObject
     [ObservableProperty] private bool _isOverallIndeterminate;
 
     public bool CanInstall => WingetAvailable && !IsInstalling && GetSelectedApps().Count > 0;
+    public bool CanUninstall => WingetAvailable && !IsInstalling && GetSelectedApps().Count > 0;
     public bool CanRefreshWinget => !IsInstalling && !IsRemediating;
     public bool CanRemediateWinget => !WingetAvailable && !IsInstalling && !IsRemediating;
 
@@ -47,6 +51,7 @@ public partial class PackageInstallerViewModel : ObservableObject
         Title = _loc.Get("inst.title");
         Subtitle = _loc.Get("inst.subtitle");
         InstallSelectedLabel = _loc.Get("inst.installSelected");
+        UninstallSelectedLabel = _loc.Get("inst.uninstallSelected");
         RemediateWingetLabel = _loc.Get("inst.wingetRemediate");
         foreach (var cat in Categories)
         {
@@ -55,6 +60,7 @@ public partial class PackageInstallerViewModel : ObservableObject
                 app.RefreshLabels(_loc);
         }
         OnPropertyChanged(nameof(CanInstall));
+        OnPropertyChanged(nameof(CanUninstall));
         OnPropertyChanged(nameof(CanRemediateWinget));
     }
 
@@ -63,6 +69,9 @@ public partial class PackageInstallerViewModel : ObservableObject
         foreach (var cat in Categories)
             cat.ApplyFilter(query);
     }
+
+    public IEnumerable<InstallerAppItemViewModel> SearchAll(string? query) =>
+        Categories.SelectMany(c => c.Apps).Where(a => a.MatchesSearch(query));
 
     private void Reload()
     {
@@ -92,7 +101,11 @@ public partial class PackageInstallerViewModel : ObservableObject
         _ => 9
     };
 
-    private void OnSelectionChanged() => OnPropertyChanged(nameof(CanInstall));
+    private void OnSelectionChanged()
+    {
+        OnPropertyChanged(nameof(CanInstall));
+        OnPropertyChanged(nameof(CanUninstall));
+    }
 
     private List<InstallerAppItemViewModel> GetSelectedApps() =>
         Categories.SelectMany(c => c.Apps).Where(a => a.IsSelected && !a.IsBusy).ToList();
@@ -105,6 +118,16 @@ public partial class PackageInstallerViewModel : ObservableObject
         WingetStatusText = avail.Available
             ? string.Format(_loc.Get("inst.wingetOk"), avail.Version)
             : (avail.ErrorMessage ?? _loc.Get("inst.wingetMissing"));
+        if (avail.Available)
+        {
+            var apps = Categories.SelectMany(c => c.Apps).ToList();
+            var installed = await _app.Winget.FindInstalledAsync(apps.Select(a => a.WingetId)).ConfigureAwait(true);
+            foreach (var app in apps)
+            {
+                if (installed.Contains(app.WingetId))
+                    app.SetStatus(WingetInstallStatus.AlreadyInstalled, _loc);
+            }
+        }
         OnPropertyChanged(nameof(CanInstall));
         OnPropertyChanged(nameof(CanRemediateWinget));
     }
@@ -167,6 +190,28 @@ public partial class PackageInstallerViewModel : ObservableObject
             OverallProgressText = "";
             OnPropertyChanged(nameof(CanRemediateWinget));
             OnPropertyChanged(nameof(CanRefreshWinget));
+        }
+    }
+
+    [RelayCommand]
+    private async Task UpgradeSelectedAsync()
+    {
+        if (IsInstalling) return;
+        var selected = GetSelectedApps();
+        if (selected.Count == 0) return;
+        IsInstalling = true;
+        try
+        {
+            foreach (var app in selected)
+            {
+                app.SetStatus(WingetInstallStatus.Installing, _loc);
+                var result = await _app.Winget.UpgradeAsync(app.WingetId).ConfigureAwait(true);
+                app.SetStatus(result.Status, _loc, result.ErrorMessage);
+            }
+        }
+        finally
+        {
+            IsInstalling = false;
         }
     }
 
@@ -238,74 +283,182 @@ public partial class PackageInstallerViewModel : ObservableObject
         OnPropertyChanged(nameof(CanInstall));
         OnPropertyChanged(nameof(CanRefreshWinget));
 
-        _installCts = new CancellationTokenSource();
-        var ct = _installCts.Token;
-        var done = 0;
-
         try
         {
-            foreach (var app in selected)
-                app.SetStatus(WingetInstallStatus.Queued, _loc);
-
-            foreach (var app in selected)
-            {
-                ct.ThrowIfCancellationRequested();
-                app.IsBusy = true;
-                app.IsProgressIndeterminate = true;
-                app.SetStatus(WingetInstallStatus.Starting, _loc);
-                OverallProgressText = string.Format(_loc.Get("inst.progress.current"), app.Title, done + 1, selected.Count);
-
-                var progress = new Progress<string>(phase =>
+            var op = await OperationHost.TrackAsync(_app.Operations, _loc.Get("inst.title"), token =>
+                _app.RunWorkAsync(_loc.Get("inst.title"), true, async ctx =>
                 {
-                    var status = phase switch
+                    var ct = ctx.Token;
+                    var done = 0;
+                    foreach (var app in selected)
+                        app.SetStatus(WingetInstallStatus.Queued, _loc);
+
+                    foreach (var app in selected)
                     {
-                        "installing" => WingetInstallStatus.Installing,
-                        "completed" => WingetInstallStatus.Completed,
-                        "already" => WingetInstallStatus.AlreadyInstalled,
-                        "failed" => WingetInstallStatus.Failed,
-                        "cancelled" => WingetInstallStatus.Cancelled,
-                        _ => WingetInstallStatus.Starting
-                    };
-                    app.SetStatus(status, _loc);
-                    app.IsProgressIndeterminate = status is WingetInstallStatus.Starting or WingetInstallStatus.Installing;
-                });
+                        ct.ThrowIfCancellationRequested();
+                        app.IsBusy = true;
+                        app.IsProgressIndeterminate = true;
+                        app.SetStatus(WingetInstallStatus.Starting, _loc);
+                        OverallProgressText = string.Format(_loc.Get("inst.progress.current"), app.Title, done + 1, selected.Count);
+                        ctx.Progress.Report(new OperationStep(OverallProgressText, null));
 
-                var result = await _app.Winget.InstallAsync(app.WingetId, progress, ct).ConfigureAwait(true);
-                app.SetStatus(result.Status, _loc, result.ErrorMessage);
-                app.IsProgressIndeterminate = false;
-                app.IsBusy = false;
-                if (result.Success)
-                    app.IsSelected = false;
+                        var progress = new Progress<string>(phase =>
+                        {
+                            var status = phase switch
+                            {
+                                "installing" => WingetInstallStatus.Installing,
+                                "completed" => WingetInstallStatus.Completed,
+                                "already" => WingetInstallStatus.AlreadyInstalled,
+                                "failed" => WingetInstallStatus.Failed,
+                                "cancelled" => WingetInstallStatus.Cancelled,
+                                _ => WingetInstallStatus.Starting
+                            };
+                            app.SetStatus(status, _loc);
+                            app.IsProgressIndeterminate = status is WingetInstallStatus.Starting or WingetInstallStatus.Installing;
+                        });
 
-                done++;
-                IsOverallIndeterminate = false;
-                OverallProgress = selected.Count == 0 ? 0 : (double)done / selected.Count * 100;
-            }
+                        var result = await _app.Winget.InstallAsync(app.WingetId, progress, ct).ConfigureAwait(true);
+                        app.SetStatus(result.Status, _loc, result.ErrorMessage);
+                        app.IsProgressIndeterminate = false;
+                        app.IsBusy = false;
+                        if (result.Success)
+                            app.IsSelected = false;
 
-            OverallProgressText = _loc.Get("inst.progress.done");
-        }
-        catch (OperationCanceledException)
-        {
-            OverallProgressText = _loc.Get("inst.progress.cancelled");
-            foreach (var app in selected.Where(a => a.Status is WingetInstallStatus.Queued or WingetInstallStatus.Starting or WingetInstallStatus.Installing))
+                        done++;
+                        IsOverallIndeterminate = false;
+                        OverallProgress = selected.Count == 0 ? 0 : (double)done / selected.Count * 100;
+                        ctx.Progress.Report(new OperationStep(OverallProgressText, OverallProgress));
+                    }
+                }, token)).ConfigureAwait(true);
+
+            OverallProgressText = op.Cancelled
+                ? _loc.Get("inst.progress.cancelled")
+                : op.Success ? _loc.Get("inst.progress.done") : (op.Message ?? _loc.Get("inst.progress.done"));
+            if (op.Cancelled)
             {
-                app.SetStatus(WingetInstallStatus.Cancelled, _loc);
-                app.IsBusy = false;
-                app.IsProgressIndeterminate = false;
+                foreach (var app in selected.Where(a => a.Status is WingetInstallStatus.Queued or WingetInstallStatus.Starting or WingetInstallStatus.Installing))
+                {
+                    app.SetStatus(WingetInstallStatus.Cancelled, _loc);
+                    app.IsBusy = false;
+                    app.IsProgressIndeterminate = false;
+                }
             }
-        }
-        catch (Exception ex)
-        {
-            OverallProgressText = ex.Message;
-            MessageBox.Show(ex.Message, _loc.Get("inst.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+            else if (!op.Success && !string.IsNullOrWhiteSpace(op.Message))
+                MessageBox.Show(op.Message, _loc.Get("inst.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
         }
         finally
         {
             IsInstalling = false;
             IsOverallIndeterminate = false;
-            _installCts?.Dispose();
-            _installCts = null;
             OnPropertyChanged(nameof(CanInstall));
+            OnPropertyChanged(nameof(CanUninstall));
+            OnPropertyChanged(nameof(CanRefreshWinget));
+        }
+    }
+
+    [RelayCommand]
+    private async Task UninstallSelectedAsync()
+    {
+        if (IsInstalling) return;
+
+        var selected = GetSelectedApps();
+        if (selected.Count == 0) return;
+
+        var avail = await _app.Winget.CheckAvailabilityAsync().ConfigureAwait(true);
+        WingetAvailable = avail.Available;
+        if (!avail.Available)
+        {
+            WingetStatusText = avail.ErrorMessage ?? _loc.Get("inst.wingetMissing");
+            OnPropertyChanged(nameof(CanRemediateWinget));
+            OnPropertyChanged(nameof(CanInstall));
+            OnPropertyChanged(nameof(CanUninstall));
+            return;
+        }
+
+        var confirm = MessageBox.Show(
+            string.Format(_loc.Get("inst.uninstallConfirm"), selected.Count),
+            _loc.Get("inst.title"),
+            MessageBoxButton.OKCancel,
+            MessageBoxImage.Warning);
+        if (confirm != MessageBoxResult.OK) return;
+
+        IsInstalling = true;
+        IsOverallIndeterminate = true;
+        OverallProgress = 0;
+        OverallProgressText = _loc.Get("inst.progress.uninstallRunning");
+        OnPropertyChanged(nameof(CanInstall));
+        OnPropertyChanged(nameof(CanUninstall));
+        OnPropertyChanged(nameof(CanRefreshWinget));
+
+        try
+        {
+            var op = await OperationHost.TrackAsync(_app.Operations, _loc.Get("inst.uninstallSelected"), token =>
+                _app.RunWorkAsync(_loc.Get("inst.uninstallSelected"), true, async ctx =>
+                {
+                    var ct = ctx.Token;
+                    var done = 0;
+                    foreach (var app in selected)
+                        app.SetStatus(WingetInstallStatus.Queued, _loc);
+
+                    foreach (var app in selected)
+                    {
+                        ct.ThrowIfCancellationRequested();
+                        app.IsBusy = true;
+                        app.IsProgressIndeterminate = true;
+                        app.SetStatus(WingetInstallStatus.Starting, _loc);
+                        OverallProgressText = string.Format(_loc.Get("inst.progress.current"), app.Title, done + 1, selected.Count);
+                        ctx.Progress.Report(new OperationStep(OverallProgressText, null));
+
+                        var progress = new Progress<string>(phase =>
+                        {
+                            var status = phase switch
+                            {
+                                "installing" => WingetInstallStatus.Installing,
+                                "completed" => WingetInstallStatus.Completed,
+                                "already" => WingetInstallStatus.AlreadyInstalled,
+                                "failed" => WingetInstallStatus.Failed,
+                                "cancelled" => WingetInstallStatus.Cancelled,
+                                _ => WingetInstallStatus.Starting
+                            };
+                            app.SetStatus(status, _loc);
+                            app.IsProgressIndeterminate = status is WingetInstallStatus.Starting or WingetInstallStatus.Installing;
+                        });
+
+                        var result = await _app.Winget.UninstallAsync(app.WingetId, progress, ct).ConfigureAwait(true);
+                        app.SetStatus(result.Status, _loc, result.ErrorMessage);
+                        app.IsProgressIndeterminate = false;
+                        app.IsBusy = false;
+                        if (result.Success)
+                            app.IsSelected = false;
+
+                        done++;
+                        IsOverallIndeterminate = false;
+                        OverallProgress = selected.Count == 0 ? 0 : (double)done / selected.Count * 100;
+                        ctx.Progress.Report(new OperationStep(OverallProgressText, OverallProgress));
+                    }
+                }, token)).ConfigureAwait(true);
+
+            OverallProgressText = op.Cancelled
+                ? _loc.Get("inst.progress.cancelled")
+                : op.Success ? _loc.Get("inst.progress.uninstallDone") : (op.Message ?? _loc.Get("inst.progress.uninstallDone"));
+            if (op.Cancelled)
+            {
+                foreach (var app in selected.Where(a => a.Status is WingetInstallStatus.Queued or WingetInstallStatus.Starting or WingetInstallStatus.Installing))
+                {
+                    app.SetStatus(WingetInstallStatus.Cancelled, _loc);
+                    app.IsBusy = false;
+                    app.IsProgressIndeterminate = false;
+                }
+            }
+            else if (!op.Success && !string.IsNullOrWhiteSpace(op.Message))
+                MessageBox.Show(op.Message, _loc.Get("inst.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsInstalling = false;
+            IsOverallIndeterminate = false;
+            OnPropertyChanged(nameof(CanInstall));
+            OnPropertyChanged(nameof(CanUninstall));
             OnPropertyChanged(nameof(CanRefreshWinget));
         }
     }
@@ -345,6 +498,7 @@ public partial class InstallerAppItemViewModel : ObservableObject
         WingetId = entry.WingetId;
         IconGlyph = string.IsNullOrWhiteSpace(entry.IconGlyph) ? "📦" : entry.IconGlyph;
         IconKey = entry.IconKey;
+        IconImage = TryLoadIcon(IconKey);
         RefreshLabels(loc);
         SetStatus(WingetInstallStatus.Idle, loc);
     }
@@ -353,6 +507,31 @@ public partial class InstallerAppItemViewModel : ObservableObject
     public string WingetId { get; }
     public string IconGlyph { get; }
     public string IconKey { get; }
+    public ImageSource? IconImage { get; }
+    public bool HasIconImage => IconImage is not null;
+
+    private static ImageSource? TryLoadIcon(string iconKey)
+    {
+        if (string.IsNullOrWhiteSpace(iconKey))
+            return null;
+
+        try
+        {
+            var uri = new Uri($"pack://application:,,,/Assets/InstallerIcons/{iconKey}.png", UriKind.Absolute);
+            var image = new BitmapImage();
+            image.BeginInit();
+            image.UriSource = uri;
+            image.CacheOption = BitmapCacheOption.OnLoad;
+            image.DecodePixelWidth = 64;
+            image.EndInit();
+            image.Freeze();
+            return image;
+        }
+        catch
+        {
+            return null;
+        }
+    }
 
     [ObservableProperty] private string _title = "";
     [ObservableProperty] private string _description = "";
@@ -392,12 +571,6 @@ public partial class InstallerAppItemViewModel : ObservableObject
         };
     }
 
-    public bool MatchesSearch(string? query)
-    {
-        if (string.IsNullOrWhiteSpace(query)) return true;
-        return Title.Contains(query, StringComparison.OrdinalIgnoreCase)
-               || Description.Contains(query, StringComparison.OrdinalIgnoreCase)
-               || WingetId.Contains(query, StringComparison.OrdinalIgnoreCase)
-               || _entry.Category.Contains(query, StringComparison.OrdinalIgnoreCase);
-    }
+    public bool MatchesSearch(string? query) =>
+        SearchKeywords.Matches(query, Title, Description, WingetId, _entry.Category);
 }

@@ -1,0 +1,33 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    runs-on: windows-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Publish x64, hash, and SPDX
+        shell: pwsh
+        run: ./scripts/publish-release.ps1 -Version "${{ github.ref_name }}"
+
+      - name: GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          body: |
+            This release is unsigned. Verify SHA256SUMS.txt before you run WinCleaner.exe.
+            There is no win-arm64 build. An ARM64 PC still asks before a system write.
+          files: |
+            publish/WinCleaner.exe
+            publish/SHA256SUMS.txt
+            publish/WinCleaner.spdx.json

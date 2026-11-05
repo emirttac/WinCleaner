@@ -1,8 +1,9 @@
 using System.Windows;
+using Wpf.Ui.Controls;
 
 namespace WinCleaner.Views;
 
-public partial class ConfirmDangerDialog : Window
+public partial class ConfirmDangerDialog : FluentWindow
 {
     public ConfirmDangerDialog(string? title = null, string? message = null, string? acknowledgeLabel = null)
     {

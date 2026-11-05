@@ -1,8 +1,9 @@
 using Microsoft.Win32;
+using WinCleaner.Core.Abstractions;
 
 namespace WinCleaner.Core.Services;
 
-public sealed class RegistryManager
+public sealed class RegistryManager : IRegistryAccess
 {
     public object? GetValue(string hive, string path, string name)
     {
@@ -150,6 +151,53 @@ public sealed class RegistryManager
         }
 
         return true;
+    }
+
+    /// <summary>Returns true when at least one subkey exists and none contain the named value.</summary>
+    public bool AreAllSubkeysMissing(string hive, string path, string name)
+    {
+        using var parent = OpenKey(hive, path, writable: false);
+        if (parent is null) return false;
+
+        var subNames = parent.GetSubKeyNames();
+        if (subNames.Length == 0) return false;
+
+        var valueName = NormalizeValueName(name);
+        foreach (var subName in subNames)
+        {
+            using var sub = parent.OpenSubKey(subName, writable: false);
+            if (sub is null) return false;
+            if (sub.GetValue(valueName, defaultValue: null) is not null)
+                return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>Deletes a named value from every subkey under path. Returns how many deletes succeeded.</summary>
+    public int DeleteValueOnAllSubkeys(string hive, string path, string name)
+    {
+        using var parent = OpenKey(hive, path, writable: true);
+        if (parent is null) return 0;
+
+        var count = 0;
+        var valueName = NormalizeValueName(name);
+        foreach (var subName in parent.GetSubKeyNames())
+        {
+            using var sub = parent.OpenSubKey(subName, writable: true);
+            if (sub is null) continue;
+            try
+            {
+                sub.DeleteValue(valueName, throwOnMissingValue: false);
+                count++;
+            }
+            catch
+            {
+                // Best-effort delete
+            }
+        }
+
+        return count;
     }
 
     public static RegistryValueKind ParseKind(string kind) =>

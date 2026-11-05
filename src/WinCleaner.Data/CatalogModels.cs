@@ -84,6 +84,25 @@ public sealed class AppCatalogEntry
     [JsonPropertyName("win11Only")]
     public bool Win11Only { get; set; }
 
+    /// <summary>Microsoft Store product ID (e.g. 9NBLGGH4R32N) used for winget reinstall.</summary>
+    [JsonPropertyName("storeId")]
+    public string? StoreId { get; set; }
+
+    /// <summary>Optional explicit winget package ID; when empty, <see cref="StoreId"/> is used.</summary>
+    [JsonPropertyName("wingetId")]
+    public string? WingetId { get; set; }
+
+    public string? GetInstallId()
+    {
+        if (!string.IsNullOrWhiteSpace(WingetId))
+            return WingetId.Trim();
+        if (!string.IsNullOrWhiteSpace(StoreId))
+            return StoreId.Trim();
+        return null;
+    }
+
+    public bool CanReinstall => !string.IsNullOrWhiteSpace(GetInstallId());
+
     public IReadOnlyList<string> GetPackageNamePatterns()
     {
         var names = new List<string>();
@@ -203,6 +222,22 @@ public sealed class TweakCatalogEntry
     [JsonPropertyName("win11Only")]
     public bool Win11Only { get; set; }
 
+    [JsonPropertyName("skus")]
+    public List<string>? Skus { get; set; }
+
+    [JsonPropertyName("archs")]
+    public List<string>? Archs { get; set; }
+
+    [JsonPropertyName("requiresFeature")]
+    public string? RequiresFeature { get; set; }
+
+    [JsonPropertyName("confirmRequired")]
+    public string? ConfirmRequired { get; set; }
+
+    /// <summary>Exact, Defaulted, Scripted, or None. Required for every tweak.</summary>
+    [JsonPropertyName("reversibility")]
+    public string Reversibility { get; set; } = "";
+
     /// <summary>
     /// When true, UI must show an anti-cheat risk confirmation before apply
     /// (Vanguard / EAC / BattlEye BSOD / ban risk).
@@ -314,6 +349,20 @@ public sealed class RegistryTweakSpec
     /// </summary>
     [JsonPropertyName("deleteValueOnDisable")]
     public bool DeleteValueOnDisable { get; set; }
+
+    /// <summary>
+    /// When applying, delete the named value instead of writing <see cref="EnabledValue"/>.
+    /// Used when the applied state is "value absent" (e.g. WinUtil SIUF PeriodInNanoSeconds).
+    /// </summary>
+    [JsonPropertyName("deleteValueOnEnable")]
+    public bool DeleteValueOnEnable { get; set; }
+
+    /// <summary>
+    /// When true, this registry entry is written on apply/revert but ignored by IsApplied().
+    /// Useful for secondary keys that Windows may clear without undoing the tweak.
+    /// </summary>
+    [JsonPropertyName("optionalForDetect")]
+    public bool OptionalForDetect { get; set; }
 }
 
 public sealed class ServiceTweakSpec
@@ -382,7 +431,7 @@ public sealed class CommandSpec
     [JsonPropertyName("detectMode")]
     public string DetectMode { get; set; } = "equals";
 
-    /// <summary>Expected value when detectMode is equals (case-insensitive; Yes/true/1 accepted for Yes).</summary>
+    /// <summary>Expected value when detectMode is equals. Boolean Yes/No locale words are not accepted; prefer present/absent for bcdedit.</summary>
     [JsonPropertyName("detectValue")]
     public string? DetectValue { get; set; }
 

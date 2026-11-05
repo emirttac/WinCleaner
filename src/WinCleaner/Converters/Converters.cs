@@ -30,6 +30,32 @@ public sealed class RiskToBrushConverter : IValueConverter
         Binding.DoNothing;
 }
 
+public sealed class RiskToBadgeTextConverter : IValueConverter
+{
+    public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+    {
+        try
+        {
+            var risk = value is Core.Models.RiskLevel r ? r : Core.Models.RiskLevel.Safe;
+            var key = risk switch
+            {
+                Core.Models.RiskLevel.Blocked => "BadgeOnMutedBrush",
+                Core.Models.RiskLevel.Dangerous => "BadgeOnDangerBrush",
+                Core.Models.RiskLevel.Caution => "BadgeOnWarningBrush",
+                _ => "BadgeOnSuccessBrush"
+            };
+            return Application.Current?.TryFindResource(key) ?? System.Windows.Media.Brushes.Black;
+        }
+        catch
+        {
+            return System.Windows.Media.Brushes.Black;
+        }
+    }
+
+    public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) =>
+        Binding.DoNothing;
+}
+
 public sealed class BoolToVisibilityConverter : IValueConverter
 {
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)

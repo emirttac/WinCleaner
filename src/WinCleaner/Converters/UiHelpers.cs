@@ -48,4 +48,17 @@ public static class UiThread
         }
         return dispatcher.InvokeAsync(action).Task;
     }
+
+    public static async Task RunAsync(Func<Task> action)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is null || dispatcher.CheckAccess())
+        {
+            await action().ConfigureAwait(true);
+            return;
+        }
+
+        var inner = await dispatcher.InvokeAsync(action).Task.ConfigureAwait(true);
+        await inner.ConfigureAwait(true);
+    }
 }

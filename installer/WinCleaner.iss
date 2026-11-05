@@ -8,7 +8,7 @@
 
 #define MyAppName "WinCleaner"
 #ifndef MyAppVersion
-  #define MyAppVersion "1.0.0"
+  #define MyAppVersion "2.0.0"
 #endif
 #define MyAppPublisher "emirttac"
 #define MyAppURL "https://github.com/emirttac/WinCleaner"
@@ -45,7 +45,7 @@ WizardStyle=modern
 PrivilegesRequired=admin
 ArchitecturesAllowed=x64compatible
 ArchitecturesInstallIn64BitMode=x64compatible
-MinVersion=10.0
+MinVersion=10.0.19044
 VersionInfoVersion={#MyAppVersion}.0
 VersionInfoCompany={#MyAppPublisher}
 VersionInfoCopyright=Copyright (c) {#MyAppPublisher}
@@ -109,10 +109,31 @@ begin
 end;
 
 function IsVcRedistInstalled: Boolean;
+var
+  Installed: Cardinal;
 begin
-  Result := RegKeyExists(HKLM64, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64') or
-            RegKeyExists(HKLM, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64') or
-            RegKeyExists(HKLM64, 'SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x64');
+  Result := False;
+  if RegQueryDWordValue(HKLM64, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Installed', Installed) then
+  begin
+    if Installed = 1 then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+  if RegQueryDWordValue(HKLM, 'SOFTWARE\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Installed', Installed) then
+  begin
+    if Installed = 1 then
+    begin
+      Result := True;
+      Exit;
+    end;
+  end;
+  if RegQueryDWordValue(HKLM64, 'SOFTWARE\WOW6432Node\Microsoft\VisualStudio\14.0\VC\Runtimes\x64', 'Installed', Installed) then
+  begin
+    if Installed = 1 then
+      Result := True;
+  end;
 end;
 
 function OnDownloadProgress(const Url, FileName: String; const Progress, ProgressMax: Int64): Boolean;
@@ -144,6 +165,7 @@ var
   ResultCode: Integer;
   DotNetPath: String;
   VcPath: String;
+  StatusMsg: String;
 begin
   Result := True;
   if CurPageID <> wpReady then
@@ -152,7 +174,16 @@ begin
   if (not NeedDotNet) and (not NeedVcRedist) then
     Exit;
 
+  StatusMsg := '';
+  if NeedDotNet and NeedVcRedist then
+    StatusMsg := 'Downloading required runtimes (.NET 8 Desktop + VC++ Redistributable)...'
+  else if NeedDotNet then
+    StatusMsg := 'Downloading .NET 8 Desktop Runtime...'
+  else
+    StatusMsg := 'Downloading Visual C++ Redistributable...';
+
   DownloadPage.Clear;
+  DownloadPage.Msg1Label.Caption := StatusMsg;
   if NeedDotNet then
     DownloadPage.Add(
       'https://aka.ms/dotnet/8.0/windowsdesktop-runtime-win-x64.exe',
@@ -171,6 +202,7 @@ begin
 
       if NeedDotNet then
       begin
+        DownloadPage.Msg1Label.Caption := 'Installing .NET 8 Desktop Runtime...';
         if not FileExists(DotNetPath) then
           RaiseException('Downloaded .NET Desktop Runtime installer was not found.');
         if not Exec(DotNetPath, '/install /quiet /norestart', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
@@ -181,6 +213,7 @@ begin
 
       if NeedVcRedist then
       begin
+        DownloadPage.Msg1Label.Caption := 'Installing Visual C++ Redistributable...';
         if not FileExists(VcPath) then
           RaiseException('Downloaded VC++ Redistributable installer was not found.');
         if not Exec(VcPath, '/install /quiet /norestart', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then

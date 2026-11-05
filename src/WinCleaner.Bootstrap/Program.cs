@@ -44,7 +44,7 @@ internal static class Program
             issues.Add(new PrerequisiteIssue(
                 PrerequisiteKind.VcRedist,
                 "Visual C++ Redistributable missing",
-                "Microsoft Visual C++ 2015–2022 (x64) is required.",
+                PrerequisiteChecker.VcRedistDetail,
                 PrerequisiteChecker.VcRedistUrl,
                 "vc_redist.x64.exe",
                 CanAutoInstall: true));

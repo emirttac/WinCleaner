@@ -1,0 +1,53 @@
+<UserControl x:Class="WinCleaner.Views.PresetsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ui="http://schemas.lepo.co/wpfui/2022/xaml">
+  <Grid>
+    <Grid.RowDefinitions>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="*"/>
+      <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
+    </Grid.RowDefinitions>
+    <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
+    <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
+
+    <ItemsControl Grid.Row="2" ItemsSource="{Binding Items}" Style="{StaticResource VirtualizingListStyle}">
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <ui:Card Margin="0,0,0,10" Padding="16">
+            <Grid>
+              <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+              </Grid.ColumnDefinitions>
+              <StackPanel>
+                <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}" FontSize="15"/>
+                <TextBlock Text="{Binding Description}" TextWrapping="Wrap"
+                           Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,6,0,0"/>
+              </StackPanel>
+              <ui:Button Grid.Column="1"
+                         Content="{DynamicResource preset.applyPreview}"
+                         Appearance="Primary"
+                         Icon="{ui:SymbolIcon Play24}"
+                         Command="{Binding DataContext.ApplyPresetCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                         CommandParameter="{Binding}"
+                         VerticalAlignment="Center"/>
+            </Grid>
+          </ui:Card>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+
+    <TextBlock Grid.Row="3" Text="{DynamicResource preset.custom}" Style="{StaticResource SectionHeaderStyle}"/>
+    <StackPanel Grid.Row="4" Orientation="Horizontal">
+      <ui:TextBox Width="240" Text="{Binding CustomName, UpdateSourceTrigger=PropertyChanged}"
+                  PlaceholderText="{DynamicResource preset.custom}" Margin="0,0,8,0"/>
+      <ui:Button Content="{DynamicResource common.export}" Command="{Binding ExportCustomCommand}"
+                 Appearance="Secondary" Icon="{ui:SymbolIcon ArrowExportUp24}" Margin="0,0,8,0"/>
+      <ui:Button Content="{DynamicResource common.import}" Command="{Binding ImportCustomCommand}"
+                 Appearance="Secondary" Icon="{ui:SymbolIcon ArrowImport24}"/>
+    </StackPanel>
+  </Grid>
+</UserControl>

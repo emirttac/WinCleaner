@@ -1,6 +1,5 @@
-using System.Diagnostics;
 using System.Security.Principal;
-using System.Text;
+using WinCleaner.Core.Abstractions;
 
 namespace WinCleaner.Core.Services;
 
@@ -40,52 +39,33 @@ public static class ElevatedCommandRunner
         try
         {
             var exe = ResolveExecutable(fileName);
-            var psi = new ProcessStartInfo
-            {
-                FileName = exe,
-                Arguments = arguments,
-                UseShellExecute = false,
-                CreateNoWindow = true,
-                RedirectStandardOutput = true,
-                RedirectStandardError = true,
-                StandardOutputEncoding = Encoding.UTF8,
-                StandardErrorEncoding = Encoding.UTF8
-            };
+            var result = ProcessRunner.Shared.RunAsync(
+                new ProcessRequest(exe, arguments, TimeSpan.FromMilliseconds(timeoutMs))).GetAwaiter().GetResult();
+            if (result.TimedOut || result.Cancelled || result.ExitCode is null)
+                return ProcessCommandResult.Fail($"'{exe}' timed out after {timeoutMs} ms.", stdout: result.Stdout, stderr: result.Stderr);
 
-            using var proc = Process.Start(psi);
-            if (proc is null)
-                return ProcessCommandResult.Fail($"Failed to start '{exe}'.");
-
-            var stdoutTask = proc.StandardOutput.ReadToEndAsync();
-            var stderrTask = proc.StandardError.ReadToEndAsync();
-            if (!proc.WaitForExit(timeoutMs))
-            {
-                try { proc.Kill(entireProcessTree: true); } catch { }
-                return ProcessCommandResult.Fail($"'{exe}' timed out after {timeoutMs} ms.");
-            }
-
-            var stdout = stdoutTask.GetAwaiter().GetResult();
-            var stderr = stderrTask.GetAwaiter().GetResult();
-            if (proc.ExitCode != 0)
+            var stdout = result.Stdout;
+            var stderr = result.Stderr;
+            if (result.ExitCode != 0)
             {
                 var detail = string.IsNullOrWhiteSpace(stderr) ? stdout : stderr;
                 detail = detail.Trim();
                 if (IsBenignBcdDeleteMiss(fileName, arguments, detail))
-                    return ProcessCommandResult.Ok(proc.ExitCode, stdout, stderr);
+                    return ProcessCommandResult.Ok(result.ExitCode.Value, stdout, stderr);
 
                 var adminHint = PrivilegeHelper.IsAdministrator()
                     ? ""
                     : " Run WinCleaner as Administrator.";
                 return ProcessCommandResult.Fail(
                     string.IsNullOrWhiteSpace(detail)
-                        ? $"Command failed (exit {proc.ExitCode}).{adminHint}"
+                        ? $"Command failed (exit {result.ExitCode}).{adminHint}"
                         : $"{detail}{adminHint}",
-                    proc.ExitCode,
+                    result.ExitCode.Value,
                     stdout,
                     stderr);
             }
 
-            return ProcessCommandResult.Ok(proc.ExitCode, stdout, stderr);
+            return ProcessCommandResult.Ok(result.ExitCode.Value, stdout, stderr);
         }
         catch (Exception ex)
         {

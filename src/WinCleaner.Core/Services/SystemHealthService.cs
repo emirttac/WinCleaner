@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Microsoft.Win32;
+using WinCleaner.Core.Abstractions;
 
 namespace WinCleaner.Core.Services;
 
@@ -8,7 +9,13 @@ namespace WinCleaner.Core.Services;
 /// </summary>
 public sealed class SystemHealthService
 {
+    private readonly IProcessRunner _processes;
     private const string TakeOwnFileKey = @"*\shell\runas";
+
+    public SystemHealthService(IProcessRunner? processes = null)
+    {
+        _processes = processes ?? ProcessRunner.Shared;
+    }
     private const string TakeOwnDirKey = @"Directory\shell\runas";
     private const string GodModeFolderName = "GodMode.{ED7BA470-8E54-465E-825C-99712043E01C}";
 
@@ -39,6 +46,41 @@ public sealed class SystemHealthService
     }
 
     /// <summary>Runs DISM RestoreHealth, then SFC /scannow, streaming all output.</summary>
+    /// <summary>Points Windows time sync at pool.ntp.org (WinUtil NTP fix).</summary>
+    public async Task ConfigureNtpPoolAsync(IProgress<string>? progress = null, CancellationToken ct = default)
+    {
+        progress?.Report(">>> Configuring NTP peer list: pool.ntp.org");
+        if (!PrivilegeHelper.IsAdministrator())
+            throw new UnauthorizedAccessException("Administrator privileges are required to change NTP settings.");
+
+        await RunStreamingAsync("net", "start w32time", progress, ct).ConfigureAwait(false);
+        var cfg = await RunStreamingAsync(
+            "w32tm",
+            "/config /update /manualpeerlist:\"pool.ntp.org,0x8\" /syncfromflags:MANUAL",
+            progress,
+            ct).ConfigureAwait(false);
+        if (cfg != 0)
+            throw new InvalidOperationException($"w32tm /config failed with exit code {cfg}.");
+
+        await RunStreamingAsync("net", "stop w32time", progress, ct).ConfigureAwait(false);
+        await RunStreamingAsync("net", "start w32time", progress, ct).ConfigureAwait(false);
+        var sync = await RunStreamingAsync("w32tm", "/resync /force", progress, ct).ConfigureAwait(false);
+        progress?.Report($"<<< NTP configure finished (resync exit {sync})");
+    }
+
+    /// <summary>Opens a classic Control Panel / MMC applet by executable or .cpl name.</summary>
+    public static void LaunchLegacyPanel(string target)
+    {
+        if (string.IsNullOrWhiteSpace(target))
+            throw new ArgumentException("Panel target is empty.", nameof(target));
+
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = target,
+            UseShellExecute = true
+        });
+    }
+
     public async Task RunSfcAndDismRepairAsync(IProgress<string>? progress, CancellationToken ct = default)
     {
         progress?.Report("=== System file repair started ===");
@@ -162,6 +204,8 @@ public sealed class SystemHealthService
             await RunStreamingAsync("net.exe", $"stop {svc}", progress, ct).ConfigureAwait(false);
         }
 
+        CopyFolder(sd, sd + ".copy-" + DateTime.Now.ToString("yyyyMMddHHmmss"), progress);
+        CopyFolder(cat, cat + ".copy-" + DateTime.Now.ToString("yyyyMMddHHmmss"), progress);
         TryRenameFolder(sd, sdBak, progress);
         TryRenameFolder(cat, catBak, progress);
 
@@ -250,6 +294,20 @@ public sealed class SystemHealthService
         }, ct);
     }
 
+    internal static void CopyFolder(string source, string dest, IProgress<string>? progress)
+    {
+        if (!Directory.Exists(source))
+            return;
+        progress?.Report($"> copy {source} → {Path.GetFileName(dest)}");
+        foreach (var file in Directory.EnumerateFiles(source, "*", SearchOption.AllDirectories))
+        {
+            var relative = Path.GetRelativePath(source, file);
+            var target = Path.Combine(dest, relative);
+            Directory.CreateDirectory(Path.GetDirectoryName(target)!);
+            File.Copy(file, target, overwrite: true);
+        }
+    }
+
     private static void TryRenameFolder(string source, string dest, IProgress<string>? progress)
     {
         progress?.Report($"> rename {source} → {Path.GetFileName(dest)}");
@@ -315,60 +373,19 @@ public sealed class SystemHealthService
         }
     }
 
-    public static async Task<int> RunStreamingAsync(
+    private async Task<int> RunStreamingAsync(
         string fileName,
         string arguments,
         IProgress<string>? progress,
         CancellationToken ct)
     {
         var exe = ResolveSystemExe(fileName);
-        var psi = new ProcessStartInfo
-        {
-            FileName = exe,
-            Arguments = arguments,
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-            // Intentionally use OS default encoding — DISM/SFC emit OEM/ANSI console text.
-        };
-
-        using var process = new Process { StartInfo = psi, EnableRaisingEvents = true };
-        var tcs = new TaskCompletionSource<int>(TaskCreationOptions.RunContinuationsAsynchronously);
-
-        void OnOutput(object sender, DataReceivedEventArgs e)
-        {
-            if (e.Data is null) return;
-            progress?.Report(e.Data);
-        }
-
-        process.OutputDataReceived += OnOutput;
-        process.ErrorDataReceived += OnOutput;
-        process.Exited += (_, _) =>
-        {
-            try { tcs.TrySetResult(process.ExitCode); }
-            catch (Exception ex) { tcs.TrySetException(ex); }
-        };
-
-        if (!process.Start())
-            throw new InvalidOperationException($"Failed to start {exe}");
-
-        process.BeginOutputReadLine();
-        process.BeginErrorReadLine();
-
-        await using (ct.Register(() =>
-        {
-            try
-            {
-                if (!process.HasExited)
-                    process.Kill(entireProcessTree: true);
-            }
-            catch { }
-            tcs.TrySetCanceled(ct);
-        }).ConfigureAwait(false))
-        {
-            return await tcs.Task.ConfigureAwait(false);
-        }
+        var result = await _processes.RunAsync(
+            new ProcessRequest(exe, arguments, TimeSpan.FromHours(6)) { LineProgress = progress },
+            ct).ConfigureAwait(false);
+        if (result.Cancelled)
+            throw new OperationCanceledException(ct);
+        return result.ExitCode ?? -1;
     }
 
     private static string ResolveSystemExe(string fileName)

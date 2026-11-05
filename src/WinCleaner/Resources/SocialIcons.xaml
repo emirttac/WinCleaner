@@ -80,9 +80,9 @@
   </DrawingImage>
 
   <Style x:Key="SocialLinkButtonStyle" TargetType="Button">
-    <Setter Property="Background" Value="{StaticResource BgElevatedBrush}"/>
-    <Setter Property="Foreground" Value="{StaticResource TextPrimaryBrush}"/>
-    <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}"/>
+    <Setter Property="Background" Value="{DynamicResource BgElevatedBrush}"/>
+    <Setter Property="Foreground" Value="{DynamicResource TextPrimaryBrush}"/>
+    <Setter Property="BorderBrush" Value="{DynamicResource BorderBrush}"/>
     <Setter Property="BorderThickness" Value="1"/>
     <Setter Property="Padding" Value="12,10"/>
     <Setter Property="Margin" Value="0,0,10,0"/>
@@ -101,11 +101,11 @@
           </Border>
           <ControlTemplate.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgHoverBrush}"/>
-              <Setter TargetName="Bd" Property="BorderBrush" Value="{StaticResource AccentBrush}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BgHoverBrush}"/>
+              <Setter TargetName="Bd" Property="BorderBrush" Value="{DynamicResource AccentBrush}"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-              <Setter TargetName="Bd" Property="Background" Value="{StaticResource BgPanelBrush}"/>
+              <Setter TargetName="Bd" Property="Background" Value="{DynamicResource BgPanelBrush}"/>
             </Trigger>
           </ControlTemplate.Triggers>
         </ControlTemplate>

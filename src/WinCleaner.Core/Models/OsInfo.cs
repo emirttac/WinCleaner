@@ -6,6 +6,7 @@ public sealed class OsInfo
     public required string DisplayName { get; init; }
     public required int BuildNumber { get; init; }
     public required string VersionString { get; init; }
+    public string Sku { get; init; } = "Unknown";
     public bool IsSupported =>
         Family == OsFamily.Windows11 ||
         (Family == OsFamily.Windows10 && BuildNumber >= 19044);

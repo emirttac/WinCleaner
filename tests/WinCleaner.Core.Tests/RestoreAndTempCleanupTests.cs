@@ -2,6 +2,7 @@ using WinCleaner.Core.Services;
 
 namespace WinCleaner.Core.Tests;
 
+[Collection("restore-points")]
 public class RestoreAndTempCleanupTests
 {
     [Fact]

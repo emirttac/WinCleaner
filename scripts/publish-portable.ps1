@@ -8,10 +8,13 @@
 param(
     [string]$Configuration = "Release",
     [string]$Runtime = "win-x64",
-    [string]$Version = "1.0.0"
+    [string]$Version = "2.0.0"
 )
 
 $ErrorActionPreference = "Stop"
+if ($Runtime -eq "win-arm64") {
+    throw "win-arm64 is not published. There is no GitHub windows-11-arm runner and no documented VM. The x64 build stays. An ARM64 operating system still asks before a system write."
+}
 $Root = Split-Path -Parent $PSScriptRoot
 if (-not $Root) { $Root = (Resolve-Path "$PSScriptRoot\..").Path }
 
@@ -54,4 +57,5 @@ $sizeMb = [math]::Round((Get-Item $FinalExe).Length / 1MB, 1)
 Write-Host ""
 Write-Host "OK" -ForegroundColor Green
 Write-Host "  $FinalExe  ($sizeMb MB)"
-Write-Host "  Single exe - run as administrator. Checks OS/admin/VC++ on startup."
+Write-Host "  Single exe - run as administrator. Checks OS, administrator, and the VC++ runtime key on startup."
+Write-Host "  No NuGet package references a Visual C++ library. The framework-dependent publish has no vcruntime DLL. The self-contained publish includes vcruntime140_cor3.dll from the .NET runtime. If the VC++ 2015-2022 x64 runtime key is missing, WinCleaner can still install it quietly."

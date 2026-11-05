@@ -1,6 +1,7 @@
 using System.Management;
 using System.Net;
 using System.Net.NetworkInformation;
+using WinCleaner.Core.Actions;
 
 namespace WinCleaner.Core.Services;
 
@@ -9,7 +10,8 @@ public enum DnsPresetKind
     Dhcp,
     Cloudflare,
     Google,
-    Quad9
+    Quad9,
+    Custom
 }
 
 public sealed record DnsPreset(
@@ -17,14 +19,33 @@ public sealed record DnsPreset(
     string Id,
     string DisplayNameKey,
     string? Primary,
-    string? Secondary)
+    string? Secondary,
+    string? PrimaryV6 = null,
+    string? SecondaryV6 = null,
+    string? DohTemplate = null)
 {
     public bool IsDhcp => Kind == DnsPresetKind.Dhcp;
 
-    public string[]? Servers =>
-        IsDhcp ? null
-        : Secondary is null ? [Primary!]
-        : [Primary!, Secondary];
+    public string[]? Servers
+    {
+        get
+        {
+            if (IsDhcp)
+                return null;
+            var list = new List<string>();
+            Add(Primary);
+            Add(Secondary);
+            Add(PrimaryV6);
+            Add(SecondaryV6);
+            return list.ToArray();
+
+            void Add(string? value)
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                    list.Add(value);
+            }
+        }
+    }
 }
 
 public sealed class DnsApplyResult
@@ -39,14 +60,14 @@ public sealed class DnsApplyResult
 /// Changes DNS servers on IP-enabled adapters via WMI Win32_NetworkAdapterConfiguration,
 /// then flushes the DNS resolver cache.
 /// </summary>
-public sealed class DnsChangerService
+public sealed class DnsChangerService : IDnsPresetStore
 {
     public static IReadOnlyList<DnsPreset> Presets { get; } =
     [
         new(DnsPresetKind.Dhcp, "dhcp", "net.dns.dhcp", null, null),
-        new(DnsPresetKind.Cloudflare, "cloudflare", "net.dns.cloudflare", "1.1.1.1", "1.0.0.1"),
-        new(DnsPresetKind.Google, "google", "net.dns.google", "8.8.8.8", "8.8.4.4"),
-        new(DnsPresetKind.Quad9, "quad9", "net.dns.quad9", "9.9.9.9", "149.112.112.112")
+        new(DnsPresetKind.Cloudflare, "cloudflare", "net.dns.cloudflare", "1.1.1.1", "1.0.0.1", "2606:4700:4700::1111", "2606:4700:4700::1001", "https://cloudflare-dns.com/dns-query"),
+        new(DnsPresetKind.Google, "google", "net.dns.google", "8.8.8.8", "8.8.4.4", "2001:4860:4860::8888", "2001:4860:4860::8844", "https://dns.google/dns-query"),
+        new(DnsPresetKind.Quad9, "quad9", "net.dns.quad9", "9.9.9.9", "149.112.112.112", "2620:fe::fe", "2620:fe::9", "https://dns.quad9.net/dns-query")
     ];
 
     public DnsPresetKind DetectCurrentPreset()
@@ -71,11 +92,39 @@ public sealed class DnsChangerService
         return DnsPresetKind.Dhcp;
     }
 
+    public static string[] ParseCustomServers(string text) =>
+        text.Split([',', ' ', ';'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+
+    public DnsApplyResult ApplyCustom(string serversText, string? adapterName)
+    {
+        var servers = ParseCustomServers(serversText);
+        if (servers.Length == 0)
+            return new DnsApplyResult { Success = false, Message = "No DNS servers." };
+        return ApplyServerList(servers, adapterName);
+    }
+
+    public async Task<long?> MeasureLatencyAsync(string host, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var ping = new Ping();
+            var reply = await ping.SendPingAsync(host, 1000).WaitAsync(cancellationToken).ConfigureAwait(false);
+            return reply.Status == IPStatus.Success ? reply.RoundtripTime : null;
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
     public DnsApplyResult ApplyPreset(DnsPresetKind kind)
     {
-        var preset = Presets.FirstOrDefault(p => p.Kind == kind)
-                     ?? Presets[0];
+        var preset = Presets.FirstOrDefault(p => p.Kind == kind) ?? Presets[0];
+        return ApplyServerList(preset.Servers, null);
+    }
 
+    private DnsApplyResult ApplyServerList(string[]? servers, string? adapterName)
+    {
         try
         {
             if (!PrivilegeHelper.IsAdministrator())
@@ -87,15 +136,16 @@ public sealed class DnsChangerService
                 };
             }
 
-            var updated = SetDnsOnIpEnabledAdapters(preset.Servers);
+            var updated = SetDnsOnIpEnabledAdapters(servers, adapterName);
             var flush = FlushDnsCache();
+            var dhcp = servers is null || servers.Length == 0;
 
             return new DnsApplyResult
             {
-                Success = updated > 0 || preset.IsDhcp,
+                Success = updated > 0 || dhcp,
                 AdaptersUpdated = updated,
                 FlushDnsSucceeded = flush.Success,
-                Message = updated == 0 && !preset.IsDhcp
+                Message = updated == 0 && !dhcp
                     ? "No IP-enabled adapters were updated."
                     : $"DNS updated on {updated} adapter(s)."
                       + (flush.Success ? " DNS cache flushed." : $" Flush DNS: {flush.ErrorMessage}")
@@ -119,7 +169,7 @@ public sealed class DnsChangerService
             : (false, run.ErrorMessage ?? "ipconfig /flushdns failed");
     }
 
-    private static int SetDnsOnIpEnabledAdapters(string[]? servers)
+    private static int SetDnsOnIpEnabledAdapters(string[]? servers, string? adapterName)
     {
         var updated = 0;
         using var searcher = new ManagementObjectSearcher(
@@ -131,6 +181,13 @@ public sealed class DnsChangerService
             {
                 try
                 {
+                    if (!string.IsNullOrWhiteSpace(adapterName))
+                    {
+                        var description = adapter["Description"]?.ToString() ?? "";
+                        if (description.Contains(adapterName, StringComparison.OrdinalIgnoreCase) == false)
+                            continue;
+                    }
+
                     var inParams = adapter.GetMethodParameters("SetDNSServerSearchOrder");
                     // null => obtain DNS from DHCP; otherwise explicit server list
                     inParams["DNSServerSearchOrder"] = servers is null || servers.Length == 0

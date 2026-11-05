@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
+using WinCleaner.Core.Abstractions;
 
 namespace WinCleaner.Core.Services;
 
@@ -28,6 +28,13 @@ public sealed record PowerShellResult(bool Success, int ExitCode, string StdOut,
 
 public sealed class AppxManager
 {
+    private readonly IProcessRunner _processes;
+
+    public AppxManager(IProcessRunner? processes = null)
+    {
+        _processes = processes ?? ProcessRunner.Shared;
+    }
+
     public async Task<IReadOnlyList<InstalledAppInfo>> GetInstalledPackagesAsync(CancellationToken ct = default)
     {
         var script = @"
@@ -361,67 +368,28 @@ if ($leftover.Count -gt 0) {
 
     private static string Escape(string s) => s.Replace("'", "''");
 
-    private static async Task<PowerShellResult> RunPowerShellAsync(string script, CancellationToken ct, int timeoutMs = 120_000)
+    private async Task<PowerShellResult> RunPowerShellAsync(string script, CancellationToken ct, int timeoutMs = 120_000)
     {
-        var psi = new ProcessStartInfo
-        {
-            FileName = "powershell.exe",
-            UseShellExecute = false,
-            CreateNoWindow = true,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true,
-            StandardOutputEncoding = Encoding.UTF8,
-            StandardErrorEncoding = Encoding.UTF8
-        };
-
         var bytes = Encoding.Unicode.GetBytes(
             "$ProgressPreference = 'SilentlyContinue'\n$WarningPreference = 'SilentlyContinue'\n" + script);
         var encoded = Convert.ToBase64String(bytes);
-        psi.Arguments = $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {encoded}";
+        var arguments = $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {encoded}";
+        var result = await _processes.RunAsync(
+            new ProcessRequest("powershell.exe", arguments, TimeSpan.FromMilliseconds(timeoutMs)),
+            ct).ConfigureAwait(false);
 
-        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(ct);
-        timeoutCts.CancelAfter(timeoutMs);
-        var linked = timeoutCts.Token;
+        if (result.TimedOut || result.Cancelled || result.ExitCode is null)
+            return new PowerShellResult(false, -1, result.Stdout.Trim(), "Timed out");
 
-        using var proc = Process.Start(psi) ?? throw new InvalidOperationException("Failed to start PowerShell");
-        var stdoutTask = proc.StandardOutput.ReadToEndAsync();
-        var stderrTask = proc.StandardError.ReadToEndAsync();
-        try
-        {
-            await proc.WaitForExitAsync(linked).ConfigureAwait(false);
-        }
-        catch (OperationCanceledException)
-        {
-            try { if (!proc.HasExited) proc.Kill(entireProcessTree: true); } catch { }
-            return new PowerShellResult(false, -1, "", "Timed out");
-        }
-
-        string stdout;
-        string stderr;
-        try
-        {
-            stdout = await stdoutTask.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-            stderr = await stderrTask.WaitAsync(TimeSpan.FromSeconds(5)).ConfigureAwait(false);
-        }
-        catch
-        {
-            stdout = "";
-            stderr = proc.HasExited ? "" : "Timed out reading PowerShell output";
-        }
-
-        var success = proc.ExitCode == 0 && string.IsNullOrWhiteSpace(stderr);
-        // Some cmdlets write progress to stderr without failing — treat non-zero exit as definitive failure;
-        // non-empty stderr with exit 0 is also treated as failure to surface silent cmdlet errors.
-        if (proc.ExitCode != 0)
+        var stdout = result.Stdout.Trim();
+        var stderr = result.Stderr.Trim();
+        var success = result.ExitCode == 0;
+        if (success && !string.IsNullOrWhiteSpace(stderr) &&
+            (stderr.Contains("Exception", StringComparison.OrdinalIgnoreCase)
+             || stderr.Contains("Error", StringComparison.OrdinalIgnoreCase)
+             || stderr.Contains("fullyqualifiederrorid", StringComparison.OrdinalIgnoreCase)))
             success = false;
-        else if (!string.IsNullOrWhiteSpace(stderr) &&
-                 (stderr.Contains("Exception", StringComparison.OrdinalIgnoreCase)
-                  || stderr.Contains("Error", StringComparison.OrdinalIgnoreCase)
-                  || stderr.Contains("fullyqualifiederrorid", StringComparison.OrdinalIgnoreCase)))
-            success = false;
-        else if (proc.ExitCode == 0)
-            success = true;
 
-        return new PowerShellResult(success, proc.ExitCode, stdout.Trim(), stderr.Trim());
+        return new PowerShellResult(success, result.ExitCode.Value, stdout, stderr);
     }
 }

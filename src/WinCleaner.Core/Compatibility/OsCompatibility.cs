@@ -1,5 +1,6 @@
 using System.Management;
 using Microsoft.Win32;
+using WinCleaner.Core.Actions;
 using WinCleaner.Core.Models;
 
 namespace WinCleaner.Core.Compatibility;
@@ -24,7 +25,8 @@ public static class OsCompatibility
             Family = family,
             DisplayName = display,
             BuildNumber = build,
-            VersionString = Environment.OSVersion.Version.ToString()
+            VersionString = Environment.OSVersion.Version.ToString(),
+            Sku = ReadSku()
         };
     }
 
@@ -34,6 +36,22 @@ public static class OsCompatibility
         if (win11Only && os.Family != OsFamily.Windows11) return false;
         if (minBuild.HasValue && os.BuildNumber < minBuild.Value) return false;
         return true;
+    }
+
+    private static string ReadSku()
+    {
+        try
+        {
+            using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
+            var installation = key?.GetValue("InstallationType")?.ToString();
+            var edition = key?.GetValue("EditionID")?.ToString();
+            return SkuMap.FromEdition(null, installation, edition);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Trace.WriteLine("SKU detection failed: " + ex.Message);
+            return "Unknown";
+        }
     }
 
     private static int GetBuildNumber()

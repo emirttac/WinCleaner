@@ -19,52 +19,34 @@ public static class CommandStateProbe
         if (string.IsNullOrWhiteSpace(output))
             return null;
 
-        int? found = null;
+        var values = new List<int>();
         foreach (var raw in output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries))
         {
-            var line = raw.Trim();
-            if (line.Length == 0)
-                continue;
-            if (ContainsAny(line, "Maximum", "Minimum", "Possible", "Mögliche", "Possible Settings"))
-                continue;
-            if (!ContainsAcToken(line))
-                continue;
-            if (!ContainsIndexToken(line))
-                continue;
-
-            var match = HexIndex.Match(line);
+            var match = HexIndex.Match(raw);
             if (!match.Success)
                 continue;
             if (int.TryParse(match.Groups[1].Value, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var value))
-                found = value;
+                values.Add(value);
         }
 
-        return found;
+        // powercfg /query order is the same in every language: minimum, maximum, increment, AC index, DC index.
+        if (values.Count >= 4)
+            return values[3];
+        if (values.Count == 1)
+            return values[0];
+        return null;
+    }
+
+    /// <summary>Case-insensitive token compare. Does not treat translated yes/no words as equal.</summary>
+    public static bool TokensEqual(string? actual, string? expected)
+    {
+        if (string.IsNullOrWhiteSpace(actual) || string.IsNullOrWhiteSpace(expected))
+            return false;
+        return actual.Trim().Equals(expected.Trim(), StringComparison.OrdinalIgnoreCase);
     }
 
     public static bool OutputContains(string? output, string? needle) =>
         !string.IsNullOrWhiteSpace(output)
         && !string.IsNullOrWhiteSpace(needle)
         && output.Contains(needle, StringComparison.OrdinalIgnoreCase);
-
-    private static bool ContainsAcToken(string line) =>
-        line.Contains(" AC", StringComparison.OrdinalIgnoreCase)
-        || line.Contains("AC-", StringComparison.OrdinalIgnoreCase)
-        || line.Contains("AC ", StringComparison.OrdinalIgnoreCase)
-        || line.Contains("(AC)", StringComparison.OrdinalIgnoreCase);
-
-    private static bool ContainsIndexToken(string line) =>
-        line.Contains("Index", StringComparison.OrdinalIgnoreCase)
-        || line.Contains("İndeks", StringComparison.OrdinalIgnoreCase)
-        || line.Contains("Indeks", StringComparison.OrdinalIgnoreCase);
-
-    private static bool ContainsAny(string line, params string[] tokens)
-    {
-        foreach (var t in tokens)
-        {
-            if (line.Contains(t, StringComparison.OrdinalIgnoreCase))
-                return true;
-        }
-        return false;
-    }
 }
