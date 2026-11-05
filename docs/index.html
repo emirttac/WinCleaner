@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" data-i18n="meta.description" content="WinCleaner is a free, open-source Windows 10/11 optimization and debloat tool for gamers. Risk-rated tweaks, ready-made presets, restore points and undo." />
+  <meta name="theme-color" content="#0D0D0D" id="theme-color-meta" />
+  <meta property="og:title" content="WinCleaner — Windows optimization for gamers" />
+  <meta property="og:description" data-i18n="meta.ogDescription" content="Debloat and tune Windows with full visibility. Every tweak is risk-rated, presets can be previewed, and every session can be undone." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://emirttac.github.io/WinCleaner/" />
+  <meta property="og:image" content="https://emirttac.github.io/WinCleaner/icon.png" />
+  <title>WinCleaner — Windows optimization for gamers</title>
+  <script>
+    (function () {
+      try {
+        var key = "wincleaner-theme";
+        var saved = localStorage.getItem(key);
+        var theme = saved === "dark" || saved === "light"
+          ? saved
+          : (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "dark");
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "WinCleaner",
+    "applicationCategory": "UtilitiesApplication",
+    "operatingSystem": "Windows 10, Windows 11",
+    "softwareVersion": "2.0.0",
+    "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+    "author": { "@type": "Person", "name": "Emir Tuğra Ataç", "url": "https://emirttac.github.io/" },
+    "url": "https://emirttac.github.io/WinCleaner/",
+    "downloadUrl": "https://github.com/emirttac/WinCleaner/releases",
+    "license": "https://opensource.org/licenses/MIT"
+  }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=7" />
+  <link rel="icon" href="favicon.ico" />
+  <link rel="apple-touch-icon" href="icon.png" />
+</head>
+<body>
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="logo" href="#top" data-i18n-aria="aria.home" aria-label="WinCleaner home">
+      <img src="icon.png" alt="" width="28" height="28" />
+      <span>WinCleaner</span>
+    </a>
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" id="theme-toggle" data-i18n-aria="aria.themeToLight" aria-label="Switch to light mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z" />
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77" />
+        </svg>
+      </button>
+      <label class="lang-switch">
+        <span class="visually-hidden" data-i18n="aria.lang">Language</span>
+        <select id="lang-select" data-i18n-aria="aria.lang" aria-label="Language">
+          <option value="en">English</option>
+          <option value="tr">Türkçe</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </label>
+      <nav class="nav" data-i18n-aria="aria.nav" aria-label="Main menu">
+        <a href="#features" data-i18n="nav.features">Features</a>
+        <a href="#safety" data-i18n="nav.safety">Safety</a>
+        <a href="#download" data-i18n="nav.download">Download</a>
+        <a href="developers.html" data-i18n="nav.developers">Developers</a>
+        <a class="nav-github" href="https://github.com/emirttac/WinCleaner" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
+      <button class="nav-toggle" type="button" data-i18n-aria="aria.menuOpen" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="hero" aria-labelledby="hero-brand">
+      <div class="hero-atmosphere" aria-hidden="true">
+        <div class="hero-grid"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-orb hero-orb-a"></div>
+        <div class="hero-orb hero-orb-b"></div>
+      </div>
+
+      <div class="hero-stage">
+        <div class="hero-content">
+          <h1 id="hero-brand" class="hero-brand" data-reveal>WinCleaner</h1>
+          <p class="hero-lead" data-reveal data-i18n="hero.lead">Debloat and tune Windows without the guesswork. Every change shows its risk level and can be undone.</p>
+          <div class="hero-actions" data-reveal>
+            <a class="btn btn-accent" href="#download" data-i18n="hero.ctaPrimary">Download</a>
+            <a class="btn btn-ghost" href="developers.html" data-i18n="hero.ctaSecondary">Developers</a>
+          </div>
+        </div>
+
+        <div class="app-mock" data-reveal aria-hidden="true">
+          <div class="app-chrome">
+            <div class="app-titlebar">
+              <span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span>
+              <span class="app-title">WinCleaner</span>
+            </div>
+            <div class="app-body">
+              <aside class="app-sidebar">
+                <div class="sb-item is-active"><span></span>Dashboard</div>
+                <div class="sb-item"><span></span>Presets</div>
+                <div class="sb-item"><span></span>Gaming</div>
+                <div class="sb-item"><span></span>Telemetry</div>
+                <div class="sb-item"><span></span>Bloatware</div>
+                <div class="sb-item"><span></span>Services</div>
+              </aside>
+              <div class="app-main">
+                <div class="mock-row">
+                  <div class="mock-stat">
+                    <em data-i18n="mock.cpu">CPU</em>
+                    <strong class="live-metric" data-metric="cpu">34%</strong>
+                  </div>
+                  <div class="mock-stat">
+                    <em data-i18n="mock.gpu">GPU</em>
+                    <strong class="live-metric" data-metric="gpu">61%</strong>
+                  </div>
+                  <div class="mock-stat">
+                    <em data-i18n="mock.ram">RAM</em>
+                    <strong class="live-metric" data-metric="ram">48%</strong>
+                  </div>
+                </div>
+                <div class="mock-preset">
+                  <div class="mock-preset-head">
+                    <span data-i18n="mock.preset">Gamer preset</span>
+                    <span class="pill" data-i18n="mock.ready">Ready</span>
+                  </div>
+                  <div class="mock-bars">
+                    <i style="--w:92%"></i>
+                    <i style="--w:74%"></i>
+                    <i style="--w:58%"></i>
+                    <i style="--w:81%"></i>
+                  </div>
+                </div>
+                <div class="mock-risks">
+                  <span class="risk safe">Safe</span>
+                  <span class="risk caution">Caution</span>
+                  <span class="risk dangerous">Dangerous</span>
+                  <span class="risk blocked">Blocked</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="hud-scan"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>92 tweaks</span><span>28 services</span><span>46 AppX</span><span>158 winget apps</span><span>6 presets</span><span>8 languages</span>
+        <span>92 tweaks</span><span>28 services</span><span>46 AppX</span><span>158 winget apps</span><span>6 presets</span><span>8 languages</span>
+      </div>
+    </section>
+
+    <section id="features" class="section features" aria-labelledby="features-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="features.kicker">Features</p>
+        <h2 id="features-title" data-reveal data-i18n="features.title">Everything you need to tune Windows</h2>
+        <p class="section-lead" data-reveal data-i18n="features.lead">Gaming tweaks, privacy controls, app cleanup, ready-made presets and a built-in app installer. Every option is labeled with its risk level.</p>
+      </div>
+
+      <div class="showcase-list">
+        <article class="showcase" data-reveal="left">
+          <div class="showcase-visual gaming" aria-hidden="true">
+            <div class="viz-ring"></div>
+            <div class="viz-label">HAGS · Game Mode · MMCSS</div>
+          </div>
+          <div class="showcase-copy">
+            <p class="showcase-index">01</p>
+            <h3 data-i18n="feat.gaming.title">Gaming</h3>
+            <p data-i18n="feat.gaming.body">Tune Windows for gaming with Game Mode, HAGS, the Ultimate Performance power plan, Game Bar and MMCSS. Tweaks that can interfere with anti-cheat ask for your confirmation first.</p>
+          </div>
+        </article>
+
+        <article class="showcase reverse" data-reveal="right">
+          <div class="showcase-visual privacy" aria-hidden="true">
+            <div class="viz-shield"></div>
+            <div class="viz-label">Telemetry · Ads · Cortana</div>
+          </div>
+          <div class="showcase-copy">
+            <p class="showcase-index">02</p>
+            <h3 data-i18n="feat.privacy.title">Privacy</h3>
+            <p data-i18n="feat.privacy.body">Turn off the advertising ID, activity history, CEIP data collection, Cortana and Bing results in search. Every switch is listed in an open JSON catalog on GitHub.</p>
+          </div>
+        </article>
+
+        <article class="showcase" data-reveal="left">
+          <div class="showcase-visual bloat" aria-hidden="true">
+            <div class="viz-stack">
+              <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="viz-label">AppX · OneDrive · winget</div>
+          </div>
+          <div class="showcase-copy">
+            <p class="showcase-index">03</p>
+            <h3 data-i18n="feat.bloat.title">Bloatware &amp; apps</h3>
+            <p data-i18n="feat.bloat.body">Remove preinstalled apps after a confirmation step, and reinstall them later with their Store ID. The built-in winget list covers 158 apps you can install or uninstall.</p>
+          </div>
+        </article>
+
+        <article class="showcase reverse" data-reveal="right">
+          <div class="showcase-visual presets" aria-hidden="true">
+            <div class="viz-presets">
+              <b>Gamer</b><b>Balanced</b><b>Minimal</b><b>Laptop</b>
+            </div>
+          </div>
+          <div class="showcase-copy">
+            <p class="showcase-index">04</p>
+            <h3 data-i18n="feat.presets.title">Presets</h3>
+            <p data-i18n="feat.presets.body">Start from Gamer, Balanced, Minimal, Laptop, Privacy Max or Defaults. Preview exactly what a preset changes before you apply it, or import and export your own profiles.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="stats-band" aria-labelledby="stats-title" id="stats">
+      <div class="stats-inner">
+        <div class="app-chrome stats-chrome" data-stats-window>
+          <div class="app-titlebar">
+            <span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span>
+            <span class="app-title">WinCleaner</span>
+          </div>
+          <div class="app-body stats-body-layout">
+            <aside class="app-sidebar" aria-hidden="true">
+              <div class="sb-item is-active"><span></span>Dashboard</div>
+              <div class="sb-item"><span></span>Presets</div>
+              <div class="sb-item"><span></span>Gaming</div>
+              <div class="sb-item"><span></span>Telemetry</div>
+              <div class="sb-item"><span></span>Bloatware</div>
+              <div class="sb-item"><span></span>Services</div>
+            </aside>
+            <div class="app-main stats-main">
+              <h2 id="stats-title" class="stats-panel-title" data-i18n="stats.title">What’s inside</h2>
+              <ul class="stats-list">
+                <li class="stats-row" data-stat-row data-fill="0.92" data-count="92">
+                  <div class="stats-row-top">
+                    <span data-i18n="stats.tweaks">Tweaks</span>
+                    <strong><span class="count">0</span></strong>
+                  </div>
+                  <div class="stats-bar" aria-hidden="true"><i></i></div>
+                </li>
+                <li class="stats-row" data-stat-row data-fill="1" data-count="158">
+                  <div class="stats-row-top">
+                    <span data-i18n="stats.apps">Winget apps</span>
+                    <strong><span class="count">0</span></strong>
+                  </div>
+                  <div class="stats-bar" aria-hidden="true"><i></i></div>
+                </li>
+                <li class="stats-row" data-stat-row data-fill="0.55" data-count="8">
+                  <div class="stats-row-top">
+                    <span data-i18n="stats.langs">Languages</span>
+                    <strong><span class="count">0</span></strong>
+                  </div>
+                  <div class="stats-bar" aria-hidden="true"><i></i></div>
+                </li>
+                <li class="stats-row" data-stat-row data-fill="0.4" data-count="6">
+                  <div class="stats-row-top">
+                    <span data-i18n="stats.presets">Presets</span>
+                    <strong><span class="count">0</span></strong>
+                  </div>
+                  <div class="stats-bar" aria-hidden="true"><i></i></div>
+                </li>
+              </ul>
+              <div class="mock-risks stats-risks" aria-hidden="true">
+                <span class="risk safe">Safe</span>
+                <span class="risk caution">Caution</span>
+                <span class="risk dangerous">Dangerous</span>
+                <span class="risk blocked">Blocked</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="safety" class="section safety" aria-labelledby="safety-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="safety.kicker">Safety</p>
+        <h2 id="safety-title" data-reveal data-i18n="safety.title">Know the risk before you apply</h2>
+        <p class="section-lead" data-reveal data-i18n="safety.lead">Many cleaners don’t tell you what they touch. In WinCleaner every item has a risk level, and Dangerous options stay locked until you enable them in Settings.</p>
+      </div>
+
+      <ul class="safety-grid">
+        <li data-reveal>
+          <span class="safety-icon risk-safe" aria-hidden="true"></span>
+          <h3 data-i18n="safety.risk.title">Four risk levels</h3>
+          <p data-i18n="safety.risk.body">Every option is rated Safe, Caution, Dangerous or Blocked. Critical components such as RpcSs and WinDefend are Blocked and can never be changed.</p>
+        </li>
+        <li data-reveal>
+          <span class="safety-icon risk-restore" aria-hidden="true"></span>
+          <h3 data-i18n="safety.restore.title">Restore point first</h3>
+          <p data-i18n="safety.restore.body">By default, WinCleaner creates a System Restore point before applying changes, so you can roll Windows back if something goes wrong.</p>
+        </li>
+        <li data-reveal>
+          <span class="safety-icon risk-undo" aria-hidden="true"></span>
+          <h3 data-i18n="safety.undo.title">Session undo</h3>
+          <p data-i18n="safety.undo.body">Every change is recorded in a session journal, and Global Undo reverts everything that can be reversed.</p>
+        </li>
+        <li data-reveal>
+          <span class="safety-icon risk-os" aria-hidden="true"></span>
+          <h3 data-i18n="safety.os.title">Build-aware</h3>
+          <p data-i18n="safety.os.body">Options that don’t apply to your Windows version, edition or architecture are hidden automatically, so nothing fails halfway through.</p>
+        </li>
+      </ul>
+
+      <aside class="warning-banner" data-reveal role="note">
+        <strong data-i18n="safety.warn.title">Before you start</strong>
+        <p data-i18n="safety.warn.body">WinCleaner changes Windows services, registry values, scheduled tasks and AppX packages. Keep System Restore enabled, read each option before applying, and start with a preset instead of selecting everything. Releases are not code-signed, so verify the download against SHA256SUMS.txt before running it.</p>
+      </aside>
+    </section>
+
+    <section id="download" class="section download" aria-labelledby="download-title">
+      <div class="download-panel" data-reveal>
+        <div class="download-copy">
+          <p class="section-kicker" data-i18n="download.kicker">Download</p>
+          <h2 id="download-title" data-i18n="download.title">Download WinCleaner</h2>
+          <ul class="download-meta">
+            <li data-i18n="download.meta1">Windows 10 21H2+ / Windows 11 · x64</li>
+            <li data-i18n="download.meta2">Free and open source (MIT license)</li>
+            <li data-i18n="download.meta3">Applies tweaks offline. No account, no telemetry.</li>
+          </ul>
+        </div>
+        <div class="download-actions">
+          <a class="btn btn-accent btn-lg" href="https://github.com/emirttac/WinCleaner/releases/latest" target="_blank" rel="noopener noreferrer" data-i18n="download.cta">Download the latest release</a>
+          <a class="btn btn-ghost" href="https://github.com/emirttac/WinCleaner" target="_blank" rel="noopener noreferrer" data-i18n="download.source">View on GitHub</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="section bridge" aria-labelledby="bridge-title">
+      <div class="bridge-panel" data-reveal>
+        <p class="section-kicker" data-i18n="bridge.kicker">For developers</p>
+        <h2 id="bridge-title" data-i18n="bridge.title">Building on WinCleaner?</h2>
+        <p data-i18n="bridge.lead">Read about the architecture, JSON catalogs, headless --config mode and contribution guidelines in the developer docs.</p>
+        <a class="btn btn-primary" href="developers.html" data-i18n="bridge.cta">Developer docs</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer">emirttac</a> · WinCleaner</p>
+    <nav class="footer-social" aria-label="Social">
+      <a href="https://www.youtube.com/@BiAltTab" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7L16 12l-6.2 3.5z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/emirttac/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2zm6.1-8.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 2.2c-2.7 0-3 0-4.1.1-2.8.1-4.1 1.5-4.2 4.2C3.6 7.5 3.6 7.8 3.6 12s0 4.5.1 5.5c.1 2.8 1.4 4.1 4.2 4.2 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c2.8-.1 4.1-1.4 4.2-4.2.1-1 .1-1.3.1-5.5s0-4.5-.1-5.5c-.1-2.8-1.4-4.1-4.2-4.2-1.1-.1-1.4-.1-4.1-.1zm0 1.8c2.6 0 2.9 0 4 .1 1.9.1 2.8 1 2.9 2.9.1 1 .1 1.3.1 3.9s0 2.9-.1 4c-.1 1.9-1 2.8-2.9 2.9-1 .1-1.3.1-4 .1s-2.9 0-4-.1c-1.9-.1-2.8-1-2.9-2.9-.1-1-.1-1.3-.1-4s0-2.9.1-4c.1-1.9 1-2.8 2.9-2.9 1.1-.1 1.4-.1 4-.1z"/></svg>
+      </a>
+      <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer" aria-label="emirttac.github.io">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.4 9h-3.1a15.3 15.3 0 0 0-1.3-5 8.1 8.1 0 0 1 4.4 5zM12 4c.8 1.2 1.8 3.2 2.2 5.5H9.8C10.2 7.2 11.2 5.2 12 4zM4.6 13a8.1 8.1 0 0 1 4.4-5 15.3 15.3 0 0 0-1.3 5H4.6zm0-2h3.1a15.3 15.3 0 0 0 1.3-5 8.1 8.1 0 0 0-4.4 5zM12 20c-.8-1.2-1.8-3.2-2.2-5.5h4.4C13.8 16.8 12.8 18.8 12 20zm2.7-7H9.3a13.5 13.5 0 0 1 1.2-4.5h3a13.5 13.5 0 0 1 1.2 4.5zm.7 2a15.3 15.3 0 0 0 1.3 5 8.1 8.1 0 0 0 4.4-5h-5.7zm-7.4 0H4.6a8.1 8.1 0 0 0 4.4 5 15.3 15.3 0 0 1-1.3-5z"/></svg>
+      </a>
+    </nav>
+    <p class="footer-note" data-i18n="footer.note">Released under the MIT License</p>
+  </footer>
+
+  <script src="js/i18n.js?v=14"></script>
+  <script src="js/main.js?v=5"></script>
+</body>
+</html>

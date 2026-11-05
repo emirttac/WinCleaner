@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" data-i18n="dev.meta.description" content="Developer documentation for WinCleaner: architecture, JSON catalogs, headless mode, build instructions and contribution guidelines." />
+  <meta name="theme-color" content="#0D0D0D" id="theme-color-meta" />
+  <title>WinCleaner — Developers</title>
+  <script>
+    (function () {
+      try {
+        var key = "wincleaner-theme";
+        var saved = localStorage.getItem(key);
+        var theme = saved === "dark" || saved === "light" ? saved : "dark";
+        document.documentElement.setAttribute("data-theme", theme);
+      } catch (e) {
+        document.documentElement.setAttribute("data-theme", "dark");
+      }
+    })();
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/styles.css?v=7" />
+  <link rel="icon" href="favicon.ico" />
+</head>
+<body class="page-dev">
+  <div class="noise" aria-hidden="true"></div>
+
+  <header class="site-header">
+    <a class="logo" href="index.html" data-i18n-aria="aria.home" aria-label="WinCleaner home">
+      <img src="icon.png" alt="" width="28" height="28" />
+      <span>WinCleaner</span>
+    </a>
+    <div class="header-actions">
+      <button class="theme-toggle" type="button" id="theme-toggle" data-i18n-aria="aria.themeToLight" aria-label="Switch to light mode">
+        <svg class="icon-moon" viewBox="0 0 24 24" aria-hidden="true">
+          <path d="M21 14.5A8.5 8.5 0 0 1 9.5 3 7 7 0 1 0 21 14.5z" />
+        </svg>
+        <svg class="icon-sun" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="4" />
+          <path d="M12 2v2.5M12 19.5V22M4.93 4.93l1.77 1.77M17.3 17.3l1.77 1.77M2 12h2.5M19.5 12H22M4.93 19.07l1.77-1.77M17.3 6.7l1.77-1.77" />
+        </svg>
+      </button>
+      <label class="lang-switch">
+        <span class="visually-hidden" data-i18n="aria.lang">Language</span>
+        <select id="lang-select" data-i18n-aria="aria.lang" aria-label="Language">
+          <option value="en">English</option>
+          <option value="tr">Türkçe</option>
+          <option value="de">Deutsch</option>
+        </select>
+      </label>
+      <nav class="nav" data-i18n-aria="aria.nav" aria-label="Main menu">
+        <a href="index.html" data-i18n="nav.product">Product</a>
+        <a href="#architecture" data-i18n="dev.nav.arch">Architecture</a>
+        <a href="#build" data-i18n="dev.nav.build">Build</a>
+        <a href="#headless" data-i18n="dev.nav.headless">Headless</a>
+        <a class="nav-github" href="https://github.com/emirttac/WinCleaner" target="_blank" rel="noopener noreferrer">GitHub</a>
+      </nav>
+      <button class="nav-toggle" type="button" data-i18n-aria="aria.menuOpen" aria-label="Open menu" aria-expanded="false">
+        <span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <section class="dev-hero">
+      <div class="dev-hero-inner">
+        <p class="section-kicker" data-reveal data-i18n="dev.hero.kicker">Developers</p>
+        <h1 data-reveal data-i18n="dev.hero.title">Build, extend and automate WinCleaner</h1>
+        <p class="hero-lead" data-reveal data-i18n="dev.hero.lead">WinCleaner is a .NET 8 / WPF app driven by JSON catalogs. This page covers the repo layout, catalog format, build steps and headless mode.</p>
+        <div class="hero-actions" data-reveal>
+          <a class="btn btn-accent" href="https://github.com/emirttac/WinCleaner" target="_blank" rel="noopener noreferrer" data-i18n="dev.hero.cta">View on GitHub</a>
+          <a class="btn btn-ghost" href="#build" data-i18n="dev.hero.cta2">Build steps</a>
+        </div>
+      </div>
+      <aside class="dev-toc" data-reveal aria-label="On this page">
+        <p data-i18n="dev.toc">On this page</p>
+        <ol>
+          <li><a href="#architecture" data-i18n="dev.nav.arch">Architecture</a></li>
+          <li><a href="#catalogs" data-i18n="dev.nav.catalogs">Catalogs</a></li>
+          <li><a href="#pipeline" data-i18n="dev.nav.pipeline">Change pipeline</a></li>
+          <li><a href="#build" data-i18n="dev.nav.build">Build</a></li>
+          <li><a href="#headless" data-i18n="dev.nav.headless">Headless</a></li>
+          <li><a href="#contribute" data-i18n="dev.nav.contribute">Contribute</a></li>
+        </ol>
+      </aside>
+    </section>
+
+    <section id="architecture" class="section" aria-labelledby="arch-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="dev.arch.kicker">Repository</p>
+        <h2 id="arch-title" data-reveal data-i18n="dev.arch.title">Solution layout</h2>
+        <p class="section-lead" data-reveal data-i18n="dev.arch.lead">A WPF shell on top of a Core library that executes actions, with the catalogs embedded in the Data project. Tests cover catalogs, OS gating, i18n, DNS, updates and profiles.</p>
+      </div>
+      <pre class="code-block" data-reveal><code>WinCleaner.slnx
+├── src/WinCleaner              WPF shell, ViewModels, themes, i18n
+├── src/WinCleaner.Core         Actions, executor, registry / services / AppX
+├── src/WinCleaner.Data         Embedded JSON catalogs + profile models
+├── src/WinCleaner.Bootstrap    Optional launcher (prereqs → app)
+├── tests/WinCleaner.Core.Tests Catalog, OS, i18n, DNS, update, profile
+├── installer/                  Inno Setup + build helper
+├── scripts/                    Portable publish + SOURCE_CODES sync
+└── tools/i18n/                 JSON → Strings.*.xaml pipeline</code></pre>
+    </section>
+
+    <section id="catalogs" class="section" aria-labelledby="cat-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="dev.cat.kicker">Data</p>
+        <h2 id="cat-title" data-reveal data-i18n="dev.cat.title">JSON catalogs</h2>
+        <p class="section-lead" data-reveal data-i18n="dev.cat.lead">Tweaks, services, bloatware, presets and winget apps are defined in plain JSON files you can read and review, not hard-coded in the UI.</p>
+      </div>
+      <div class="catalog-table" data-reveal>
+        <div class="catalog-row head">
+          <span data-i18n="dev.cat.col.file">Catalog</span>
+          <span data-i18n="dev.cat.col.count">Entries</span>
+          <span data-i18n="dev.cat.col.path">Path</span>
+        </div>
+        <div class="catalog-row"><span>Tweaks</span><span>92</span><span>Catalogs/tweaks.json</span></div>
+        <div class="catalog-row"><span>Services</span><span>28</span><span>Catalogs/services.json</span></div>
+        <div class="catalog-row"><span>Bloatware</span><span>46</span><span>Catalogs/apps.json</span></div>
+        <div class="catalog-row"><span>Winget apps</span><span>158</span><span>Catalogs/apps_installer.json</span></div>
+        <div class="catalog-row"><span>Presets</span><span>6</span><span>Catalogs/presets.json</span></div>
+      </div>
+      <ul class="dev-notes" data-reveal>
+        <li data-i18n="dev.cat.n1"><code>risk</code>: Safe, Caution, Dangerous or Blocked. Blocked entries can never be applied.</li>
+        <li data-i18n="dev.cat.n2"><code>reversibility</code>: Exact, Defaulted, Scripted or None. Required on every tweak.</li>
+        <li data-i18n="dev.cat.n3">Optional <code>minBuild</code>, <code>win11Only</code>, <code>skus</code> and <code>archs</code> fields control which Windows versions, editions and architectures see an entry.</li>
+      </ul>
+    </section>
+
+    <section id="pipeline" class="section" aria-labelledby="pipe-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="dev.pipe.kicker">Runtime</p>
+        <h2 id="pipe-title" data-reveal data-i18n="dev.pipe.title">How a change is applied</h2>
+        <p class="section-lead" data-reveal data-i18n="dev.pipe.lead">The UI never touches the system directly. Core applies each action, journals it and enforces the risk rules.</p>
+      </div>
+      <ol class="pipeline" data-reveal>
+        <li><span>01</span><p data-i18n="dev.pipe.s1">Catalog load → OS / risk filter → ViewModel binding</p></li>
+        <li><span>02</span><p data-i18n="dev.pipe.s2">User intent → confirmation (Dangerous) → restore point</p></li>
+        <li><span>03</span><p data-i18n="dev.pipe.s3">Executor applies action → session journal entry</p></li>
+        <li><span>04</span><p data-i18n="dev.pipe.s4">Undo reads journal → reverse where reversibility allows</p></li>
+      </ol>
+    </section>
+
+    <section id="build" class="section" aria-labelledby="build-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="dev.build.kicker">Setup</p>
+        <h2 id="build-title" data-reveal data-i18n="dev.build.title">Build and test</h2>
+        <p class="section-lead" data-reveal data-i18n="dev.build.lead">Requires the .NET 8 SDK. The app requests administrator rights through UAC when it starts. win-arm64 publishing is intentionally blocked.</p>
+      </div>
+      <pre class="code-block" data-reveal><code>git clone https://github.com/emirttac/WinCleaner.git
+cd WinCleaner
+
+dotnet restore
+dotnet build src\WinCleaner\WinCleaner.csproj -c Release
+dotnet test
+dotnet run --project src\WinCleaner\WinCleaner.csproj
+
+# Portable single-file
+powershell -ExecutionPolicy Bypass -File scripts\publish-portable.ps1
+
+# Installer (needs Inno Setup 6)
+powershell -ExecutionPolicy Bypass -File installer\build-installer.ps1</code></pre>
+    </section>
+
+    <section id="headless" class="section" aria-labelledby="headless-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="dev.head.kicker">CLI</p>
+        <h2 id="headless-title" data-reveal data-i18n="dev.head.title">Headless / --config</h2>
+        <p class="section-lead" data-reveal data-i18n="dev.head.lead">Apply a profile JSON without opening the UI. Useful for deployment images, lab machines and scripts.</p>
+      </div>
+      <pre class="code-block" data-reveal><code>WinCleaner.exe --config path\to\profile.json --apply --silent
+WinCleaner.exe --config path\to\profile.json --whatif
+WinCleaner.exe --config path\to\profile.json --apply --allow-unknown --log path\to\log.txt</code></pre>
+      <ul class="dev-notes" data-reveal>
+        <li><code>--config</code> — profile JSON (schema v2 or v3)</li>
+        <li><code>--apply</code> / <code>--whatif</code> — apply or plan only</li>
+        <li><code>--silent</code> — no summary MessageBox</li>
+        <li><code>--allow-unknown</code> — skip unknown IDs instead of rejecting</li>
+      </ul>
+    </section>
+
+    <section id="contribute" class="section" aria-labelledby="contrib-title">
+      <div class="section-head">
+        <p class="section-kicker" data-reveal data-i18n="dev.contrib.kicker">Contributing</p>
+        <h2 id="contrib-title" data-reveal data-i18n="dev.contrib.title">Before you open a PR</h2>
+        <p class="section-lead" data-reveal data-i18n="dev.contrib.lead">A few ground rules: keep the risk gates strict, keep catalog descriptions accurate, and keep all eight languages in sync.</p>
+      </div>
+      <ul class="safety-grid contrib-grid">
+        <li data-reveal>
+          <h3 data-i18n="dev.contrib.r1t">Keep risk gates strict</h3>
+          <p data-i18n="dev.contrib.r1b">Blocked entries can never be applied. Dangerous entries require a Settings opt-in and a confirmation. Changes must not loosen either rule.</p>
+        </li>
+        <li data-reveal>
+          <h3 data-i18n="dev.contrib.r2t">Complete translations</h3>
+          <p data-i18n="dev.contrib.r2b">Add every new string key to all eight Strings.*.xaml files. Catalog text guidelines live in tools/i18n.</p>
+        </li>
+        <li data-reveal>
+          <h3 data-i18n="dev.contrib.r3t">Credit WinUtil</h3>
+          <p data-i18n="dev.contrib.r3b">If an entry is adapted from WinUtil, reference the original WinUtil key in a note. Don’t reuse WinUtil’s preset names.</p>
+        </li>
+        <li data-reveal>
+          <h3 data-i18n="dev.contrib.r4t">Verify before submitting</h3>
+          <p data-i18n="dev.contrib.r4b">Run <code>dotnet test</code> and <code>dotnet format --verify-no-changes</code> before opening a PR. Releases ship with SHA256SUMS and an SPDX 2.3 SBOM.</p>
+        </li>
+      </ul>
+      <div class="hero-actions" data-reveal>
+        <a class="btn btn-accent" href="https://github.com/emirttac/WinCleaner/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">CONTRIBUTING.md</a>
+        <a class="btn btn-ghost" href="https://github.com/emirttac/WinCleaner/issues" target="_blank" rel="noopener noreferrer">Issues</a>
+          <a class="btn btn-ghost" href="index.html" data-i18n="dev.contrib.back">← Product site</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer">emirttac</a> · WinCleaner</p>
+    <nav class="footer-social" aria-label="Social">
+      <a href="https://www.youtube.com/@BiAltTab" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7L16 12l-6.2 3.5z"/></svg>
+      </a>
+      <a href="https://www.instagram.com/emirttac/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2zm6.1-8.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 2.2c-2.7 0-3 0-4.1.1-2.8.1-4.1 1.5-4.2 4.2C3.6 7.5 3.6 7.8 3.6 12s0 4.5.1 5.5c.1 2.8 1.4 4.1 4.2 4.2 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c2.8-.1 4.1-1.4 4.2-4.2.1-1 .1-1.3.1-5.5s0-4.5-.1-5.5c-.1-2.8-1.4-4.1-4.2-4.2-1.1-.1-1.4-.1-4.1-.1zm0 1.8c2.6 0 2.9 0 4 .1 1.9.1 2.8 1 2.9 2.9.1 1 .1 1.3.1 3.9s0 2.9-.1 4c-.1 1.9-1 2.8-2.9 2.9-1 .1-1.3.1-4 .1s-2.9 0-4-.1c-1.9-.1-2.8-1-2.9-2.9-.1-1-.1-1.3-.1-4s0-2.9.1-4c.1-1.9 1-2.8 2.9-2.9 1.1-.1 1.4-.1 4-.1z"/></svg>
+      </a>
+      <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer" aria-label="emirttac.github.io">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.4 9h-3.1a15.3 15.3 0 0 0-1.3-5 8.1 8.1 0 0 1 4.4 5zM12 4c.8 1.2 1.8 3.2 2.2 5.5H9.8C10.2 7.2 11.2 5.2 12 4zM4.6 13a8.1 8.1 0 0 1 4.4-5 15.3 15.3 0 0 0-1.3 5H4.6zm0-2h3.1a15.3 15.3 0 0 0 1.3-5 8.1 8.1 0 0 0-4.4 5zM12 20c-.8-1.2-1.8-3.2-2.2-5.5h4.4C13.8 16.8 12.8 18.8 12 20zm2.7-7H9.3a13.5 13.5 0 0 1 1.2-4.5h3a13.5 13.5 0 0 1 1.2 4.5zm.7 2a15.3 15.3 0 0 0 1.3 5 8.1 8.1 0 0 0 4.4-5h-5.7zm-7.4 0H4.6a8.1 8.1 0 0 0 4.4 5 15.3 15.3 0 0 1-1.3-5z"/></svg>
+      </a>
+    </nav>
+    <p class="footer-note" data-i18n="footer.note">Released under the MIT License</p>
+  </footer>
+
+  <script src="js/i18n.js?v=14"></script>
+  <script src="js/main.js?v=5"></script>
+</body>
+</html>
