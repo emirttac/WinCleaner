@@ -24,3 +24,7 @@ tools/i18n/AddSocialKeys/obj/
 # Local / agent
 .cursor/
 
+
+__pycache__/
+*.pyc
+
