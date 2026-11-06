@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=22" />
+  <link rel="stylesheet" href="css/styles.css?v=24" />
   <link rel="icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="icon.png" />
 </head>
@@ -153,7 +153,6 @@
 
     <section id="features" class="section features" aria-labelledby="features-title">
       <div class="section-head">
-        <p class="section-kicker" data-reveal data-i18n="features.kicker">Features</p>
         <h2 id="features-title" data-reveal data-i18n="features.title">Everything you need to tune Windows</h2>
         <p class="section-lead" data-reveal data-i18n="features.lead">Optimize your PC with 92 tweaks, 28 services, 46 AppX packages, 158 winget apps and 6 ready-made profiles.</p>
       </div>
@@ -161,11 +160,30 @@
       <div class="showcase-list">
         <article class="showcase" data-reveal="left">
           <div class="showcase-visual gaming" aria-hidden="true">
-            <div class="viz-ring"></div>
-            <div class="viz-label">HAGS · Game Mode · MMCSS</div>
+            <div class="viz-game">
+              <div class="viz-game-hud">
+                <div class="viz-game-fps">
+                  <strong>240</strong>
+                  <span>FPS</span>
+                </div>
+                <div class="viz-game-meters" aria-hidden="true">
+                  <div class="viz-meter"><b>GPU</b><i style="--v:88%"></i></div>
+                  <div class="viz-meter"><b>CPU</b><i style="--v:62%"></i></div>
+                  <div class="viz-meter"><b>LAT</b><i style="--v:34%"></i></div>
+                </div>
+              </div>
+              <div class="viz-game-graph" aria-hidden="true">
+                <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
+              </div>
+              <div class="viz-game-toggles">
+                <span class="is-on">HAGS</span>
+                <span class="is-on">Game Mode</span>
+                <span class="is-on">MMCSS</span>
+                <span>FSO</span>
+              </div>
+            </div>
           </div>
           <div class="showcase-copy">
-            <p class="showcase-index">01</p>
             <h3 data-i18n="feat.gaming.title">Gaming</h3>
             <p data-i18n="feat.gaming.body">Apply advanced options like HAGS, Ultimate Performance, Game Bar/DVR, FSO, MMCSS and more. Anti-cheat warnings keep competitive play safe while you tune Windows.</p>
           </div>
@@ -173,25 +191,29 @@
 
         <article class="showcase reverse" data-reveal="right">
           <div class="showcase-visual privacy" aria-hidden="true">
-            <div class="viz-shield"></div>
-            <div class="viz-label">Telemetry · Ads · Cortana</div>
+            <ul class="viz-privacy">
+              <li>Telemetry</li>
+              <li>Advertising ID</li>
+              <li>Windows Recall</li>
+              <li>Location</li>
+            </ul>
           </div>
           <div class="showcase-copy">
-            <p class="showcase-index">02</p>
             <h3 data-i18n="feat.privacy.title">Privacy</h3>
-            <p data-i18n="feat.privacy.body">Apply privacy options for Advertising ID, Activity History, CEIP, Cortana, Bing Search, Location and more. Privacy comes first.</p>
+            <p data-i18n="feat.privacy.body">Apply privacy options for Advertising ID, Activity History, CEIP, Recall, Bing Search, Location and more. Privacy comes first.</p>
           </div>
         </article>
 
         <article class="showcase" data-reveal="left">
           <div class="showcase-visual bloat" aria-hidden="true">
-            <div class="viz-stack">
-              <span></span><span></span><span></span><span></span>
-            </div>
-            <div class="viz-label">AppX · OneDrive · winget</div>
+            <ul class="viz-bloat">
+              <li class="is-gone">Xbox Apps</li>
+              <li class="is-gone">OneDrive</li>
+              <li class="is-gone">Clipchamp</li>
+              <li>winget · 158 apps</li>
+            </ul>
           </div>
           <div class="showcase-copy">
-            <p class="showcase-index">03</p>
             <h3 data-i18n="feat.bloat.title">Bloatware &amp; apps</h3>
             <p data-i18n="feat.bloat.body">Remove Microsoft’s preinstalled apps as AppX packages. Drop the bloat you don’t need.</p>
           </div>
@@ -204,7 +226,6 @@
             </div>
           </div>
           <div class="showcase-copy">
-            <p class="showcase-index">04</p>
             <h3 data-i18n="feat.presets.title">Presets</h3>
             <p data-i18n="feat.presets.body">If tweaks feel overwhelming, apply optimized ready-made profiles like Gamer Mode, Balanced Mode, Minimal / Server, Laptop / Battery or Maximum Privacy in one click.</p>
           </div>
@@ -274,29 +295,52 @@
 
     <section id="safety" class="section safety" aria-labelledby="safety-title">
       <div class="section-head">
-        <p class="section-kicker" data-reveal data-i18n="safety.kicker">Safety</p>
         <h2 id="safety-title" data-reveal data-i18n="safety.title">Know the risk before you apply</h2>
         <p class="section-lead" data-reveal data-i18n="safety.lead">Many cleaners don’t tell you what they touch. In WinCleaner every item has a risk level, and Dangerous options stay locked until you enable them in Settings.</p>
       </div>
 
       <ul class="safety-grid">
         <li data-reveal>
-          <span class="safety-icon risk-safe" aria-hidden="true"></span>
+          <span class="safety-icon risk-safe" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+              <path d="M12 3 22 20H2L12 3Z" />
+              <path d="M12 10v4.5" />
+              <circle cx="12" cy="17.2" r="0.9" fill="currentColor" stroke="none" />
+            </svg>
+          </span>
           <h3 data-i18n="safety.risk.title">Four risk levels</h3>
           <p data-i18n="safety.risk.body">Every tweak has a Safe, Caution, Dangerous or Blocked risk level. Knowing the risk before you feel it the hard way is every user’s right.</p>
         </li>
         <li data-reveal>
-          <span class="safety-icon risk-restore" aria-hidden="true"></span>
+          <span class="safety-icon risk-restore" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 12a9 9 0 1 0 3-6.7" />
+              <path d="M3 4v5h5" />
+              <path d="M12 8v5l3.5 2" />
+            </svg>
+          </span>
           <h3 data-i18n="safety.restore.title">Restore point first</h3>
           <p data-i18n="safety.restore.body">If some settings backfire on your PC or you dislike what you applied, roll everything back with the Restore Point WinCleaner created.</p>
         </li>
         <li data-reveal>
-          <span class="safety-icon risk-undo" aria-hidden="true"></span>
+          <span class="safety-icon risk-undo" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 14 4 9l5-5" />
+              <path d="M4 9h10.5a5.5 5.5 0 1 1 0 11H13" />
+            </svg>
+          </span>
           <h3 data-i18n="safety.undo.title">Undo the session</h3>
           <p data-i18n="safety.undo.body">Every change is recorded in a session journal, and Global Undo reverts everything that can be reversed.</p>
         </li>
         <li data-reveal>
-          <span class="safety-icon risk-os" aria-hidden="true"></span>
+          <span class="safety-icon risk-os" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3.5" y="2.5" width="17" height="8" rx="1.5" />
+              <rect x="3.5" y="13.5" width="17" height="8" rx="1.5" />
+              <text x="12" y="8.2" text-anchor="middle" fill="currentColor" stroke="none" font-size="5.2" font-weight="700" font-family="system-ui,sans-serif">10</text>
+              <text x="12" y="19.2" text-anchor="middle" fill="currentColor" stroke="none" font-size="5.2" font-weight="700" font-family="system-ui,sans-serif">11</text>
+            </svg>
+          </span>
           <h3 data-i18n="safety.os.title">Build-aware</h3>
           <p data-i18n="safety.os.body">Options that don’t match your Windows version, SKU or architecture are not offered; every setting is shown only when it fits your Windows build.</p>
         </li>
@@ -311,7 +355,6 @@
     <section id="download" class="section download" aria-labelledby="download-title">
       <div class="download-panel" data-reveal>
         <div class="download-copy">
-          <p class="section-kicker" data-i18n="download.kicker">Download</p>
           <h2 id="download-title" data-i18n="download.title">Download WinCleaner</h2>
           <ul class="download-meta">
             <li data-i18n="download.meta1">Windows 10 21H2+ / Windows 11 · x64</li>
@@ -337,22 +380,25 @@
   </main>
 
   <footer class="site-footer">
-    <p>© <span id="year"></span> <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer">emirttac</a> · WinCleaner</p>
-    <nav class="footer-social" aria-label="Social">
-      <a href="https://www.youtube.com/@BiAltTab" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7L16 12l-6.2 3.5z"/></svg>
-      </a>
-      <a href="https://www.instagram.com/emirttac/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2zm6.1-8.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 2.2c-2.7 0-3 0-4.1.1-2.8.1-4.1 1.5-4.2 4.2C3.6 7.5 3.6 7.8 3.6 12s0 4.5.1 5.5c.1 2.8 1.4 4.1 4.2 4.2 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c2.8-.1 4.1-1.4 4.2-4.2.1-1 .1-1.3.1-5.5s0-4.5-.1-5.5c-.1-2.8-1.4-4.1-4.2-4.2-1.1-.1-1.4-.1-4.1-.1zm0 1.8c2.6 0 2.9 0 4 .1 1.9.1 2.8 1 2.9 2.9.1 1 .1 1.3.1 3.9s0 2.9-.1 4c-.1 1.9-1 2.8-2.9 2.9-1 .1-1.3.1-4 .1s-2.9 0-4-.1c-1.9-.1-2.8-1-2.9-2.9-.1-1-.1-1.3-.1-4s0-2.9.1-4c.1-1.9 1-2.8 2.9-2.9 1.1-.1 1.4-.1 4-.1z"/></svg>
-      </a>
-      <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer" aria-label="emirttac.github.io">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.4 9h-3.1a15.3 15.3 0 0 0-1.3-5 8.1 8.1 0 0 1 4.4 5zM12 4c.8 1.2 1.8 3.2 2.2 5.5H9.8C10.2 7.2 11.2 5.2 12 4zM4.6 13a8.1 8.1 0 0 1 4.4-5 15.3 15.3 0 0 0-1.3 5H4.6zm0-2h3.1a15.3 15.3 0 0 0 1.3-5 8.1 8.1 0 0 0-4.4 5zM12 20c-.8-1.2-1.8-3.2-2.2-5.5h4.4C13.8 16.8 12.8 18.8 12 20zm2.7-7H9.3a13.5 13.5 0 0 1 1.2-4.5h3a13.5 13.5 0 0 1 1.2 4.5zm.7 2a15.3 15.3 0 0 0 1.3 5 8.1 8.1 0 0 0 4.4-5h-5.7zm-7.4 0H4.6a8.1 8.1 0 0 0 4.4 5 15.3 15.3 0 0 1-1.3-5z"/></svg>
-      </a>
-    </nav>
-    <p class="footer-note" data-i18n="footer.note">Released under the MIT License</p>
+    <div class="footer-bar">
+      <p>© <span id="year"></span> <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer">emirttac</a> · WinCleaner</p>
+      <nav class="footer-social" aria-label="Social">
+        <a href="https://www.youtube.com/@BiAltTab" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M23.5 6.2a3 3 0 0 0-2.1-2.1C19.5 3.5 12 3.5 12 3.5s-7.5 0-9.4.6A3 3 0 0 0 .5 6.2 31.5 31.5 0 0 0 0 12a31.5 31.5 0 0 0 .5 5.8 3 3 0 0 0 2.1 2.1c1.9.6 9.4.6 9.4.6s7.5 0 9.4-.6a3 3 0 0 0 2.1-2.1A31.5 31.5 0 0 0 24 12a31.5 31.5 0 0 0-.5-5.8zM9.8 15.5v-7L16 12l-6.2 3.5z"/></svg>
+        </a>
+        <a href="https://www.instagram.com/emirttac/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 7.2A4.8 4.8 0 1 0 12 16.8 4.8 4.8 0 0 0 12 7.2zm0 7.9a3.1 3.1 0 1 1 0-6.2 3.1 3.1 0 0 1 0 6.2zm6.1-8.2a1.1 1.1 0 1 1-2.2 0 1.1 1.1 0 0 1 2.2 0zM12 2.2c-2.7 0-3 0-4.1.1-2.8.1-4.1 1.5-4.2 4.2C3.6 7.5 3.6 7.8 3.6 12s0 4.5.1 5.5c.1 2.8 1.4 4.1 4.2 4.2 1.1.1 1.4.1 4.1.1s3 0 4.1-.1c2.8-.1 4.1-1.4 4.2-4.2.1-1 .1-1.3.1-5.5s0-4.5-.1-5.5c-.1-2.8-1.4-4.1-4.2-4.2-1.1-.1-1.4-.1-4.1-.1zm0 1.8c2.6 0 2.9 0 4 .1 1.9.1 2.8 1 2.9 2.9.1 1 .1 1.3.1 3.9s0 2.9-.1 4c-.1 1.9-1 2.8-2.9 2.9-1 .1-1.3.1-4 .1s-2.9 0-4-.1c-1.9-.1-2.8-1-2.9-2.9-.1-1-.1-1.3-.1-4s0-2.9.1-4c.1-1.9 1-2.8 2.9-2.9 1.1-.1 1.4-.1 4-.1z"/></svg>
+        </a>
+        <a href="https://emirttac.github.io/" target="_blank" rel="noopener noreferrer" aria-label="emirttac.github.io">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm7.4 9h-3.1a15.3 15.3 0 0 0-1.3-5 8.1 8.1 0 0 1 4.4 5zM12 4c.8 1.2 1.8 3.2 2.2 5.5H9.8C10.2 7.2 11.2 5.2 12 4zM4.6 13a8.1 8.1 0 0 1 4.4-5 15.3 15.3 0 0 0-1.3 5H4.6zm0-2h3.1a15.3 15.3 0 0 0 1.3-5 8.1 8.1 0 0 0-4.4 5zM12 20c-.8-1.2-1.8-3.2-2.2-5.5h4.4C13.8 16.8 12.8 18.8 12 20zm2.7-7H9.3a13.5 13.5 0 0 1 1.2-4.5h3a13.5 13.5 0 0 1 1.2 4.5zm.7 2a15.3 15.3 0 0 0 1.3 5 8.1 8.1 0 0 0 4.4-5h-5.7zm-7.4 0H4.6a8.1 8.1 0 0 0 4.4 5 15.3 15.3 0 0 1-1.3-5z"/></svg>
+        </a>
+      </nav>
+      <p class="footer-note" data-i18n="footer.note">Released under the MIT License</p>
+    </div>
+    <p class="footer-disclaimer" data-i18n="footer.disclaimer">WinCleaner can change system settings on your PC. Developers are not responsible for adverse outcomes; all responsibility rests with the user. The app already operates within safety limits such as risk levels, undo, and version filtering.</p>
   </footer>
 
   <script src="js/i18n.js?v=16"></script>
-  <script src="js/main.js?v=7"></script>
+  <script src="js/main.js?v=9"></script>
 </body>
 </html>
