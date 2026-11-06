@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=8" />
+  <link rel="stylesheet" href="css/styles.css?v=22" />
   <link rel="icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="icon.png" />
 </head>
@@ -104,62 +104,42 @@
           <p class="hero-lead" data-reveal data-i18n="hero.lead">Debloat and tune Windows without the guesswork. Every change shows its risk level and can be undone.</p>
           <div class="hero-actions" data-reveal>
             <a class="btn btn-accent" href="#download" data-i18n="hero.ctaPrimary">Download</a>
-            <a class="btn btn-ghost" href="developers.html" data-i18n="hero.ctaSecondary">Developers</a>
+            <a class="btn btn-ghost" href="developers.html" data-i18n="hero.ctaSecondary">Developer documentation</a>
           </div>
         </div>
 
         <div class="app-mock" data-reveal aria-hidden="true">
-          <div class="app-chrome">
-            <div class="app-titlebar">
-              <span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span>
-              <span class="app-title">WinCleaner</span>
-            </div>
-            <div class="app-body">
-              <aside class="app-sidebar">
-                <div class="sb-item is-active"><span></span>Dashboard</div>
-                <div class="sb-item"><span></span>Presets</div>
-                <div class="sb-item"><span></span>Gaming</div>
-                <div class="sb-item"><span></span>Telemetry</div>
-                <div class="sb-item"><span></span>Bloatware</div>
-                <div class="sb-item"><span></span>Services</div>
-              </aside>
-              <div class="app-main">
-                <div class="mock-row">
-                  <div class="mock-stat">
-                    <em data-i18n="mock.cpu">CPU</em>
-                    <strong class="live-metric" data-metric="cpu">34%</strong>
+          <div class="app-mock-pivot">
+            <div class="app-chrome">
+              <div class="app-titlebar">
+                <span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span>
+                <span class="app-brand">
+                  <img src="icon.png" alt="" width="18" height="18" />
+                  <span>WinCleaner</span>
+                </span>
+              </div>
+              <div class="app-body">
+                <aside class="app-sidebar">
+                  <div class="sb-item is-active"><span></span>Gaming</div>
+                  <div class="sb-item"><span></span>Presets</div>
+                  <div class="sb-item"><span></span>Telemetry</div>
+                  <div class="sb-item"><span></span>Services</div>
+                </aside>
+                <div class="app-main">
+                  <div class="mock-metrics">
+                    <span><em data-i18n="mock.cpu">CPU</em> <strong>0%</strong></span>
+                    <span><em data-i18n="mock.ram">RAM</em> <strong>18%</strong></span>
                   </div>
-                  <div class="mock-stat">
-                    <em data-i18n="mock.gpu">GPU</em>
-                    <strong class="live-metric" data-metric="gpu">61%</strong>
-                  </div>
-                  <div class="mock-stat">
-                    <em data-i18n="mock.ram">RAM</em>
-                    <strong class="live-metric" data-metric="ram">48%</strong>
-                  </div>
-                </div>
-                <div class="mock-preset">
-                  <div class="mock-preset-head">
-                    <span data-i18n="mock.preset">Gamer Mode</span>
-                    <span class="pill" data-i18n="mock.ready">Ready</span>
-                  </div>
-                  <div class="mock-bars">
-                    <i style="--w:92%"></i>
-                    <i style="--w:74%"></i>
-                    <i style="--w:58%"></i>
-                    <i style="--w:81%"></i>
-                  </div>
-                </div>
-                <div class="mock-risks">
-                  <span class="risk safe">Safe</span>
-                  <span class="risk caution">Caution</span>
-                  <span class="risk dangerous">Dangerous</span>
-                  <span class="risk blocked">Blocked</span>
+                  <ul class="mock-lines">
+                    <li class="is-on"><i class="dot safe"></i>Game Mode</li>
+                    <li class="is-on"><i class="dot caution"></i>HAGS</li>
+                    <li class="is-on"><i class="dot caution"></i>Ultimate Performance</li>
+                    <li><i class="dot dangerous"></i>Disable VBS</li>
+                  </ul>
                 </div>
               </div>
             </div>
           </div>
-          <div class="hud-scan"></div>
         </div>
       </div>
     </section>
@@ -175,7 +155,7 @@
       <div class="section-head">
         <p class="section-kicker" data-reveal data-i18n="features.kicker">Features</p>
         <h2 id="features-title" data-reveal data-i18n="features.title">Everything you need to tune Windows</h2>
-        <p class="section-lead" data-reveal data-i18n="features.lead">92 tweaks, 28 services, 46 AppX packages, 158 winget apps, 6 presets and 8 languages. Every option is labeled with its risk level.</p>
+        <p class="section-lead" data-reveal data-i18n="features.lead">Optimize your PC with 92 tweaks, 28 services, 46 AppX packages, 158 winget apps and 6 ready-made profiles.</p>
       </div>
 
       <div class="showcase-list">
@@ -187,7 +167,7 @@
           <div class="showcase-copy">
             <p class="showcase-index">01</p>
             <h3 data-i18n="feat.gaming.title">Gaming</h3>
-            <p data-i18n="feat.gaming.body">20 gaming tweaks: Game Mode, HAGS, Ultimate Performance, Game Bar/DVR, FSO and MMCSS. Five anti-cheat-sensitive options ask for confirmation first.</p>
+            <p data-i18n="feat.gaming.body">Apply advanced options like HAGS, Ultimate Performance, Game Bar/DVR, FSO, MMCSS and more. Anti-cheat warnings keep competitive play safe while you tune Windows.</p>
           </div>
         </article>
 
@@ -199,7 +179,7 @@
           <div class="showcase-copy">
             <p class="showcase-index">02</p>
             <h3 data-i18n="feat.privacy.title">Privacy</h3>
-            <p data-i18n="feat.privacy.body">15 telemetry tweaks cover advertising ID, activity history, CEIP, Cortana, Bing search, location and speech. Every switch is listed in an open JSON catalog on GitHub.</p>
+            <p data-i18n="feat.privacy.body">Apply privacy options for Advertising ID, Activity History, CEIP, Cortana, Bing Search, Location and more. Privacy comes first.</p>
           </div>
         </article>
 
@@ -213,7 +193,7 @@
           <div class="showcase-copy">
             <p class="showcase-index">03</p>
             <h3 data-i18n="feat.bloat.title">Bloatware &amp; apps</h3>
-            <p data-i18n="feat.bloat.body">Remove from 46 AppX packages after confirmation; 31 support Store ID reinstall. Critical Store/Calculator rows stay locked. The winget installer covers 158 apps across six categories.</p>
+            <p data-i18n="feat.bloat.body">Remove Microsoft’s preinstalled apps as AppX packages. Drop the bloat you don’t need.</p>
           </div>
         </article>
 
@@ -226,7 +206,7 @@
           <div class="showcase-copy">
             <p class="showcase-index">04</p>
             <h3 data-i18n="feat.presets.title">Presets</h3>
-            <p data-i18n="feat.presets.body">Start from Gamer Mode, Balanced Mode, Minimal / Server, Laptop / Battery, Maximum Privacy or Restore Defaults. Preview exactly what a preset changes before you apply it, or import and export your own profiles.</p>
+            <p data-i18n="feat.presets.body">If tweaks feel overwhelming, apply optimized ready-made profiles like Gamer Mode, Balanced Mode, Minimal / Server, Laptop / Battery or Maximum Privacy in one click.</p>
           </div>
         </article>
       </div>
@@ -253,28 +233,28 @@
               <ul class="stats-list">
                 <li class="stats-row" data-stat-row data-fill="0.92" data-count="92">
                   <div class="stats-row-top">
-                    <span data-i18n="stats.tweaks">Tweaks</span>
+                    <span data-i18n="stats.tweaks">Applicable tweaks</span>
                     <strong><span class="count">0</span></strong>
                   </div>
                   <div class="stats-bar" aria-hidden="true"><i></i></div>
                 </li>
                 <li class="stats-row" data-stat-row data-fill="1" data-count="158">
                   <div class="stats-row-top">
-                    <span data-i18n="stats.apps">Winget apps</span>
+                    <span data-i18n="stats.apps">Ready winget apps</span>
                     <strong><span class="count">0</span></strong>
                   </div>
                   <div class="stats-bar" aria-hidden="true"><i></i></div>
                 </li>
                 <li class="stats-row" data-stat-row data-fill="0.55" data-count="8">
                   <div class="stats-row-top">
-                    <span data-i18n="stats.langs">Languages</span>
+                    <span data-i18n="stats.langs">Supported languages</span>
                     <strong><span class="count">0</span></strong>
                   </div>
                   <div class="stats-bar" aria-hidden="true"><i></i></div>
                 </li>
                 <li class="stats-row" data-stat-row data-fill="0.4" data-count="6">
                   <div class="stats-row-top">
-                    <span data-i18n="stats.presets">Presets</span>
+                    <span data-i18n="stats.presets">Ready-made profiles</span>
                     <strong><span class="count">0</span></strong>
                   </div>
                   <div class="stats-bar" aria-hidden="true"><i></i></div>
@@ -303,28 +283,28 @@
         <li data-reveal>
           <span class="safety-icon risk-safe" aria-hidden="true"></span>
           <h3 data-i18n="safety.risk.title">Four risk levels</h3>
-          <p data-i18n="safety.risk.body">Every option is rated Safe, Caution, Dangerous or Blocked. Critical components such as RpcSs and WinDefend are Blocked and can never be changed.</p>
+          <p data-i18n="safety.risk.body">Every tweak has a Safe, Caution, Dangerous or Blocked risk level. Knowing the risk before you feel it the hard way is every user’s right.</p>
         </li>
         <li data-reveal>
           <span class="safety-icon risk-restore" aria-hidden="true"></span>
           <h3 data-i18n="safety.restore.title">Restore point first</h3>
-          <p data-i18n="safety.restore.body">By default, WinCleaner creates a System Restore point before applying changes, so you can roll Windows back if something goes wrong.</p>
+          <p data-i18n="safety.restore.body">If some settings backfire on your PC or you dislike what you applied, roll everything back with the Restore Point WinCleaner created.</p>
         </li>
         <li data-reveal>
           <span class="safety-icon risk-undo" aria-hidden="true"></span>
-          <h3 data-i18n="safety.undo.title">Session undo</h3>
+          <h3 data-i18n="safety.undo.title">Undo the session</h3>
           <p data-i18n="safety.undo.body">Every change is recorded in a session journal, and Global Undo reverts everything that can be reversed.</p>
         </li>
         <li data-reveal>
           <span class="safety-icon risk-os" aria-hidden="true"></span>
           <h3 data-i18n="safety.os.title">Build-aware</h3>
-          <p data-i18n="safety.os.body">Options that don’t apply to your Windows version, edition or architecture are hidden automatically, so nothing fails halfway through.</p>
+          <p data-i18n="safety.os.body">Options that don’t match your Windows version, SKU or architecture are not offered; every setting is shown only when it fits your Windows build.</p>
         </li>
       </ul>
 
       <aside class="warning-banner" data-reveal role="note">
         <strong data-i18n="safety.warn.title">Before you start</strong>
-        <p data-i18n="safety.warn.body">WinCleaner changes Windows services, registry values, scheduled tasks and AppX packages. Keep System Restore enabled, read each option before applying, and start with a preset instead of selecting everything. Releases are not code-signed, so verify the download against SHA256SUMS.txt before running it.</p>
+        <p data-i18n="safety.warn.body">WinCleaner changes Windows services, registry values, scheduled tasks and AppX packages. Keep System Restore enabled in Windows, read each option before applying, and start with a preset instead of selecting everything. If something backfires, you can roll back.</p>
       </aside>
     </section>
 
@@ -335,8 +315,8 @@
           <h2 id="download-title" data-i18n="download.title">Download WinCleaner</h2>
           <ul class="download-meta">
             <li data-i18n="download.meta1">Windows 10 21H2+ / Windows 11 · x64</li>
-            <li data-i18n="download.meta2">Free and open source (MIT license)</li>
-            <li data-i18n="download.meta3">Applies tweaks offline. No account, no telemetry.</li>
+            <li data-i18n="download.meta2">Free and open source.</li>
+            <li data-i18n="download.meta3">No account required. Your data stays with you.</li>
           </ul>
         </div>
         <div class="download-actions">
@@ -373,6 +353,6 @@
   </footer>
 
   <script src="js/i18n.js?v=16"></script>
-  <script src="js/main.js?v=5"></script>
+  <script src="js/main.js?v=7"></script>
 </body>
 </html>

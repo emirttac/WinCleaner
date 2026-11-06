@@ -222,30 +222,6 @@
     }
   }
 
-  /* Live dashboard metrics in hero mock */
-  const metrics = document.querySelectorAll(".live-metric");
-  if (metrics.length && !reduceMotion) {
-    const ranges = {
-      cpu: [22, 48],
-      gpu: [45, 78],
-      ram: [38, 62],
-    };
-
-    const nudge = () => {
-      metrics.forEach((el) => {
-        const key = el.getAttribute("data-metric");
-        const range = ranges[key] || [30, 70];
-        const value = Math.round(
-          range[0] + Math.random() * (range[1] - range[0])
-        );
-        el.textContent = `${value}%`;
-      });
-    };
-
-    nudge();
-    window.setInterval(nudge, 2200);
-  }
-
   /* Cycle sidebar highlight in app mock */
   const sidebarItems = Array.from(document.querySelectorAll(".app-sidebar .sb-item"));
   if (sidebarItems.length > 1 && !reduceMotion) {
@@ -258,7 +234,7 @@
     }, 2600);
   }
 
-  /* Pointer glow + mock parallax */
+  /* Pointer glow */
   const finePointer = window.matchMedia("(pointer: fine)").matches;
   if (!reduceMotion && finePointer) {
     const glow = document.createElement("div");
@@ -266,8 +242,6 @@
     document.body.appendChild(glow);
     document.body.classList.add("has-pointer");
 
-    const mock = document.querySelector(".app-mock");
-    const chrome = mock && mock.querySelector(".app-chrome");
     let raf = 0;
     let mx = 0;
     let my = 0;
@@ -277,18 +251,6 @@
       glow.style.left = `${mx}px`;
       glow.style.top = `${my}px`;
       glow.classList.add("is-on");
-
-      if (chrome && mock) {
-        const rect = mock.getBoundingClientRect();
-        const cx = rect.left + rect.width / 2;
-        const cy = rect.top + rect.height / 2;
-        const dx = (mx - cx) / Math.max(rect.width, 1);
-        const dy = (my - cy) / Math.max(rect.height, 1);
-        const tiltY = (-6 + dx * 5).toFixed(2);
-        const tiltX = (3 - dy * 4).toFixed(2);
-        chrome.style.setProperty("--tilt-y", `${tiltY}deg`);
-        chrome.style.setProperty("--tilt-x", `${tiltX}deg`);
-      }
     };
 
     window.addEventListener(
@@ -304,5 +266,15 @@
     document.addEventListener("pointerleave", () => {
       glow.classList.remove("is-on");
     });
+  }
+
+  /* Hero mock focus: soft glow + lift */
+  const mock = document.querySelector(".app-mock");
+  if (mock) {
+    const setFocus = (on) => mock.classList.toggle("is-focus", on);
+    mock.addEventListener("pointerenter", () => setFocus(true));
+    mock.addEventListener("pointerleave", () => setFocus(false));
+    mock.addEventListener("focusin", () => setFocus(true));
+    mock.addEventListener("focusout", () => setFocus(false));
   }
 })();
