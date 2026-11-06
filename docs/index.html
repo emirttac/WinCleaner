@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=25" />
+  <link rel="stylesheet" href="css/styles.css?v=27" />
   <link rel="icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="icon.png" />
 </head>
@@ -120,10 +120,10 @@
               </div>
               <div class="app-body">
                 <aside class="app-sidebar">
-                  <div class="sb-item is-active"><span></span>Gaming</div>
-                  <div class="sb-item"><span></span>Presets</div>
-                  <div class="sb-item"><span></span>Telemetry</div>
-                  <div class="sb-item"><span></span>Services</div>
+                  <div class="sb-item is-active"><span></span><span data-i18n="mock.nav.gaming">Gaming</span></div>
+                  <div class="sb-item"><span></span><span data-i18n="mock.nav.presets">Presets</span></div>
+                  <div class="sb-item"><span></span><span data-i18n="mock.nav.telemetry">Telemetry</span></div>
+                  <div class="sb-item"><span></span><span data-i18n="mock.nav.services">Services</span></div>
                 </aside>
                 <div class="app-main">
                   <div class="mock-metrics">
@@ -131,10 +131,10 @@
                     <span><em data-i18n="mock.ram">RAM</em> <strong>18%</strong></span>
                   </div>
                   <ul class="mock-lines">
-                    <li class="is-on"><i class="dot safe"></i>Game Mode</li>
-                    <li class="is-on"><i class="dot caution"></i>HAGS</li>
-                    <li class="is-on"><i class="dot caution"></i>Ultimate Performance</li>
-                    <li><i class="dot dangerous"></i>Disable VBS</li>
+                    <li class="is-on"><i class="dot safe"></i><span data-i18n="mock.line.gamemode">Game Mode</span></li>
+                    <li class="is-on"><i class="dot caution"></i><span data-i18n="mock.line.hags">HAGS</span></li>
+                    <li class="is-on"><i class="dot caution"></i><span data-i18n="mock.line.ultimate">Ultimate Performance</span></li>
+                    <li><i class="dot dangerous"></i><span data-i18n="mock.line.vbs">Disable VBS</span></li>
                   </ul>
                 </div>
               </div>
@@ -146,8 +146,8 @@
 
     <section class="marquee" aria-hidden="true">
       <div class="marquee-track">
-        <span>92 tweaks</span><span>28 services</span><span>46 AppX</span><span>158 winget apps</span><span>6 presets</span><span>8 languages</span>
-        <span>92 tweaks</span><span>28 services</span><span>46 AppX</span><span>158 winget apps</span><span>6 presets</span><span>8 languages</span>
+        <span data-i18n="marquee.tweaks">92 tweaks</span><span data-i18n="marquee.services">28 services</span><span data-i18n="marquee.appx">46 AppX</span><span data-i18n="marquee.winget">158 winget apps</span><span data-i18n="marquee.presets">6 presets</span><span data-i18n="marquee.langs">8 languages</span>
+        <span data-i18n="marquee.tweaks">92 tweaks</span><span data-i18n="marquee.services">28 services</span><span data-i18n="marquee.appx">46 AppX</span><span data-i18n="marquee.winget">158 winget apps</span><span data-i18n="marquee.presets">6 presets</span><span data-i18n="marquee.langs">8 languages</span>
       </div>
     </section>
 
@@ -164,9 +164,9 @@
               <div class="viz-game-hud">
                 <div class="viz-game-fps">
                   <strong>240</strong>
-                  <span>FPS</span>
+                  <span lang="en">FPS</span>
                 </div>
-                <div class="viz-game-meters" aria-hidden="true">
+                <div class="viz-game-meters" lang="en" aria-hidden="true">
                   <div class="viz-meter"><b>GPU</b><i style="--v:88%"></i></div>
                   <div class="viz-meter"><b>CPU</b><i style="--v:62%"></i></div>
                   <div class="viz-meter"><b>LAT</b><i style="--v:34%"></i></div>
@@ -176,10 +176,10 @@
                 <i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i>
               </div>
               <div class="viz-game-toggles">
-                <span class="is-on">HAGS</span>
-                <span class="is-on">Game Mode</span>
-                <span class="is-on">MMCSS</span>
-                <span>FSO</span>
+                <span class="is-on" lang="en">HAGS</span>
+                <span class="is-on" data-i18n="mock.line.gamemode">Game Mode</span>
+                <span class="is-on" lang="en">MMCSS</span>
+                <span lang="en">FSO</span>
               </div>
             </div>
           </div>
@@ -192,10 +192,10 @@
         <article class="showcase reverse" data-reveal="right">
           <div class="showcase-visual privacy" aria-hidden="true">
             <ul class="viz-privacy">
-              <li>Telemetry</li>
-              <li>Advertising ID</li>
-              <li>Windows Recall</li>
-              <li>Location</li>
+              <li data-i18n="mock.viz.telemetry">Telemetry</li>
+              <li data-i18n="mock.viz.ads">Advertising ID</li>
+              <li lang="en">Windows Recall</li>
+              <li data-i18n="mock.viz.location">Location</li>
             </ul>
           </div>
           <div class="showcase-copy">
@@ -207,10 +207,10 @@
         <article class="showcase" data-reveal="left">
           <div class="showcase-visual bloat" aria-hidden="true">
             <ul class="viz-bloat">
-              <li class="is-gone">Xbox Apps</li>
-              <li class="is-gone">OneDrive</li>
-              <li class="is-gone">Clipchamp</li>
-              <li>winget · 158 apps</li>
+              <li class="is-gone" data-i18n="mock.viz.xbox">Xbox Apps</li>
+              <li class="is-gone" lang="en">OneDrive</li>
+              <li class="is-gone" lang="en">Clipchamp</li>
+              <li data-i18n="mock.viz.winget">WINGET · 158 APPS</li>
             </ul>
           </div>
           <div class="showcase-copy">
@@ -222,7 +222,7 @@
         <article class="showcase reverse" data-reveal="right">
           <div class="showcase-visual presets" aria-hidden="true">
             <div class="viz-presets">
-              <b>Gamer Mode</b><b>Balanced</b><b>Minimal</b><b>Privacy</b>
+              <b data-i18n="mock.preset.gamer">Gamer Mode</b><b data-i18n="mock.preset.balanced">Balanced</b><b data-i18n="mock.preset.minimal">Minimal</b><b data-i18n="mock.preset.privacy">Privacy</b>
             </div>
           </div>
           <div class="showcase-copy">
@@ -238,16 +238,16 @@
         <div class="app-chrome stats-chrome" data-stats-window>
           <div class="app-titlebar">
             <span class="app-dot"></span><span class="app-dot"></span><span class="app-dot"></span>
-            <span class="app-title">WinCleaner</span>
+            <span class="app-title" lang="en">WinCleaner</span>
           </div>
           <div class="app-body stats-body-layout">
             <aside class="app-sidebar" aria-hidden="true">
-              <div class="sb-item is-active"><span></span>Dashboard</div>
-              <div class="sb-item"><span></span>Presets</div>
-              <div class="sb-item"><span></span>Gaming</div>
-              <div class="sb-item"><span></span>Telemetry</div>
-              <div class="sb-item"><span></span>Bloatware</div>
-              <div class="sb-item"><span></span>Services</div>
+              <div class="sb-item is-active"><span></span><span data-i18n="mock.nav.dashboard">Dashboard</span></div>
+              <div class="sb-item"><span></span><span data-i18n="mock.nav.presets">Presets</span></div>
+              <div class="sb-item"><span></span><span data-i18n="mock.nav.gaming">Gaming</span></div>
+              <div class="sb-item"><span></span><span data-i18n="mock.nav.telemetry">Telemetry</span></div>
+              <div class="sb-item"><span></span><span data-i18n="mock.nav.bloatware">Bloatware</span></div>
+              <div class="sb-item"><span></span><span data-i18n="mock.nav.services">Services</span></div>
             </aside>
             <div class="app-main stats-main">
               <h2 id="stats-title" class="stats-panel-title" data-i18n="stats.title">What’s inside</h2>
@@ -282,10 +282,10 @@
                 </li>
               </ul>
               <div class="mock-risks stats-risks" aria-hidden="true">
-                <span class="risk safe">Safe</span>
-                <span class="risk caution">Caution</span>
-                <span class="risk dangerous">Dangerous</span>
-                <span class="risk blocked">Blocked</span>
+                <span class="risk safe" data-i18n="mock.risk.safe">Safe</span>
+                <span class="risk caution" data-i18n="mock.risk.caution">Caution</span>
+                <span class="risk dangerous" data-i18n="mock.risk.dangerous">Dangerous</span>
+                <span class="risk blocked" data-i18n="mock.risk.blocked">Blocked</span>
               </div>
             </div>
           </div>
@@ -398,7 +398,7 @@
     <p class="footer-disclaimer" data-i18n="footer.disclaimer">WinCleaner can change system settings on your PC. Developers are not responsible for adverse outcomes; all responsibility rests with the user. The app already operates within safety limits such as risk levels, undo, and version filtering.</p>
   </footer>
 
-  <script src="js/i18n.js?v=17"></script>
+  <script src="js/i18n.js?v=19"></script>
   <script src="js/main.js?v=9"></script>
 </body>
 </html>
