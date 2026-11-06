@@ -1,0 +1,6 @@
+# Project site: https://emirttac.github.io/WinCleaner/
+# Submit sitemap in Google Search Console (URL-prefix property).
+User-agent: *
+Allow: /
+
+Sitemap: https://emirttac.github.io/WinCleaner/sitemap.xml
