@@ -96,8 +96,8 @@ public class CatalogLoaderTests
         Assert.Contains(tweaks, t => t.Id == "tweak-start-iris"
             && t.Registries is { Count: 4 }
             && t.Registries.Count(r => r.Name == "HideRecommendedSection") == 2
-            && t.Registries.Any(r => r.Path.Contains("PolicyManager", StringComparison.OrdinalIgnoreCase)
-                && r.Name == "IsEducationEnvironment" && r.EnabledValue == "1"));
+            && t.Registries.Any(r => r.Name == "IsEducationEnvironment"
+                && r.DeleteValueOnEnable && r.DeleteValueOnDisable && r.OptionalForDetect));
         Assert.Contains(tweaks, t => t.Id == "tweak-visual-perf" && t.Type == "visualEffects");
         Assert.Contains(tweaks, t => t.Id == "tweak-animations" && t.Type == "visualEffects");
         Assert.Contains(tweaks, t => t.Id == "tweak-disable-hpet"
@@ -148,7 +148,10 @@ public class CatalogLoaderTests
             && t.Command.DetectKey == "bootmenupolicy");
         Assert.Contains(tweaks, t => t.Id == "tweak-wu-recommended" && t.Registries is { Count: >= 6 }
             && t.Registries.Any(r => r.Name == "DeferFeatureUpdatesPeriodInDays" && r.EnabledValue == "365")
-            && t.Registries.Any(r => r.Name == "DeferQualityUpdatesPeriodInDays" && r.EnabledValue == "4"));
+            && t.Registries.Any(r => r.Name == "DeferQualityUpdatesPeriodInDays" && r.EnabledValue == "4")
+            && t.Skus is { Count: > 0 }
+            && t.Skus.Contains("Pro")
+            && !t.Skus.Contains("Home"));
         Assert.True(tweaks.Count >= 90);
     }
 

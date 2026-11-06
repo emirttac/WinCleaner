@@ -79,3 +79,5 @@ inst.extra.jetbrainsintellijideacommunity.name
 inst.extra.jetbrainspycharmcommunity.name
 inst.extra.microsoftpowerautomatedesktop.name
 inst.extra.nilesoftshell.name
+inst.extra.microsoftpcmanager.name
+inst.extra.apachemaven.name

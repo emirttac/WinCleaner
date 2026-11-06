@@ -14,11 +14,13 @@
     </Setter>
   </Style>
 
+  <!-- Pixel scroll by default: item scroll jumps whole tall cards and feels like skipped rows. -->
   <Style x:Key="VirtualizingListStyle" TargetType="ItemsControl">
     <Setter Property="FocusVisualStyle" Value="{StaticResource AppFocusVisual}"/>
     <Setter Property="VirtualizingPanel.IsVirtualizing" Value="True"/>
     <Setter Property="VirtualizingPanel.VirtualizationMode" Value="Recycling"/>
-    <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
+    <Setter Property="VirtualizingPanel.ScrollUnit" Value="Pixel"/>
+    <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
     <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
     <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
     <Setter Property="ItemsPanel">
@@ -31,16 +33,19 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="ItemsControl">
-          <ScrollViewer CanContentScroll="True"
-                        Focusable="False"
-                        HorizontalScrollBarVisibility="Disabled"
-                        VerticalScrollBarVisibility="Auto">
+          <ScrollViewer Focusable="False"
+                        CanContentScroll="{TemplateBinding ScrollViewer.CanContentScroll}"
+                        HorizontalScrollBarVisibility="{TemplateBinding ScrollViewer.HorizontalScrollBarVisibility}"
+                        VerticalScrollBarVisibility="{TemplateBinding ScrollViewer.VerticalScrollBarVisibility}">
             <ItemsPresenter />
           </ScrollViewer>
         </ControlTemplate>
       </Setter.Value>
     </Setter>
   </Style>
+
+  <!-- Alias kept for call sites that opt into pixel scroll explicitly. -->
+  <Style x:Key="VirtualizingPixelListStyle" TargetType="ItemsControl" BasedOn="{StaticResource VirtualizingListStyle}"/>
 
   <Style TargetType="UserControl">
     <Setter Property="Background" Value="Transparent"/>
@@ -49,11 +54,11 @@
   </Style>
 
   <Style x:Key="NavSectionHeaderStyle" TargetType="TextBlock">
-    <Setter Property="FontSize" Value="11"/>
+    <Setter Property="FontSize" Value="10"/>
     <Setter Property="FontWeight" Value="SemiBold"/>
     <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
-    <Setter Property="Margin" Value="18,14,12,4"/>
-    <Setter Property="Opacity" Value="0.9"/>
+    <Setter Property="Margin" Value="14,12,10,2"/>
+    <Setter Property="Opacity" Value="0.55"/>
   </Style>
 
   <Style x:Key="SidebarButtonStyle" TargetType="RadioButton">
@@ -61,20 +66,21 @@
     <Setter Property="Background" Value="Transparent"/>
     <Setter Property="Foreground" Value="{DynamicResource TextSecondaryBrush}"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="Padding" Value="12,10"/>
-    <Setter Property="Margin" Value="8,1"/>
-    <Setter Property="MinHeight" Value="40"/>
+    <Setter Property="Padding" Value="10,6"/>
+    <Setter Property="Margin" Value="8,0"/>
+    <Setter Property="MinHeight" Value="32"/>
+    <Setter Property="FontSize" Value="13"/>
     <Setter Property="Cursor" Value="Hand"/>
     <Setter Property="HorizontalContentAlignment" Value="Left"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="Local"/>
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="RadioButton">
-          <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+          <Border x:Name="Bd" Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
             <Grid>
-              <Border x:Name="AccentBar" Width="3" HorizontalAlignment="Left" Margin="-12,2,0,2"
-                      Background="Transparent" CornerRadius="2"/>
-              <ContentPresenter Margin="4,0,0,0" VerticalAlignment="Center"
+              <Border x:Name="AccentBar" Width="2" HorizontalAlignment="Left" Margin="-10,4,0,4"
+                      Background="Transparent" CornerRadius="1"/>
+              <ContentPresenter Margin="2,0,0,0" VerticalAlignment="Center"
                                 TextElement.Foreground="{TemplateBinding Foreground}"/>
             </Grid>
           </Border>

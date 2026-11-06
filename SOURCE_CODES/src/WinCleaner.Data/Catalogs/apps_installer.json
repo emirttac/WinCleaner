@@ -522,7 +522,7 @@
   {
     "id": "inst-windirstat-windirstat",
     "displayNameKey": "inst.extra.windirstatwindirstat.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.windirstatwindirstat.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "WinDirStat.WinDirStat",
@@ -532,7 +532,7 @@
   {
     "id": "inst-greenshot-greenshot",
     "displayNameKey": "inst.extra.greenshotgreenshot.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.greenshotgreenshot.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Greenshot.Greenshot",
@@ -542,7 +542,7 @@
   {
     "id": "inst-flameshot-flameshot",
     "displayNameKey": "inst.extra.flameshotflameshot.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.flameshotflameshot.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Flameshot.Flameshot",
@@ -552,7 +552,7 @@
   {
     "id": "inst-putty-putty",
     "displayNameKey": "inst.extra.puttyputty.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.puttyputty.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "PuTTY.PuTTY",
@@ -562,7 +562,7 @@
   {
     "id": "inst-winscp-winscp",
     "displayNameKey": "inst.extra.winscpwinscp.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.winscpwinscp.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "WinSCP.WinSCP",
@@ -572,7 +572,7 @@
   {
     "id": "inst-filezilla-filezilla",
     "displayNameKey": "inst.extra.filezillafilezilla.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.filezillafilezilla.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "FileZilla.FileZilla",
@@ -582,7 +582,7 @@
   {
     "id": "inst-gimp-gimp",
     "displayNameKey": "inst.extra.gimpgimp.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.gimpgimp.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "GIMP.GIMP",
@@ -592,7 +592,7 @@
   {
     "id": "inst-kde-krita",
     "displayNameKey": "inst.extra.kdekrita.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.kdekrita.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "KDE.Krita",
@@ -602,7 +602,7 @@
   {
     "id": "inst-inkscape-inkscape",
     "displayNameKey": "inst.extra.inkscapeinkscape.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.inkscapeinkscape.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "Inkscape.Inkscape",
@@ -612,7 +612,7 @@
   {
     "id": "inst-audacity-audacity",
     "displayNameKey": "inst.extra.audacityaudacity.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.audacityaudacity.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "Audacity.Audacity",
@@ -622,7 +622,7 @@
   {
     "id": "inst-clsid2-mpc-hc",
     "displayNameKey": "inst.extra.clsid2mpchc.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.clsid2mpchc.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "clsid2.mpc-hc",
@@ -632,7 +632,7 @@
   {
     "id": "inst-dotpdn-paintdotnet",
     "displayNameKey": "inst.extra.dotpdnpaintdotnet.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.dotpdnpaintdotnet.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "dotPDN.PaintDotNet",
@@ -642,7 +642,7 @@
   {
     "id": "inst-kde-kdenlive",
     "displayNameKey": "inst.extra.kdekdenlive.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.kdekdenlive.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "KDE.Kdenlive",
@@ -652,7 +652,7 @@
   {
     "id": "inst-shotcut-shotcut",
     "displayNameKey": "inst.extra.shotcutshotcut.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.shotcutshotcut.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "Shotcut.Shotcut",
@@ -662,7 +662,7 @@
   {
     "id": "inst-darktable-darktable",
     "displayNameKey": "inst.extra.darktabledarktable.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.darktabledarktable.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "darktable.darktable",
@@ -672,7 +672,7 @@
   {
     "id": "inst-calibre-calibre",
     "displayNameKey": "inst.extra.calibrecalibre.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.calibrecalibre.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "calibre.calibre",
@@ -682,7 +682,7 @@
   {
     "id": "inst-sumatrapdf-sumatrapdf",
     "displayNameKey": "inst.extra.sumatrapdfsumatrapdf.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.sumatrapdfsumatrapdf.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "SumatraPDF.SumatraPDF",
@@ -692,7 +692,7 @@
   {
     "id": "inst-pdfsam-pdfsam",
     "displayNameKey": "inst.extra.pdfsampdfsam.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.pdfsampdfsam.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "PDFsam.PDFsam",
@@ -702,7 +702,7 @@
   {
     "id": "inst-libreoffice-libreoffice",
     "displayNameKey": "inst.extra.libreofficelibreoffice.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.libreofficelibreoffice.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "LibreOffice.LibreOffice",
@@ -712,7 +712,7 @@
   {
     "id": "inst-onlyoffice-desktopeditors",
     "displayNameKey": "inst.extra.onlyofficedesktopeditors.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.onlyofficedesktopeditors.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "ONLYOFFICE.DesktopEditors",
@@ -722,7 +722,7 @@
   {
     "id": "inst-signal-signal",
     "displayNameKey": "inst.extra.signalsignal.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.signalsignal.desc",
     "category": "Communication",
     "categoryKey": "inst.cat.communication",
     "wingetId": "Signal.Signal",
@@ -732,7 +732,7 @@
   {
     "id": "inst-element-element",
     "displayNameKey": "inst.extra.elementelement.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.elementelement.desc",
     "category": "Communication",
     "categoryKey": "inst.cat.communication",
     "wingetId": "Element.Element",
@@ -742,7 +742,7 @@
   {
     "id": "inst-prismlauncher-prismlauncher",
     "displayNameKey": "inst.extra.prismlauncherprismlauncher.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.prismlauncherprismlauncher.desc",
     "category": "Gaming",
     "categoryKey": "inst.cat.gaming",
     "wingetId": "PrismLauncher.PrismLauncher",
@@ -752,7 +752,7 @@
   {
     "id": "inst-foobar2000-foobar2000",
     "displayNameKey": "inst.extra.foobar2000foobar2000.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.foobar2000foobar2000.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "foobar2000.foobar2000",
@@ -762,7 +762,7 @@
   {
     "id": "inst-musicbee-musicbee",
     "displayNameKey": "inst.extra.musicbeemusicbee.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.musicbeemusicbee.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "MusicBee.MusicBee",
@@ -772,7 +772,7 @@
   {
     "id": "inst-alcpu-coretemp",
     "displayNameKey": "inst.extra.alcpucoretemp.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.alcpucoretemp.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "ALCPU.CoreTemp",
@@ -782,7 +782,7 @@
   {
     "id": "inst-crystaldewworld-crystaldiskinfo",
     "displayNameKey": "inst.extra.crystaldewworldcrystaldiskinfo.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.crystaldewworldcrystaldiskinfo.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "CrystalDewWorld.CrystalDiskInfo",
@@ -792,7 +792,7 @@
   {
     "id": "inst-crystaldewworld-crystaldiskmark",
     "displayNameKey": "inst.extra.crystaldewworldcrystaldiskmark.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.crystaldewworldcrystaldiskmark.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "CrystalDewWorld.CrystalDiskMark",
@@ -802,7 +802,7 @@
   {
     "id": "inst-balena-etcher",
     "displayNameKey": "inst.extra.balenaetcher.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.balenaetcher.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Balena.Etcher",
@@ -812,7 +812,7 @@
   {
     "id": "inst-ventoy-ventoy",
     "displayNameKey": "inst.extra.ventoyventoy.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.ventoyventoy.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Ventoy.Ventoy",
@@ -822,7 +822,7 @@
   {
     "id": "inst-github-githubdesktop",
     "displayNameKey": "inst.extra.githubgithubdesktop.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.githubgithubdesktop.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "GitHub.GitHubDesktop",
@@ -832,7 +832,7 @@
   {
     "id": "inst-golang-go",
     "displayNameKey": "inst.extra.golanggo.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.golanggo.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "GoLang.Go",
@@ -842,7 +842,7 @@
   {
     "id": "inst-rustlang-rustup",
     "displayNameKey": "inst.extra.rustlangrustup.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.rustlangrustup.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Rustlang.Rustup",
@@ -852,7 +852,7 @@
   {
     "id": "inst-eclipseadoptium-temurin-21-jdk",
     "displayNameKey": "inst.extra.eclipseadoptiumtemurin21jdk.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.eclipseadoptiumtemurin21jdk.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "EclipseAdoptium.Temurin.21.JDK",
@@ -862,7 +862,7 @@
   {
     "id": "inst-microsoft-dotnet-sdk-8",
     "displayNameKey": "inst.extra.microsoftdotnetsdk8.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftdotnetsdk8.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Microsoft.DotNet.SDK.8",
@@ -872,7 +872,7 @@
   {
     "id": "inst-kubernetes-kubectl",
     "displayNameKey": "inst.extra.kuberneteskubectl.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.kuberneteskubectl.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Kubernetes.kubectl",
@@ -882,7 +882,7 @@
   {
     "id": "inst-helm-helm",
     "displayNameKey": "inst.extra.helmhelm.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.helmhelm.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Helm.Helm",
@@ -892,7 +892,7 @@
   {
     "id": "inst-hashicorp-terraform",
     "displayNameKey": "inst.extra.hashicorpterraform.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.hashicorpterraform.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Hashicorp.Terraform",
@@ -902,7 +902,7 @@
   {
     "id": "inst-microsoft-azurecli",
     "displayNameKey": "inst.extra.microsoftazurecli.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftazurecli.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Microsoft.AzureCLI",
@@ -912,7 +912,7 @@
   {
     "id": "inst-amazon-awscli",
     "displayNameKey": "inst.extra.amazonawscli.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.amazonawscli.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Amazon.AWSCLI",
@@ -922,7 +922,7 @@
   {
     "id": "inst-postman-postman",
     "displayNameKey": "inst.extra.postmanpostman.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.postmanpostman.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Postman.Postman",
@@ -932,7 +932,7 @@
   {
     "id": "inst-dbeaver-dbeaver-community",
     "displayNameKey": "inst.extra.dbeaverdbeavercommunity.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.dbeaverdbeavercommunity.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "DBeaver.DBeaver.Community",
@@ -942,7 +942,7 @@
   {
     "id": "inst-sqlite-sqlite",
     "displayNameKey": "inst.extra.sqlitesqlite.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.sqlitesqlite.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "SQLite.SQLite",
@@ -952,7 +952,7 @@
   {
     "id": "inst-neovim-neovim",
     "displayNameKey": "inst.extra.neovimneovim.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.neovimneovim.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Neovim.Neovim",
@@ -962,7 +962,7 @@
   {
     "id": "inst-microsoft-visualstudio-2022-community",
     "displayNameKey": "inst.extra.microsoftvisualstudio2022community.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftvisualstudio2022community.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Microsoft.VisualStudio.2022.Community",
@@ -972,7 +972,7 @@
   {
     "id": "inst-jetbrains-toolbox",
     "displayNameKey": "inst.extra.jetbrainstoolbox.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.jetbrainstoolbox.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "JetBrains.Toolbox",
@@ -982,7 +982,7 @@
   {
     "id": "inst-sublimehq-sublimetext-4",
     "displayNameKey": "inst.extra.sublimehqsublimetext4.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.sublimehqsublimetext4.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "SublimeHQ.SublimeText.4",
@@ -992,7 +992,7 @@
   {
     "id": "inst-wiresharkfoundation-wireshark",
     "displayNameKey": "inst.extra.wiresharkfoundationwireshark.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.wiresharkfoundationwireshark.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "WiresharkFoundation.Wireshark",
@@ -1002,7 +1002,7 @@
   {
     "id": "inst-wireguard-wireguard",
     "displayNameKey": "inst.extra.wireguardwireguard.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.wireguardwireguard.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "WireGuard.WireGuard",
@@ -1012,7 +1012,7 @@
   {
     "id": "inst-tailscale-tailscale",
     "displayNameKey": "inst.extra.tailscaletailscale.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.tailscaletailscale.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Tailscale.Tailscale",
@@ -1022,7 +1022,7 @@
   {
     "id": "inst-openvpntechnologies-openvpnconnect",
     "displayNameKey": "inst.extra.openvpntechnologiesopenvpnconnect.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.openvpntechnologiesopenvpnconnect.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "OpenVPNTechnologies.OpenVPNConnect",
@@ -1032,7 +1032,7 @@
   {
     "id": "inst-klocman-bulkcrapuninstaller",
     "displayNameKey": "inst.extra.klocmanbulkcrapuninstaller.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.klocmanbulkcrapuninstaller.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Klocman.BulkCrapUninstaller",
@@ -1042,7 +1042,7 @@
   {
     "id": "inst-m2team-nanazip",
     "displayNameKey": "inst.extra.m2teamnanazip.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.m2teamnanazip.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "M2Team.NanaZip",
@@ -1052,7 +1052,7 @@
   {
     "id": "inst-peazip-peazip",
     "displayNameKey": "inst.extra.peazippeazip.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.peazippeazip.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "PeaZip.PeaZip",
@@ -1062,7 +1062,7 @@
   {
     "id": "inst-vivaldi-vivaldi",
     "displayNameKey": "inst.extra.vivaldivivaldi.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.vivaldivivaldi.desc",
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "Vivaldi.Vivaldi",
@@ -1072,7 +1072,7 @@
   {
     "id": "inst-opera-opera",
     "displayNameKey": "inst.extra.operaopera.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.operaopera.desc",
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "Opera.Opera",
@@ -1082,7 +1082,7 @@
   {
     "id": "inst-librewolf-librewolf",
     "displayNameKey": "inst.extra.librewolflibrewolf.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.librewolflibrewolf.desc",
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "LibreWolf.LibreWolf",
@@ -1092,7 +1092,7 @@
   {
     "id": "inst-torproject-torbrowser",
     "displayNameKey": "inst.extra.torprojecttorbrowser.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.torprojecttorbrowser.desc",
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "TorProject.TorBrowser",
@@ -1102,7 +1102,7 @@
   {
     "id": "inst-thebrowsercompany-arc",
     "displayNameKey": "inst.extra.thebrowsercompanyarc.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.thebrowsercompanyarc.desc",
     "category": "Browsers",
     "categoryKey": "inst.cat.browsers",
     "wingetId": "TheBrowserCompany.Arc",
@@ -1112,7 +1112,7 @@
   {
     "id": "inst-notion-notion",
     "displayNameKey": "inst.extra.notionnotion.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.notionnotion.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Notion.Notion",
@@ -1122,7 +1122,7 @@
   {
     "id": "inst-logseq-logseq",
     "displayNameKey": "inst.extra.logseqlogseq.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.logseqlogseq.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Logseq.Logseq",
@@ -1132,7 +1132,7 @@
   {
     "id": "inst-joplin-joplin",
     "displayNameKey": "inst.extra.joplinjoplin.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.joplinjoplin.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Joplin.Joplin",
@@ -1142,7 +1142,7 @@
   {
     "id": "inst-zotero-zotero",
     "displayNameKey": "inst.extra.zoterozotero.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.zoterozotero.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Zotero.Zotero",
@@ -1152,7 +1152,7 @@
   {
     "id": "inst-dropbox-dropbox",
     "displayNameKey": "inst.extra.dropboxdropbox.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.dropboxdropbox.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Dropbox.Dropbox",
@@ -1162,7 +1162,7 @@
   {
     "id": "inst-google-googledrive",
     "displayNameKey": "inst.extra.googlegoogledrive.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.googlegoogledrive.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Google.GoogleDrive",
@@ -1172,7 +1172,7 @@
   {
     "id": "inst-syncthing-syncthing",
     "displayNameKey": "inst.extra.syncthingsyncthing.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.syncthingsyncthing.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Syncthing.Syncthing",
@@ -1182,7 +1182,7 @@
   {
     "id": "inst-yt-dlp-yt-dlp",
     "displayNameKey": "inst.extra.ytdlpytdlp.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.ytdlpytdlp.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "yt-dlp.yt-dlp",
@@ -1192,7 +1192,7 @@
   {
     "id": "inst-jgraph-draw",
     "displayNameKey": "inst.extra.jgraphdraw.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.jgraphdraw.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "JGraph.Draw",
@@ -1202,7 +1202,7 @@
   {
     "id": "inst-raspberrypifoundation-raspberrypiimager",
     "displayNameKey": "inst.extra.raspberrypifoundationraspberrypiimager.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.raspberrypifoundationraspberrypiimager.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "RaspberryPiFoundation.RaspberryPiImager",
@@ -1212,7 +1212,7 @@
   {
     "id": "inst-microsoft-pcmanager",
     "displayNameKey": "inst.extra.microsoftpcmanager.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftpcmanager.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Microsoft.PCManager",
@@ -1222,7 +1222,7 @@
   {
     "id": "inst-bleachbit-bleachbit",
     "displayNameKey": "inst.extra.bleachbitbleachbit.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.bleachbitbleachbit.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "BleachBit.BleachBit",
@@ -1232,7 +1232,7 @@
   {
     "id": "inst-codesector-teracopy",
     "displayNameKey": "inst.extra.codesectorteracopy.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.codesectorteracopy.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "CodeSector.TeraCopy",
@@ -1242,7 +1242,7 @@
   {
     "id": "inst-proton-protonvpn",
     "displayNameKey": "inst.extra.protonprotonvpn.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.protonprotonvpn.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Proton.ProtonVPN",
@@ -1252,7 +1252,7 @@
   {
     "id": "inst-1password-1password",
     "displayNameKey": "inst.extra.1password1password.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.1password1password.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "1Password.1Password",
@@ -1262,7 +1262,7 @@
   {
     "id": "inst-standardnotes-standardnotes",
     "displayNameKey": "inst.extra.standardnotesstandardnotes.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.standardnotesstandardnotes.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "StandardNotes.StandardNotes",
@@ -1272,7 +1272,7 @@
   {
     "id": "inst-ciderapp-cider",
     "displayNameKey": "inst.extra.ciderappcider.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.ciderappcider.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "ciderapp.Cider",
@@ -1282,7 +1282,7 @@
   {
     "id": "inst-strawberrymusicplayer-strawberry",
     "displayNameKey": "inst.extra.strawberrymusicplayerstrawberry.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.strawberrymusicplayerstrawberry.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "StrawberryMusicPlayer.Strawberry",
@@ -1292,7 +1292,7 @@
   {
     "id": "inst-plex-plex",
     "displayNameKey": "inst.extra.plexplex.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.plexplex.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "Plex.Plex",
@@ -1302,7 +1302,7 @@
   {
     "id": "inst-anki-anki",
     "displayNameKey": "inst.extra.ankianki.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.ankianki.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Anki.Anki",
@@ -1312,7 +1312,7 @@
   {
     "id": "inst-rproject-r",
     "displayNameKey": "inst.extra.rprojectr.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.rprojectr.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "RProject.R",
@@ -1322,7 +1322,7 @@
   {
     "id": "inst-posit-rstudio",
     "displayNameKey": "inst.extra.positrstudio.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.positrstudio.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Posit.RStudio",
@@ -1332,7 +1332,7 @@
   {
     "id": "inst-julialang-julia",
     "displayNameKey": "inst.extra.julialangjulia.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.julialangjulia.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "JuliaLang.Julia",
@@ -1342,7 +1342,7 @@
   {
     "id": "inst-jqlang-jq",
     "displayNameKey": "inst.extra.jqlangjq.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.jqlangjq.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "jqlang.jq",
@@ -1352,7 +1352,7 @@
   {
     "id": "inst-sharkdp-fd",
     "displayNameKey": "inst.extra.sharkdpfd.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.sharkdpfd.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "sharkdp.fd",
@@ -1362,7 +1362,7 @@
   {
     "id": "inst-sharkdp-bat",
     "displayNameKey": "inst.extra.sharkdpbat.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.sharkdpbat.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "sharkdp.bat",
@@ -1372,7 +1372,7 @@
   {
     "id": "inst-microsoft-bicep",
     "displayNameKey": "inst.extra.microsoftbicep.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftbicep.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Microsoft.Bicep",
@@ -1382,7 +1382,7 @@
   {
     "id": "inst-pulumi-pulumi",
     "displayNameKey": "inst.extra.pulumipulumi.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.pulumipulumi.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Pulumi.Pulumi",
@@ -1392,7 +1392,7 @@
   {
     "id": "inst-apache-maven",
     "displayNameKey": "inst.extra.apachemaven.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.apachemaven.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Apache.Maven",
@@ -1402,7 +1402,7 @@
   {
     "id": "inst-gradle-gradle",
     "displayNameKey": "inst.extra.gradlegradle.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.gradlegradle.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Gradle.Gradle",
@@ -1412,7 +1412,7 @@
   {
     "id": "inst-jetbrains-intellijidea-community",
     "displayNameKey": "inst.extra.jetbrainsintellijideacommunity.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.jetbrainsintellijideacommunity.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "JetBrains.IntelliJIDEA.Community",
@@ -1422,7 +1422,7 @@
   {
     "id": "inst-jetbrains-pycharm-community",
     "displayNameKey": "inst.extra.jetbrainspycharmcommunity.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.jetbrainspycharmcommunity.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "JetBrains.PyCharm.Community",
@@ -1432,7 +1432,7 @@
   {
     "id": "inst-kitware-cmake",
     "displayNameKey": "inst.extra.kitwarecmake.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.kitwarecmake.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Kitware.CMake",
@@ -1442,7 +1442,7 @@
   {
     "id": "inst-ninja-build-ninja",
     "displayNameKey": "inst.extra.ninjabuildninja.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.ninjabuildninja.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Ninja-build.Ninja",
@@ -1452,7 +1452,7 @@
   {
     "id": "inst-microsoft-vcpkg",
     "displayNameKey": "inst.extra.microsoftvcpkg.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftvcpkg.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Microsoft.vcpkg",
@@ -1462,7 +1462,7 @@
   {
     "id": "inst-github-gitlfs",
     "displayNameKey": "inst.extra.githubgitlfs.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.githubgitlfs.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "GitHub.GitLFS",
@@ -1472,7 +1472,7 @@
   {
     "id": "inst-axosoft-gitkraken",
     "displayNameKey": "inst.extra.axosoftgitkraken.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.axosoftgitkraken.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Axosoft.GitKraken",
@@ -1482,7 +1482,7 @@
   {
     "id": "inst-amazon-corretto-21-jdk",
     "displayNameKey": "inst.extra.amazoncorretto21jdk.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.amazoncorretto21jdk.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Amazon.Corretto.21.JDK",
@@ -1492,7 +1492,7 @@
   {
     "id": "inst-astral-sh-uv",
     "displayNameKey": "inst.extra.astralshuv.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.astralshuv.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "astral-sh.uv",
@@ -1502,7 +1502,7 @@
   {
     "id": "inst-astral-sh-ruff",
     "displayNameKey": "inst.extra.astralshruff.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.astralshruff.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "astral-sh.ruff",
@@ -1512,7 +1512,7 @@
   {
     "id": "inst-devtoys-app-devtoys",
     "displayNameKey": "inst.extra.devtoysappdevtoys.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.devtoysappdevtoys.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "DevToys-app.DevToys",
@@ -1522,7 +1522,7 @@
   {
     "id": "inst-lexikos-autohotkey",
     "displayNameKey": "inst.extra.lexikosautohotkey.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.lexikosautohotkey.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Lexikos.AutoHotkey",
@@ -1532,7 +1532,7 @@
   {
     "id": "inst-microsoft-powerautomatedesktop",
     "displayNameKey": "inst.extra.microsoftpowerautomatedesktop.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftpowerautomatedesktop.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Microsoft.PowerAutomateDesktop",
@@ -1542,7 +1542,7 @@
   {
     "id": "inst-irfanview-irfanview",
     "displayNameKey": "inst.extra.irfanviewirfanview.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.irfanviewirfanview.desc",
     "category": "Media",
     "categoryKey": "inst.cat.media",
     "wingetId": "IrfanView.IrfanView",
@@ -1552,7 +1552,7 @@
   {
     "id": "inst-nilesoft-shell",
     "displayNameKey": "inst.extra.nilesoftshell.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.nilesoftshell.desc",
     "category": "Tools",
     "categoryKey": "inst.cat.tools",
     "wingetId": "Nilesoft.Shell",
@@ -1562,7 +1562,7 @@
   {
     "id": "inst-microsoft-windbg",
     "displayNameKey": "inst.extra.microsoftwindbg.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.microsoftwindbg.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "Microsoft.WinDbg",
@@ -1572,7 +1572,7 @@
   {
     "id": "inst-llvm-llvm",
     "displayNameKey": "inst.extra.llvmllvm.name",
-    "descriptionKey": "inst.desc.winget",
+    "descriptionKey": "inst.extra.llvmllvm.desc",
     "category": "Developer",
     "categoryKey": "inst.cat.developer",
     "wingetId": "LLVM.LLVM",

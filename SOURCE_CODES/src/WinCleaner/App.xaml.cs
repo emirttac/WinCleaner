@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Windows;
 using System.Windows.Threading;
+using WinCleaner.Behaviors;
 using WinCleaner.Core.Actions;
 using WinCleaner.Core.Services;
 using WinCleaner.Data;
@@ -16,6 +17,7 @@ public partial class App : Application
     protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
+        ToggleSwitchMotion.Register();
 
         AppLog.Info("=== WinCleaner starting ===");
         AppLog.Info($"Log file: {AppLog.LogFilePath}");

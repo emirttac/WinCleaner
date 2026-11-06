@@ -13,6 +13,7 @@
         <ui:ControlsDictionary/>
         <ResourceDictionary Source="Themes/DarkRed.xaml"/>
         <ResourceDictionary Source="Themes/Controls.xaml"/>
+        <ResourceDictionary Source="Themes/ToggleSwitch.xaml"/>
         <ResourceDictionary Source="Resources/SocialIcons.xaml"/>
         <ResourceDictionary Source="Resources/Strings.tr.xaml"/>
       </ResourceDictionary.MergedDictionaries>

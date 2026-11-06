@@ -126,6 +126,7 @@ public partial class ToolsViewModel : ObservableObject
         _all = CatalogLoader.LoadTweaks()
             .Where(t => t.Category.Equals("Tools", StringComparison.OrdinalIgnoreCase))
             .Where(t => OsCompatibility.IsCompatible(t.MinBuild, t.Win11Only, _app.Os))
+            .Where(t => CatalogAccess.Allows(t, _app.Os.Sku, System.Runtime.InteropServices.RuntimeInformation.OSArchitecture))
             .Select(entry =>
             {
                 return new TweakItemViewModel(

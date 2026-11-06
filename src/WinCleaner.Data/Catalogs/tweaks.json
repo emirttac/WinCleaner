@@ -979,10 +979,10 @@
         "path": "SOFTWARE\\Microsoft\\PolicyManager\\current\\device\\Education",
         "name": "IsEducationEnvironment",
         "valueKind": "DWord",
-        "enabledValue": "1",
-        "disabledValue": "0",
-        "restartExplorer": true,
-        "deleteValueOnDisable": true
+        "deleteValueOnEnable": true,
+        "deleteValueOnDisable": true,
+        "optionalForDetect": true,
+        "restartExplorer": true
       },
       {
         "hive": "HKLM",
@@ -2229,6 +2229,13 @@
     "descriptionKey": "tweak.wurecommended.desc",
     "type": "registry",
     "risk": "Caution",
+    "skus": [
+      "Pro",
+      "Enterprise",
+      "Education",
+      "LTSC",
+      "Server"
+    ],
     "registries": [
       {
         "deleteValueOnDisable": true,

@@ -286,6 +286,7 @@ public class ProcessAndGateTests
         var tweaks = CatalogLoader.LoadTweaks();
         var hyperv = tweaks.Single(t => t.Id == "tweak-feat-hyperv");
         var recall = tweaks.Single(t => t.Id == "tweak-disable-recall");
+        var deferral = tweaks.Single(t => t.Id == "tweak-wu-recommended");
         var arch = System.Runtime.InteropServices.Architecture.X64;
 
         Assert.False(CatalogAccess.Allows(hyperv, "Home", arch));
@@ -293,6 +294,9 @@ public class ProcessAndGateTests
         Assert.True(CatalogAccess.Allows(hyperv, "Unknown", arch));
         Assert.False(CatalogAccess.Allows(recall, "Server", arch));
         Assert.True(CatalogAccess.Allows(recall, "Pro", arch));
+        Assert.False(CatalogAccess.Allows(deferral, "Home", arch));
+        Assert.True(CatalogAccess.Allows(deferral, "Pro", arch));
+        Assert.True(CatalogAccess.Allows(deferral, "Unknown", arch));
     }
 
     [Fact]

@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
   Publishes the x64 portable build, SHA256 sums, and an SPDX 2.3 file.
@@ -6,7 +6,7 @@
 #>
 [CmdletBinding()]
 param(
-    [string]$Version = "2.1.0"
+    [string]$Version = "2.5.0"
 )
 
 $ErrorActionPreference = "Stop"

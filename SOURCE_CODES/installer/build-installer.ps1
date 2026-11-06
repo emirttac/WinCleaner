@@ -1,4 +1,4 @@
-#Requires -Version 5.1
+﻿#Requires -Version 5.1
 <#
 .SYNOPSIS
   Publishes WinCleaner (framework-dependent) and compiles the Inno Setup installer.
@@ -9,7 +9,7 @@
 param(
     [string]$Configuration = "Release",
     [string]$Runtime = "win-x64",
-    [string]$Version = "2.1.0"
+    [string]$Version = "2.5.0"
 )
 
 $ErrorActionPreference = "Stop"

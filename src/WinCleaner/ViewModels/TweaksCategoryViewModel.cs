@@ -80,6 +80,7 @@ public partial class TweaksCategoryViewModel : ObservableObject
         _all = CatalogLoader.LoadTweaks()
             .Where(t => t.Category.Equals(_category, StringComparison.OrdinalIgnoreCase))
             .Where(t => OsCompatibility.IsCompatible(t.MinBuild, t.Win11Only, _app.Os))
+            .Where(t => CatalogAccess.Allows(t, _app.Os.Sku, System.Runtime.InteropServices.RuntimeInformation.OSArchitecture))
             .Select(CreateItem)
             .Where(x => x is not null)
             .Cast<TweakItemViewModel>()

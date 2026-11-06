@@ -51,17 +51,12 @@
         </Grid>
       </ui:Card>
 
-      <ItemsControl Grid.Row="3" ItemsSource="{Binding Categories}" Style="{StaticResource VirtualizingListStyle}">
+      <ItemsControl Grid.Row="3" ItemsSource="{Binding Categories}" Style="{StaticResource VirtualizingPixelListStyle}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
             <StackPanel Margin="0,4,0,12">
               <TextBlock Text="{Binding Title}" Style="{StaticResource SectionHeaderStyle}"/>
               <ItemsControl ItemsSource="{Binding Apps}">
-                <ItemsControl.ItemsPanel>
-                  <ItemsPanelTemplate>
-                    <VirtualizingStackPanel />
-                  </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
                   <DataTemplate>
                     <ui:Card Margin="0,0,0,10" Padding="14,12"
@@ -77,7 +72,7 @@
                                   IsEnabled="{Binding CanSelect}"
                                   Margin="0,0,12,0"/>
                         <Border Grid.Column="1" Width="34" Height="34" CornerRadius="8"
-                                Background="#F2F2F2" Margin="0,0,12,0" VerticalAlignment="Center"
+                                Background="Transparent" Margin="0,0,12,0" VerticalAlignment="Center"
                                 ClipToBounds="True">
                           <Grid>
                             <TextBlock Text="{Binding IconGlyph}" FontSize="16"

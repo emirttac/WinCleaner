@@ -1,4 +1,4 @@
-; WinCleaner Inno Setup script
+﻿; WinCleaner Inno Setup script
 ; Installs the app and downloads missing runtimes during setup:
 ;   - .NET 8 Desktop Runtime (x64)
 ;   - Visual C++ 2015-2022 Redistributable (x64)
@@ -8,7 +8,7 @@
 
 #define MyAppName "WinCleaner"
 #ifndef MyAppVersion
-  #define MyAppVersion "2.1.0"
+  #define MyAppVersion "2.5.0"
 #endif
 #define MyAppPublisher "emirttac"
 #define MyAppURL "https://github.com/emirttac/WinCleaner"

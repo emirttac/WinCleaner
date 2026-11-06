@@ -151,8 +151,8 @@ NATURAL_TWEAKS: dict[str, dict[str, str]] = {
         "tr": "Windows Recall / yapay zekâ ekran verisi analizini politikayla kapatır. Windows 11’de gizlilik için önerilir.",
     },
     "tweak.startiris.desc": {
-        "en": "Turns off Start menu “recommended / Iris” content for a cleaner Start. Explorer may restart.",
-        "tr": "Başlat menüsündeki “önerilen / Iris” içeriğini kapatır; Başlat sadeleşir. Explorer yeniden başlayabilir.",
+        "en": "Hides Start menu recommendations. Windows can show them again after a feature update. This does not mark the PC as an education device. If you turned this on in an older version, switch it off and on once to clear that mark. Explorer may restart.",
+        "tr": "Başlat menüsü önerilerini gizler. Bir özellik güncellemesinden sonra öneriler geri gelebilir. Bu anahtar bilgisayarı eğitim cihazı olarak işaretlemez. Eski bir sürümde açtıysanız, eski işareti silmek için bir kez kapatıp yeniden açın. Explorer yeniden başlayabilir.",
     },
     "tweak.widgets.desc": {
         "en": "Disables taskbar Widgets and the News and interests feed. Less background chatter; Explorer may restart.",
@@ -367,8 +367,8 @@ NATURAL_TWEAKS: dict[str, dict[str, str]] = {
         "tr": "Desteklenen yerlerde eski F8 gelişmiş önyükleme menüsü davranışını geri getirir.",
     },
     "tweak.wurecommended.desc": {
-        "en": "Limits or controls optional / recommended Windows Update offerings so fewer extras install themselves.",
-        "tr": "İsteğe bağlı / önerilen Windows Update tekliflerini kısıtlar; ekstra paketlerin kendiliğinden kurulmasını azaltır.",
+        "en": "Defers feature updates by 365 days and quality updates by 4 days, and keeps drivers out of Windows Update. Applies on Pro, Enterprise, Education, LTSC, and Windows Server. Home ignores these policies.",
+        "tr": "Özellik güncellemelerini 365 gün, kalite güncellemelerini 4 gün erteler ve sürücüleri Windows Update dışında bırakır. Pro, Enterprise, Education, LTSC ve Windows Server’da geçerlidir. Home bu ilkeleri yok sayar.",
     },
     "preset.gamer.desc": {
         "en": "One click for Game Mode, Game Bar/DVR off, a strong power plan, MMCSS, lighter visuals, less telemetry, SysMain off, and similar gaming tweaks. Read the preview list, then apply on a gaming PC.",

@@ -1,10 +1,10 @@
-# WinCleaner
+﻿# WinCleaner
 
 <p align="center">
   <img src="src/WinCleaner/app.ico" alt="WinCleaner" width="96" height="96">
 </p>
 
-**Windows 10/11 optimization and debloat toolkit for gamers** — C# · .NET 8 · WPF · **v2.1.0**
+**Windows 10/11 optimization and debloat toolkit for gamers** — C# · .NET 8 · WPF · **v2.5.0**
 
 Catalog-driven tweaks · Risk levels · Restore points · Session undo · Headless config · 8 languages
 
@@ -90,7 +90,7 @@ Global **Undo** lives in the main chrome and reverts journaled session changes w
 - Crash and session logging under `%LocalAppData%\WinCleaner\`
 - Headless profile apply via `--config` (see below)
 
-### Catalog size (v2.1.0)
+### Catalog size (v2.5.0)
 
 | Catalog | Entries | File |
 |---------|--------:|------|
@@ -162,11 +162,11 @@ Portable builds are **self-contained** (runtime embedded) but still require a su
 
 | Channel | Link |
 |---------|------|
-| **Installer (recommended)** | [Releases](https://github.com/emirttac/WinCleaner/releases) → `WinCleaner-Setup-2.1.0.exe` |
+| **Installer (recommended)** | [Releases](https://github.com/emirttac/WinCleaner/releases) → `WinCleaner-Setup-2.5.0.exe` |
 | **Portable** | Release assets or build via `scripts\publish-portable.ps1` → `publish\WinCleaner.exe` |
 | **Source** | Clone this repo or open [`SOURCE_CODES/`](SOURCE_CODES/) |
 
-The Inno Setup installer (`WinCleaner-Setup-2.1.0.exe`):
+The Inno Setup installer (`WinCleaner-Setup-2.5.0.exe`):
 
 1. Installs WinCleaner under Program Files  
 2. On the Ready page, detects missing **.NET 8 Desktop Runtime** and **VC++ Redistributable**, downloads them from Microsoft, and installs quietly  
@@ -206,7 +206,7 @@ Requires [Inno Setup 6](https://jrsoftware.org/isinfo.php).
 powershell -ExecutionPolicy Bypass -File installer\build-installer.ps1
 ```
 
-Output: `publish\setup\WinCleaner-Setup-2.1.0.exe`  
+Output: `publish\setup\WinCleaner-Setup-2.5.0.exe`  
 (Framework-dependent publish under `publish\installer`, then packaged by Inno. Missing runtimes are fetched at install time.)
 
 ### Refresh the open-source snapshot
