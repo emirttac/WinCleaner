@@ -105,7 +105,7 @@ public sealed class OperationRunner : IOperationRunner
     {
         IsBusy = true;
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-        var progress = new Progress<OperationStep>(step =>
+        IProgress<OperationStep> progress = new InlineProgress<OperationStep>(step =>
         {
             _log.Write(item.Request.Name + ": " + step.Message);
             StepReported?.Invoke(this, step);
@@ -165,6 +165,14 @@ public sealed class OperationRunner : IOperationRunner
 
         next?.Turn.TrySetResult(true);
     }
+}
+
+/// <summary>Reports on the calling thread so the session log is ordered before "done".</summary>
+internal sealed class InlineProgress<T> : IProgress<T>
+{
+    private readonly Action<T> _report;
+    public InlineProgress(Action<T> report) => _report = report;
+    public void Report(T value) => _report(value);
 }
 
 public sealed class SessionLineLog : ILogSink

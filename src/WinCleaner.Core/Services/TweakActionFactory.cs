@@ -300,11 +300,12 @@ public sealed class AppServices
         string name,
         IReadOnlyList<IChangeAction> actions,
         string? snapshotName,
-        CancellationToken cancellationToken = default) =>
+        CancellationToken cancellationToken = default,
+        bool antiCheatConfirmed = false) =>
         Operations.EnqueueAsync(new OperationRequest(name, true, async ctx =>
         {
-            var progress = new Progress<string>(text => ctx.Progress.Report(new OperationStep(text, null)));
-            var results = await Executor.ExecuteManyAsync(actions, progress, ctx.Token, snapshotName).ConfigureAwait(false);
+            IProgress<string> progress = new InlineProgress<string>(text => ctx.Progress.Report(new OperationStep(text, null)));
+            var results = await Executor.ExecuteManyAsync(actions, progress, ctx.Token, snapshotName, antiCheatConfirmed).ConfigureAwait(false);
             var failed = results.Where(r => !r.Success).Select(r => r.Message ?? r.ErrorCode).Where(m => !string.IsNullOrWhiteSpace(m)).ToList();
             if (failed.Count > 0)
                 throw new InvalidOperationException(string.Join(Environment.NewLine, failed));

@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">Je comprends les risques</sys:String>
   <sys:String x:Key="danger.anticheat.title">Avertissement anti-triche</sys:String>
   <sys:String x:Key="danger.anticheat.message">Cette optimisation gaming (VBS / HPET / MMCSS) peut entrer en conflit avec des systèmes anti-triche tels que Riot Vanguard, Easy Anti-Cheat (EAC) ou BattlEye. Conséquences possibles : écrans bleus (BSOD), plantages de jeux ou bans de compte. Ne continuez que si vous acceptez ces risques.</sys:String>
+  <sys:String x:Key="danger.arm64.title">Avertissement de compatibilité ARM64</sys:String>
+  <sys:String x:Key="danger.arm64.message">Cet ordinateur utilise un processeur ARM64. Certains réglages Windows ont été écrits pour x64 et peuvent échouer ou rendre le système instable. Ne continuez que si vous acceptez ce risque.</sys:String>
   <sys:String x:Key="common.status">État</sys:String>
   <sys:String x:Key="common.adminRequired">Cette modification nécessite les droits Administrateur. Relancez WinCleaner avec &quot; Exécuter en tant qu’administrateur &quot;.</sys:String>
   <sys:String x:Key="common.rebootRequired">Modification enregistrée. Redémarrez votre PC pour qu’elle prenne pleinement effet.</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">Rien à appliquer.</sys:String>
   <sys:String x:Key="msg.done">Terminé</sys:String>
   <sys:String x:Key="msg.failed">Échec</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">Ce mode de gestion de l’alimentation n’expose pas le parking des cœurs. Aucun changement n’a été fait.</sys:String>
+  <sys:String x:Key="msg.netResetWarning">La réinitialisation réseau s’est terminée avec un avertissement. Une étape a été refusée. Redémarrez le PC pour terminer.</sys:String>
+  <sys:String x:Key="msg.processCancelled">L’opération a été annulée.</sys:String>
+  <sys:String x:Key="msg.processTimedOut">L’opération a expiré.</sys:String>
+  <sys:String x:Key="msg.processNoExit">Le processus s’est terminé sans code de sortie.</sys:String>
   <sys:String x:Key="msg.disableConfirm">Désactiver les éléments listés ?</sys:String>
   <sys:String x:Key="msg.unexpectedError">Erreur inattendue (détails dans le journal) :</sys:String>
   <sys:String x:Key="msg.logLabel">Journal :</sys:String>

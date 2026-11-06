@@ -50,3 +50,36 @@ public static class CommandStateProbe
         && !string.IsNullOrWhiteSpace(needle)
         && output.Contains(needle, StringComparison.OrdinalIgnoreCase);
 }
+
+/// <summary>Shared checks for the core-parking powercfg sequence.</summary>
+public static class CoreParking
+{
+    public static readonly string[] ApplyValueArguments =
+    [
+        "-setacvalueindex scheme_current SUB_PROCESSOR CPMINCORES 100",
+        "-setdcvalueindex scheme_current SUB_PROCESSOR CPMINCORES 100",
+        "-setacvalueindex scheme_current SUB_PROCESSOR CPMINCORES1 100",
+        "-setdcvalueindex scheme_current SUB_PROCESSOR CPMINCORES1 100"
+    ];
+
+    public static bool IsOptionalAlias(string arguments) =>
+        arguments.Contains("CPMINCORES1", StringComparison.OrdinalIgnoreCase);
+
+    public static bool IsSettingMissing(string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text))
+            return false;
+
+        return text.Contains("not found", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("does not exist", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("invalid parameters", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("bulunamad", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("geçersiz", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("no existe", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("introuvable", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("nicht gefunden", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("не найден", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("nu există", StringComparison.OrdinalIgnoreCase)
+               || text.Contains("无效", StringComparison.Ordinal);
+    }
+}

@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">Riskleri anlıyorum</sys:String>
   <sys:String x:Key="danger.anticheat.title">Anti-Cheat Risk Uyarısı</sys:String>
   <sys:String x:Key="danger.anticheat.message">Bu oyun ayarı (VBS / HPET / MMCSS) Riot Vanguard, Easy Anti-Cheat (EAC) veya BattlEye gibi hile engelleme sistemleriyle çakışabilir. Mavi ekran (BSOD), çökme veya hesap yasağı riski vardır. Yalnızca bu riskleri kabul ediyorsan devam et.</sys:String>
+  <sys:String x:Key="danger.arm64.title">ARM64 uyumluluk uyarısı</sys:String>
+  <sys:String x:Key="danger.arm64.message">Bu bilgisayar ARM64 işlemci kullanıyor. Bazı Windows ayarları x64 için yazıldı ve başarısız olabilir ya da sistemi kararsız bırakabilir. Yalnızca bu riski kabul ediyorsan devam et.</sys:String>
   <sys:String x:Key="common.status">Durum</sys:String>
   <sys:String x:Key="common.adminRequired">Bu işlem yönetici (Administrator) yetkisi ister. WinCleaner’ı &quot;Yönetici olarak çalıştır&quot; ile aç.</sys:String>
   <sys:String x:Key="common.rebootRequired">Değişiklik kaydedildi. Tam etki için bilgisayarı yeniden başlatman gerekir.</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">Uygulanacak bir şey yok.</sys:String>
   <sys:String x:Key="msg.done">Tamam</sys:String>
   <sys:String x:Key="msg.failed">Başarısız</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">Bu güç planında çekirdek park ayarı yok. Değişiklik yapılmadı.</sys:String>
+  <sys:String x:Key="msg.netResetWarning">Ağ sıfırlama bir uyarıyla bitti. Bir adım erişim reddi verdi. Sıfırlamanın tamamlanması için bilgisayarı yeniden başlat.</sys:String>
+  <sys:String x:Key="msg.processCancelled">İşlem iptal edildi.</sys:String>
+  <sys:String x:Key="msg.processTimedOut">İşlem zaman aşımına uğradı.</sys:String>
+  <sys:String x:Key="msg.processNoExit">Süreç bir çıkış kodu olmadan bitti.</sys:String>
   <sys:String x:Key="msg.disableConfirm">Listedeki öğeler devre dışı bırakılsın mı?</sys:String>
   <sys:String x:Key="msg.unexpectedError">Beklenmeyen hata (detay logda):</sys:String>
   <sys:String x:Key="msg.logLabel">Log:</sys:String>

@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">Ich verstehe die Risiken</sys:String>
   <sys:String x:Key="danger.anticheat.title">Anti-Cheat-Risikowarnung</sys:String>
   <sys:String x:Key="danger.anticheat.message">Diese Gaming-Optimierung (VBS / HPET / MMCSS) kann mit Anti-Cheat-Systemen wie Riot Vanguard, Easy Anti-Cheat (EAC) oder BattlEye in Konflikt geraten. Mögliche Folgen sind Bluescreens (BSOD), Spielabstürze oder Account-Sperren. Fahren Sie nur fort, wenn Sie diese Risiken akzeptieren.</sys:String>
+  <sys:String x:Key="danger.arm64.title">ARM64-Kompatibilitätshinweis</sys:String>
+  <sys:String x:Key="danger.arm64.message">Dieser PC verwendet einen ARM64-Prozessor. Einige Windows-Einstellungen wurden für x64 geschrieben und können fehlschlagen oder das System instabil machen. Fahren Sie nur fort, wenn Sie dieses Risiko akzeptieren.</sys:String>
   <sys:String x:Key="common.status">Status</sys:String>
   <sys:String x:Key="common.adminRequired">Diese Änderung erfordert Administratorrechte. Starten Sie WinCleaner neu mit &quot;Als Administrator ausführen&quot;.</sys:String>
   <sys:String x:Key="common.rebootRequired">Änderung gespeichert. Starten Sie den PC neu, damit sie vollständig wirksam wird.</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">Nichts anzuwenden.</sys:String>
   <sys:String x:Key="msg.done">Fertig</sys:String>
   <sys:String x:Key="msg.failed">Fehlgeschlagen</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">Dieser Energiesparplan bietet kein Core-Parking. Es wurde nichts geändert.</sys:String>
+  <sys:String x:Key="msg.netResetWarning">Die Netzwerkzurücksetzung endete mit einer Warnung. Ein Schritt wurde verweigert. Starten Sie den PC neu, um sie abzuschließen.</sys:String>
+  <sys:String x:Key="msg.processCancelled">Der Vorgang wurde abgebrochen.</sys:String>
+  <sys:String x:Key="msg.processTimedOut">Zeitüberschreitung beim Vorgang.</sys:String>
+  <sys:String x:Key="msg.processNoExit">Der Prozess endete ohne Exitcode.</sys:String>
   <sys:String x:Key="msg.disableConfirm">Die aufgelisteten Elemente deaktivieren?</sys:String>
   <sys:String x:Key="msg.unexpectedError">Unerwarteter Fehler (Details im Protokoll):</sys:String>
   <sys:String x:Key="msg.logLabel">Protokoll:</sys:String>

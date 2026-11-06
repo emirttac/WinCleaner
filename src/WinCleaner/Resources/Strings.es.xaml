@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">Entiendo los riesgos</sys:String>
   <sys:String x:Key="danger.anticheat.title">Advertencia de riesgo con anti-cheat</sys:String>
   <sys:String x:Key="danger.anticheat.message">Este ajuste de juegos (VBS / HPET / MMCSS) puede entrar en conflicto con sistemas anti-cheat como Riot Vanguard, Easy Anti-Cheat (EAC) o BattlEye. Posibles consecuencias: pantallas azules (BSOD), cierres del juego o bloqueos de cuenta. Continúa solo si aceptas estos riesgos.</sys:String>
+  <sys:String x:Key="danger.arm64.title">Aviso de compatibilidad ARM64</sys:String>
+  <sys:String x:Key="danger.arm64.message">Este equipo usa un procesador ARM64. Algunos ajustes de Windows se escribieron para x64 y pueden fallar o dejar el sistema inestable. Continúa solo si aceptas ese riesgo.</sys:String>
   <sys:String x:Key="common.status">Estado</sys:String>
   <sys:String x:Key="common.adminRequired">Este cambio requiere privilegios de administrador. Reinicia WinCleaner con &quot;Ejecutar como administrador&quot;.</sys:String>
   <sys:String x:Key="common.rebootRequired">Cambio guardado. Reinicia el PC para que surta efecto por completo.</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">No hay nada que aplicar.</sys:String>
   <sys:String x:Key="msg.done">Listo</sys:String>
   <sys:String x:Key="msg.failed">Error</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">Este plan de energía no expone el core parking, así que no se cambió nada.</sys:String>
+  <sys:String x:Key="msg.netResetWarning">El restablecimiento de red terminó con una advertencia. Un paso fue denegado. Reinicia el PC para completarlo.</sys:String>
+  <sys:String x:Key="msg.processCancelled">La operación se canceló.</sys:String>
+  <sys:String x:Key="msg.processTimedOut">La operación agotó el tiempo de espera.</sys:String>
+  <sys:String x:Key="msg.processNoExit">El proceso terminó sin un código de salida.</sys:String>
   <sys:String x:Key="msg.disableConfirm">¿Desactivar los elementos de la lista?</sys:String>
   <sys:String x:Key="msg.unexpectedError">Error inesperado (detalles en el registro):</sys:String>
   <sys:String x:Key="msg.logLabel">Registro:</sys:String>

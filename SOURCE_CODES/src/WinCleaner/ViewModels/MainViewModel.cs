@@ -67,6 +67,7 @@ public partial class MainViewModel : ObservableObject
         _loc = new LocalizationService();
         App = new AppServices(key => _loc.Get(key));
         _loc.Initialize(App.Settings.Language);
+        App.Executor.Confirmation = new UiGateConfirmation(_loc);
         App.SetLocalizer(key => _loc.Get(key));
 
         Dashboard = new DashboardViewModel(App, _loc, this);

@@ -1013,7 +1013,8 @@
         "valueKind": "DWord",
         "enabledValue": "0",
         "disabledValue": "1",
-        "restartExplorer": true
+        "restartExplorer": true,
+        "optionalForDetect": true
       },
       {
         "hive": "HKCU",
@@ -1032,7 +1033,8 @@
         "enabledValue": "0",
         "disabledValue": "1",
         "restartExplorer": true,
-        "deleteValueOnDisable": true
+        "deleteValueOnDisable": true,
+        "optionalForDetect": true
       }
     ],
     "reversibility": "Exact"
@@ -1183,9 +1185,9 @@
     "risk": "Caution",
     "type": "command",
     "command": {
-      "fileName": "cmd",
-      "arguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 100 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 100 & powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 100 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 100 & powercfg /setactive SCHEME_CURRENT",
-      "revertArguments": "/c powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 5 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES 5 & powercfg /setacvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 5 & powercfg /setdcvalueindex SCHEME_CURRENT SUB_PROCESSOR CPMINCORES1 5 & powercfg /setactive SCHEME_CURRENT",
+      "fileName": "powercfg",
+      "arguments": "-setacvalueindex scheme_current SUB_PROCESSOR CPMINCORES 100",
+      "revertArguments": "-setacvalueindex scheme_current SUB_PROCESSOR CPMINCORES 0",
       "requiresAdmin": true,
       "detectFileName": "powercfg",
       "detectArguments": "/query SCHEME_CURRENT SUB_PROCESSOR CPMINCORES",

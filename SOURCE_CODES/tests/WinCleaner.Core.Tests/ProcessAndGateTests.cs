@@ -62,6 +62,7 @@ public class ProcessAndGateTests
 
         Assert.False(result.Success);
         Assert.Equal(GateCodes.Dangerous, result.ErrorCode);
+        Assert.Equal("danger.needSettings", result.Message);
         Assert.Equal(0, action.Applies);
     }
 
@@ -129,9 +130,7 @@ public class ProcessAndGateTests
         Assert.True(result.Success);
         var request = Assert.Single(fake.Requests);
         Assert.Contains("powershell.exe", request.FileName, StringComparison.OrdinalIgnoreCase);
-        var encoded = request.Arguments.Split(' ', StringSplitOptions.RemoveEmptyEntries)[^1];
-        var script = System.Text.Encoding.Unicode.GetString(Convert.FromBase64String(encoded));
-        Assert.Contains("Microsoft.WindowsStore", script, StringComparison.Ordinal);
+        Assert.Contains("Microsoft.WindowsStore", fake.Script, StringComparison.Ordinal);
     }
 
     [Fact]
@@ -202,6 +201,34 @@ public class ProcessAndGateTests
         var result = await harness.Executor.ExecuteAsync(action);
 
         Assert.Equal(GateCodes.SystemCritical, result.ErrorCode);
+    }
+
+    [Fact]
+    public async Task AntiCheat_Applies_WhenPreviewAlreadyConfirmed()
+    {
+        using var harness = ExecutorHarness.Create(allowDangerous: true);
+        var action = new FakeAction { RequiresAntiCheatConfirm = true };
+
+        var results = await harness.Executor.ExecuteManyAsync([action], antiCheatConfirmed: true);
+
+        Assert.True(results[0].Success);
+        Assert.Equal(1, action.Applies);
+    }
+
+    [Fact]
+    public async Task AntiCheatBatch_AsksOnce_AndSkipsTheRest()
+    {
+        var confirm = new CountingConfirmation(code => code == GateCodes.AntiCheat);
+        using var harness = ExecutorHarness.Create(allowDangerous: true, confirmation: confirm);
+        var first = new FakeAction { RequiresAntiCheatConfirm = true };
+        var second = new FakeAction { RequiresAntiCheatConfirm = true };
+
+        var results = await harness.Executor.ExecuteManyAsync([first, second]);
+
+        Assert.All(results, result => Assert.True(result.Success));
+        Assert.Equal(1, first.Applies);
+        Assert.Equal(1, second.Applies);
+        Assert.Equal(1, confirm.Count);
     }
 
     [Fact]
@@ -345,10 +372,20 @@ public class ProcessAndGateTests
     {
         public List<ProcessRequest> Requests { get; } = [];
         public ProcessResult Result { get; init; } = new(0, "", "", false, false);
+        public string Script { get; private set; } = "";
 
         public Task<ProcessResult> RunAsync(ProcessRequest request, CancellationToken cancellationToken = default)
         {
             Requests.Add(request);
+            const string marker = "-File \"";
+            var start = request.Arguments.IndexOf(marker, StringComparison.Ordinal);
+            if (start >= 0)
+            {
+                var path = request.Arguments[(start + marker.Length)..].TrimEnd('"');
+                if (File.Exists(path))
+                    Script = File.ReadAllText(path);
+            }
+
             return Task.FromResult(Result);
         }
     }

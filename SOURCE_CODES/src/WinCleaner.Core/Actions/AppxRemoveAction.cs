@@ -45,6 +45,7 @@ public sealed class AppxRemoveAction : IChangeAction
     public string Category { get; }
     public bool CanRevert { get; }
     public bool SystemCritical { get; }
+    public IProgress<string>? Progress { get; set; }
 
     public Task<string?> GetCurrentStateAsync(CancellationToken cancellationToken = default) =>
         Task.FromResult<string?>("installed?");
@@ -71,7 +72,7 @@ public sealed class AppxRemoveAction : IChangeAction
 
     public async Task<ChangeResult> ApplyAsync(CancellationToken cancellationToken = default)
     {
-        var result = await _appx.RemovePackageAsync(_packageNames, cancellationToken).ConfigureAwait(false);
+        var result = await _appx.RemovePackageAsync(_packageNames, cancellationToken, Progress).ConfigureAwait(false);
         if (!result.Success)
             return ChangeResult.Fail(result.ErrorDetail);
         return ChangeResult.Ok("installed", "removed", "Package removed");

@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">Я понимаю риски</sys:String>
   <sys:String x:Key="danger.anticheat.title">Предупреждение об античите</sys:String>
   <sys:String x:Key="danger.anticheat.message">Эта игровая настройка (VBS / HPET / MMCSS) может конфликтовать с античит-системами, такими как Riot Vanguard, Easy Anti-Cheat (EAC) или BattlEye. Возможны синие экраны (BSOD), сбои игр или блокировка аккаунта. Продолжайте только если принимаете эти риски.</sys:String>
+  <sys:String x:Key="danger.arm64.title">Предупреждение о совместимости ARM64</sys:String>
+  <sys:String x:Key="danger.arm64.message">На этом компьютере процессор ARM64. Некоторые настройки Windows написаны для x64 и могут не сработать или сделать систему нестабильной. Продолжайте только если принимаете этот риск.</sys:String>
   <sys:String x:Key="common.status">Статус</sys:String>
   <sys:String x:Key="common.adminRequired">Для этого изменения нужны права администратора. Перезапустите WinCleaner с параметром &quot;Запуск от имени администратора&quot;.</sys:String>
   <sys:String x:Key="common.rebootRequired">Изменение сохранено. Перезагрузите ПК, чтобы оно полностью вступило в силу.</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">Нечего применять.</sys:String>
   <sys:String x:Key="msg.done">Готово</sys:String>
   <sys:String x:Key="msg.failed">Ошибка</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">В этой схеме питания нет настройки парковки ядер, поэтому ничего не изменено.</sys:String>
+  <sys:String x:Key="msg.netResetWarning">Сброс сети завершился с предупреждением. Один шаг получил отказ в доступе. Перезагрузите компьютер, чтобы завершить сброс.</sys:String>
+  <sys:String x:Key="msg.processCancelled">Операция отменена.</sys:String>
+  <sys:String x:Key="msg.processTimedOut">Время операции истекло.</sys:String>
+  <sys:String x:Key="msg.processNoExit">Процесс завершился без кода выхода.</sys:String>
   <sys:String x:Key="msg.disableConfirm">Отключить перечисленные элементы?</sys:String>
   <sys:String x:Key="msg.unexpectedError">Непредвиденная ошибка (подробности в журнале):</sys:String>
   <sys:String x:Key="msg.logLabel">Журнал:</sys:String>

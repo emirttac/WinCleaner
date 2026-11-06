@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">Înțeleg riscurile</sys:String>
   <sys:String x:Key="danger.anticheat.title">Avertisment risc anti-cheat</sys:String>
   <sys:String x:Key="danger.anticheat.message">Această ajustare pentru jocuri (VBS / HPET / MMCSS) poate intra în conflict cu sisteme anti-cheat precum Riot Vanguard, Easy Anti-Cheat (EAC) sau BattlEye. Posibile efecte: ecran albastru (BSOD), blocări ale jocului sau banări de cont. Continuați doar dacă acceptați aceste riscuri.</sys:String>
+  <sys:String x:Key="danger.arm64.title">Avertisment de compatibilitate ARM64</sys:String>
+  <sys:String x:Key="danger.arm64.message">Acest PC folosește un procesor ARM64. Unele setări Windows au fost scrise pentru x64 și pot eșua sau lăsa sistemul instabil. Continuați doar dacă acceptați acest risc.</sys:String>
   <sys:String x:Key="common.status">Stare</sys:String>
   <sys:String x:Key="common.adminRequired">Această modificare necesită privilegii de administrator. Reporniți WinCleaner cu &quot;Executare ca administrator&quot;.</sys:String>
   <sys:String x:Key="common.rebootRequired">Modificare salvată. Reporniți PC-ul pentru ca efectul să fie complet.</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">Nimic de aplicat.</sys:String>
   <sys:String x:Key="msg.done">Gata</sys:String>
   <sys:String x:Key="msg.failed">Eșuat</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">Acest plan de alimentare nu expune parcarea nucleelor, așa că nu s-a schimbat nimic.</sys:String>
+  <sys:String x:Key="msg.netResetWarning">Resetarea rețelei s-a încheiat cu un avertisment. Un pas a fost refuzat. Reporniți PC-ul pentru a o finaliza.</sys:String>
+  <sys:String x:Key="msg.processCancelled">Operația a fost anulată.</sys:String>
+  <sys:String x:Key="msg.processTimedOut">Operația a expirat.</sys:String>
+  <sys:String x:Key="msg.processNoExit">Procesul s-a încheiat fără un cod de ieșire.</sys:String>
   <sys:String x:Key="msg.disableConfirm">Dezactivați elementele listate?</sys:String>
   <sys:String x:Key="msg.unexpectedError">Eroare neașteptată (detalii în jurnal):</sys:String>
   <sys:String x:Key="msg.logLabel">Jurnal:</sys:String>

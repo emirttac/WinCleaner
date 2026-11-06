@@ -191,8 +191,11 @@ public partial class ToolsViewModel : ObservableObject
             _loc.Get("tools.networkReset"),
             (progress, ct) => _app.SystemHealth.ResetNetworkStackAsync(progress, ct)).ConfigureAwait(true);
 
+        var note = _app.SystemHealth.NetworkResetHadWarning
+            ? "msg.netResetWarning"
+            : "tools.networkReset.reboot";
         MessageBox.Show(
-            _loc.Get("tools.networkReset.reboot"),
+            _loc.Get(note),
             _loc.Get("tools.networkReset"),
             MessageBoxButton.OK,
             MessageBoxImage.Information);
@@ -441,7 +444,7 @@ public partial class ToolsViewModel : ObservableObject
             var op = await OperationHost.TrackAsync(_app.Operations, title, token =>
                 _app.RunWorkAsync(title, true, async ctx =>
                 {
-                    var progress = new Progress<string>(line => ctx.Progress.Report(new OperationStep(line, null)));
+                    IProgress<string> progress = new SyncLineProgress(line => ctx.Progress.Report(new OperationStep(line, null)));
                     await work(progress, ctx.Token).ConfigureAwait(false);
                 }, token)).ConfigureAwait(true);
             if (!op.Success && !op.Cancelled && !string.IsNullOrWhiteSpace(op.Message))
@@ -451,5 +454,12 @@ public partial class ToolsViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+
+    private sealed class SyncLineProgress : IProgress<string>
+    {
+        private readonly Action<string> _report;
+        public SyncLineProgress(Action<string> report) => _report = report;
+        public void Report(string value) => _report(value);
     }
 }

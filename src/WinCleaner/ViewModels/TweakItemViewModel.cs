@@ -163,7 +163,8 @@ public partial class TweakItemViewModel : ObservableObject
                 }
 
                 var journal = _app.ChangeLog.GetLatestRevertable(Id);
-                action.SeedPreviousState(journal?.OldValue);
+                if (journal is not null)
+                    action.SeedPreviousState(journal.OldValue);
             }
 
             var result = desired

@@ -38,6 +38,14 @@ public static class UiThread
         dispatcher.Invoke(action);
     }
 
+    public static T Invoke<T>(Func<T> func)
+    {
+        var dispatcher = Application.Current?.Dispatcher;
+        if (dispatcher is null || dispatcher.CheckAccess())
+            return func();
+        return dispatcher.Invoke(func);
+    }
+
     public static Task RunAsync(Action action)
     {
         var dispatcher = Application.Current?.Dispatcher;

@@ -94,7 +94,10 @@ ConvertTo-Json -InputObject @($map.Values) -Compress -Depth 3
     public Task<PowerShellResult> RemovePackageAsync(string packageNamePattern, CancellationToken ct = default) =>
         RemovePackageAsync(new[] { packageNamePattern }, ct);
 
-    public async Task<PowerShellResult> RemovePackageAsync(IReadOnlyList<string> packageNamePatterns, CancellationToken ct = default)
+    public async Task<PowerShellResult> RemovePackageAsync(
+        IReadOnlyList<string> packageNamePatterns,
+        CancellationToken ct = default,
+        IProgress<string>? progress = null)
     {
         var patterns = packageNamePatterns
             .Where(p => !string.IsNullOrWhiteSpace(p))
@@ -106,69 +109,90 @@ ConvertTo-Json -InputObject @($map.Values) -Compress -Depth 3
 
         var quoted = string.Join(", ", patterns.Select(p => "'" + Escape(p) + "'"));
         var script = $@"
-$ErrorActionPreference = 'SilentlyContinue'
+$ErrorActionPreference = 'Continue'
 $patterns = @({quoted})
-$fullNames = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
 
-function Add-MatchingPackages([string]$name) {{
-  $bags = @()
-  try {{ $bags += @(Get-AppxPackage -AllUsers -Name $name -ErrorAction SilentlyContinue) }} catch {{}}
-  $bags += @(Get-AppxPackage -Name $name -ErrorAction SilentlyContinue)
-  foreach ($p in $bags) {{
-    if ($p -and $p.PackageFullName) {{ [void]$fullNames.Add([string]$p.PackageFullName) }}
+function Get-Matching([switch]$AllUsers) {{
+  $set = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  foreach ($pattern in $patterns) {{
+    $bags = @()
+    if ($AllUsers) {{
+      try {{ $bags = @(Get-AppxPackage -AllUsers -Name $pattern -ErrorAction SilentlyContinue) }} catch {{}}
+    }} else {{
+      $bags = @(Get-AppxPackage -Name $pattern -ErrorAction SilentlyContinue)
+    }}
+    foreach ($p in $bags) {{
+      if ($p -and $p.PackageFullName) {{ [void]$set.Add([string]$p.PackageFullName) }}
+    }}
   }}
+  return @($set)
 }}
 
-foreach ($pattern in $patterns) {{
-  Add-MatchingPackages $pattern
+Write-Output 'Removing packages for the current user'
+foreach ($full in @(Get-Matching)) {{
+  Write-Output ""remove $full""
+  Remove-AppxPackage -Package $full -ErrorAction SilentlyContinue
 }}
 
-foreach ($full in @($fullNames)) {{
+Write-Output 'Removing packages for all users'
+foreach ($full in @(Get-Matching -AllUsers)) {{
+  Write-Output ""remove-all $full""
   try {{
     Remove-AppxPackage -Package $full -AllUsers -ErrorAction Stop
   }} catch {{
-    try {{
-      Remove-AppxPackage -Package $full -ErrorAction Stop
-    }} catch {{}}
+    Remove-AppxPackage -Package $full -ErrorAction SilentlyContinue
   }}
 }}
 
+Write-Output 'Removing provisioned packages'
 try {{
   $prov = @(Get-AppxProvisionedPackage -Online -ErrorAction SilentlyContinue)
   foreach ($p in $prov) {{
     $display = [string]$p.DisplayName
-    $hit = $false
     foreach ($pattern in $patterns) {{
-      if ($display -eq $pattern) {{ $hit = $true; break }}
-    }}
-    if ($hit) {{
-      Remove-AppxProvisionedPackage -Online -PackageName $p.PackageName | Out-Null
+      if ($display -eq $pattern) {{
+        Write-Output ""deprovision $display""
+        Remove-AppxProvisionedPackage -Online -PackageName $p.PackageName | Out-Null
+        break
+      }}
     }}
   }}
 }} catch {{}}
 
-$remaining = New-Object System.Collections.Generic.List[string]
-foreach ($pattern in $patterns) {{
-  $bags = @()
-  try {{ $bags += @(Get-AppxPackage -AllUsers -Name $pattern -ErrorAction SilentlyContinue) }} catch {{}}
-  $bags += @(Get-AppxPackage -Name $pattern -ErrorAction SilentlyContinue)
-  foreach ($p in $bags) {{
-    if ($p -and $p.Name -and -not $remaining.Contains([string]$p.Name)) {{
-      $remaining.Add([string]$p.Name)
-    }}
-  }}
+$left = New-Object System.Collections.Generic.List[string]
+foreach ($full in @(Get-Matching)) {{
+  if (-not $left.Contains($full)) {{ $left.Add($full) }}
 }}
-if ($remaining.Count -gt 0) {{
-  throw ""Package still installed after removal: $($remaining -join ', ')""
+if ($left.Count -gt 0) {{
+  throw ""Package still installed after removal: $($left -join ', ')""
 }}
+Write-Output 'removed'
 ";
-        return await RunPowerShellAsync(script, ct, timeoutMs: 120_000).ConfigureAwait(false);
+        return await RunPowerShellAsync(script, ct, timeoutMs: 180_000, progress).ConfigureAwait(false);
     }
 
     public async Task<PowerShellResult> UninstallOneDriveAsync(CancellationToken ct = default)
     {
         var script = @"
 $ErrorActionPreference = 'Continue'
+
+# Keep the user's sync folder if the uninstaller tries to delete it. Restored in finally.
+$syncRoot = $env:OneDrive
+$syncAcl = $null
+$syncProtected = $false
+if (-not [string]::IsNullOrWhiteSpace($syncRoot) -and (Test-Path -LiteralPath $syncRoot -PathType Container)) {
+  try {
+    $syncAcl = Get-Acl -LiteralPath $syncRoot
+    & icacls.exe $syncRoot /deny '*S-1-5-32-544:(D,DC)' | Out-Null
+    $syncProtected = $true
+  } catch {}
+}
+
+trap {
+  if ($syncProtected -and $syncAcl) {
+    try { Set-Acl -LiteralPath $syncRoot -AclObject $syncAcl -ErrorAction SilentlyContinue } catch {}
+  }
+}
 
 function Stop-NamedProcesses([string[]]$names) {
   foreach ($n in $names) {
@@ -306,7 +330,10 @@ if (Test-Path $overlayRoot) {
   }
 }
 
-# --- 5. Verify the client is gone (do not treat System32 OneDriveSetup.exe as leftover) ---
+# --- 5. Restore sync-folder access, then verify the client is gone ---
+if ($syncProtected -and $syncAcl) {
+  try { Set-Acl -LiteralPath $syncRoot -AclObject $syncAcl -ErrorAction SilentlyContinue } catch {}
+}
 Stop-NamedProcesses @('OneDrive','OneDriveSetup','FileCoAuth')
 $leftover = New-Object System.Collections.Generic.List[string]
 $exeCandidates = @(
@@ -368,28 +395,49 @@ if ($leftover.Count -gt 0) {
 
     private static string Escape(string s) => s.Replace("'", "''");
 
-    private async Task<PowerShellResult> RunPowerShellAsync(string script, CancellationToken ct, int timeoutMs = 120_000)
+    private async Task<PowerShellResult> RunPowerShellAsync(
+        string script,
+        CancellationToken ct,
+        int timeoutMs = 120_000,
+        IProgress<string>? progress = null)
     {
-        var bytes = Encoding.Unicode.GetBytes(
-            "$ProgressPreference = 'SilentlyContinue'\n$WarningPreference = 'SilentlyContinue'\n" + script);
-        var encoded = Convert.ToBase64String(bytes);
-        var arguments = $"-NoProfile -ExecutionPolicy Bypass -EncodedCommand {encoded}";
-        var result = await _processes.RunAsync(
-            new ProcessRequest("powershell.exe", arguments, TimeSpan.FromMilliseconds(timeoutMs)),
-            ct).ConfigureAwait(false);
+        var dir = Path.Combine(Path.GetTempPath(), "WinCleaner");
+        Directory.CreateDirectory(dir);
+        var scriptPath = Path.Combine(dir, Guid.NewGuid().ToString("N") + ".ps1");
+        var body = "$ProgressPreference = 'SilentlyContinue'\n$WarningPreference = 'SilentlyContinue'\n" + script;
+        await File.WriteAllTextAsync(scriptPath, body, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true), ct).ConfigureAwait(false);
+        try
+        {
+            var exe = Path.Combine(Environment.SystemDirectory, @"WindowsPowerShell\v1.0\powershell.exe");
+            if (!File.Exists(exe))
+                exe = "powershell.exe";
+            var arguments = "-NoProfile -ExecutionPolicy Bypass -File \"" + scriptPath + "\"";
+            var result = await _processes.RunAsync(
+                new ProcessRequest(exe, arguments, TimeSpan.FromMilliseconds(timeoutMs)) { LineProgress = progress },
+                ct).ConfigureAwait(false);
 
-        if (result.TimedOut || result.Cancelled || result.ExitCode is null)
-            return new PowerShellResult(false, -1, result.Stdout.Trim(), "Timed out");
+            var stdout = result.Stdout.Trim();
+            var stderr = result.Stderr.Trim();
+            if (result.Cancelled)
+                return new PowerShellResult(false, -1, stdout, "msg.processCancelled");
+            if (result.TimedOut)
+                return new PowerShellResult(false, -1, stdout, "msg.processTimedOut");
+            if (result.ExitCode is null)
+                return new PowerShellResult(false, -1, stdout, "msg.processNoExit");
 
-        var stdout = result.Stdout.Trim();
-        var stderr = result.Stderr.Trim();
-        var success = result.ExitCode == 0;
-        if (success && !string.IsNullOrWhiteSpace(stderr) &&
-            (stderr.Contains("Exception", StringComparison.OrdinalIgnoreCase)
-             || stderr.Contains("Error", StringComparison.OrdinalIgnoreCase)
-             || stderr.Contains("fullyqualifiederrorid", StringComparison.OrdinalIgnoreCase)))
-            success = false;
+            var success = result.ExitCode == 0;
+            if (success && !string.IsNullOrWhiteSpace(stderr) &&
+                (stderr.Contains("Exception", StringComparison.OrdinalIgnoreCase)
+                 || stderr.Contains("Error", StringComparison.OrdinalIgnoreCase)
+                 || stderr.Contains("fullyqualifiederrorid", StringComparison.OrdinalIgnoreCase)))
+                success = false;
 
-        return new PowerShellResult(success, result.ExitCode.Value, stdout, stderr);
+            return new PowerShellResult(success, result.ExitCode.Value, stdout, stderr);
+        }
+        finally
+        {
+            try { File.Delete(scriptPath); }
+            catch { /* the script is only a launch vehicle */ }
+        }
     }
 }

@@ -20,3 +20,7 @@ tools/i18n/AddSocialKeys/obj/
 .idea/
 *.DotSettings.user
 **/TestResults/
+.cursor/
+AFTERTEST/
+__pycache__/
+*.pyc

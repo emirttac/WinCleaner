@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">I understand the risks</sys:String>
   <sys:String x:Key="danger.anticheat.title">Anti-Cheat Risk Warning</sys:String>
   <sys:String x:Key="danger.anticheat.message">This gaming tweak (VBS / HPET / MMCSS) can conflict with anti-cheat systems such as Riot Vanguard, Easy Anti-Cheat (EAC), or BattlEye. Possible outcomes include blue screens (BSOD), game crashes, or account bans. Only continue if you accept these risks.</sys:String>
+  <sys:String x:Key="danger.arm64.title">ARM64 compatibility warning</sys:String>
+  <sys:String x:Key="danger.arm64.message">This PC uses an ARM64 processor. Some Windows tweaks were written for x64 and can fail or leave the system unstable. Continue only if you accept that risk.</sys:String>
   <sys:String x:Key="common.status">Status</sys:String>
   <sys:String x:Key="common.adminRequired">This change requires Administrator privileges. Restart WinCleaner with &quot;Run as administrator&quot;.</sys:String>
   <sys:String x:Key="common.rebootRequired">Change saved. Restart your PC for it to take full effect.</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">Nothing to apply.</sys:String>
   <sys:String x:Key="msg.done">Done</sys:String>
   <sys:String x:Key="msg.failed">Failed</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">This power plan does not expose core parking, so the setting was not changed.</sys:String>
+  <sys:String x:Key="msg.netResetWarning">Network reset finished with a warning. One step was denied access. Restart the PC to complete the reset.</sys:String>
+  <sys:String x:Key="msg.processCancelled">The operation was cancelled.</sys:String>
+  <sys:String x:Key="msg.processTimedOut">The operation timed out.</sys:String>
+  <sys:String x:Key="msg.processNoExit">The process ended without an exit code.</sys:String>
   <sys:String x:Key="msg.disableConfirm">Disable the listed items?</sys:String>
   <sys:String x:Key="msg.unexpectedError">Unexpected error (details in the log):</sys:String>
   <sys:String x:Key="msg.logLabel">Log:</sys:String>

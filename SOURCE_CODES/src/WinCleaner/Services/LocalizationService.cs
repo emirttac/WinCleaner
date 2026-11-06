@@ -132,6 +132,13 @@ public sealed class LocalizationService
         A("msg.oneShotOk", "Command completed.");
         A("common.loading", "Loading...");
         A("danger.needSettings", "Turn on Allow dangerous actions in Settings before this operation.");
+        A("danger.arm64.title", "ARM64 compatibility warning");
+        A("danger.arm64.message", "This PC uses an ARM64 processor. Some Windows tweaks were written for x64 and can fail or leave the system unstable. Continue only if you accept that risk.");
+        A("msg.coreParkingUnavailable", "This power plan does not expose core parking, so the setting was not changed.");
+        A("msg.netResetWarning", "Network reset finished with a warning. One step was denied access. Restart the PC to complete the reset.");
+        A("msg.processCancelled", "The operation was cancelled.");
+        A("msg.processTimedOut", "The operation timed out.");
+        A("msg.processNoExit", "The process ended without an exit code.");
         A("tools.cleanTemp.confirm", "Delete files in Windows and user Temp folders?");
         A("dash.recentEmpty", "No changes in this session yet.");
         A("dash.createRestore", "Create Restore Point");

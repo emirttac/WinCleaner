@@ -254,12 +254,16 @@ public partial class MainViewModel : ObservableObject
             return;
 
         var progress = new Progress<string>(s => StatusText = s);
-        await OperationHost.TrackAsync(App.Operations, title, token =>
+        var op = await OperationHost.TrackAsync(App.Operations, title, token =>
         {
             progress.ProgressChanged += (_, text) => StatusText = text;
-            return App.RunActionsAsync(title, batch.ToApply, title, token);
+            return App.RunActionsAsync(title, batch.ToApply, title, token, antiCheatConfirmed: batch.HasAntiCheat);
         });
-        StatusText = _loc.Get("msg.done");
+        if (!op.Success && !op.Cancelled && !string.IsNullOrWhiteSpace(op.Message))
+        {
+            MessageBox.Show(_loc.Get(op.Message), title, MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        StatusText = _loc.Get(op.Success ? "msg.done" : "msg.failed");
         Dashboard.RefreshRecent();
         Dashboard.RefreshTimeMachine();
     }
@@ -305,5 +309,47 @@ public partial class MainViewModel : ObservableObject
         dlg.ShowDialog();
         Dashboard.RefreshRecent();
         Dashboard.RefreshTimeMachine();
+    }
+
+    /// <summary>
+    /// Shows the existing confirm dialogs when a gate asks. Preview already records anti-cheat
+    /// acknowledgement, so that path does not reach this service.
+    /// </summary>
+    private sealed class UiGateConfirmation : IConfirmationService
+    {
+        private readonly LocalizationService _loc;
+
+        public UiGateConfirmation(LocalizationService loc) => _loc = loc;
+
+        public Task<bool> ConfirmAsync(string code, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+                return Task.FromResult(false);
+
+            return Task.FromResult(UiThread.Invoke(() =>
+            {
+                if (cancellationToken.IsCancellationRequested)
+                    return false;
+
+                return code switch
+                {
+                    GateCodes.AntiCheat => Show("danger.anticheat.title", "danger.anticheat.message"),
+                    GateCodes.Arm64 => Show("danger.arm64.title", "danger.arm64.message"),
+                    _ => false
+                };
+            }));
+        }
+
+        private bool Show(string titleKey, string messageKey)
+        {
+            var dlg = new ConfirmDangerDialog(
+                title: _loc.Get(titleKey),
+                message: _loc.Get(messageKey),
+                acknowledgeLabel: _loc.Get("danger.ack"))
+            {
+                Owner = Application.Current?.MainWindow
+            };
+            return dlg.ShowDialog() == true;
+        }
     }
 }

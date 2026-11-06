@@ -41,6 +41,8 @@
   <sys:String x:Key="danger.ack">我了解相关风险</sys:String>
   <sys:String x:Key="danger.anticheat.title">反作弊风险警告</sys:String>
   <sys:String x:Key="danger.anticheat.message">此游戏优化项（VBS / HPET / MMCSS）可能与 Riot Vanguard、Easy Anti-Cheat（EAC）或 BattlEye 等反作弊系统冲突。可能导致蓝屏（BSOD）、游戏崩溃或账号封禁。仅在您接受这些风险时继续。</sys:String>
+  <sys:String x:Key="danger.arm64.title">ARM64 兼容性警告</sys:String>
+  <sys:String x:Key="danger.arm64.message">这台电脑使用 ARM64 处理器。部分 Windows 设置是为 x64 编写的，可能失败或使系统不稳定。仅在您接受该风险时继续。</sys:String>
   <sys:String x:Key="common.status">状态</sys:String>
   <sys:String x:Key="common.adminRequired">此更改需要管理员权限。请以「以管理员身份运行」重新启动 WinCleaner。</sys:String>
   <sys:String x:Key="common.rebootRequired">更改已保存。请重启电脑以使其完全生效。</sys:String>
@@ -494,6 +496,11 @@
   <sys:String x:Key="msg.nothingToApply">没有可应用的项。</sys:String>
   <sys:String x:Key="msg.done">完成</sys:String>
   <sys:String x:Key="msg.failed">失败</sys:String>
+  <sys:String x:Key="msg.coreParkingUnavailable">此电源计划不提供核心停放设置，因此未做更改。</sys:String>
+  <sys:String x:Key="msg.netResetWarning">网络重置已完成，但有一条警告。有一步被拒绝访问。请重启电脑以完成重置。</sys:String>
+  <sys:String x:Key="msg.processCancelled">操作已取消。</sys:String>
+  <sys:String x:Key="msg.processTimedOut">操作超时。</sys:String>
+  <sys:String x:Key="msg.processNoExit">进程结束时没有退出代码。</sys:String>
   <sys:String x:Key="msg.disableConfirm">要禁用列出的项目吗？</sys:String>
   <sys:String x:Key="msg.unexpectedError">意外错误（详情见日志）：</sys:String>
   <sys:String x:Key="msg.logLabel">日志：</sys:String>

@@ -125,9 +125,9 @@ public partial class BloatwareViewModel : ObservableObject
 
             var op = await OperationHost.TrackAsync(_app.Operations, _loc.Get("nav.bloatware"), token =>
                 _app.RunActionsAsync(_loc.Get("nav.bloatware"), actions, _loc.Get("nav.bloatware"), token));
-            if (!op.Success && !string.IsNullOrWhiteSpace(op.Message))
+            if (!op.Success && !op.Cancelled && !string.IsNullOrWhiteSpace(op.Message))
             {
-                MessageBox.Show(op.Message, _loc.Get("app.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(_loc.Get(op.Message), _loc.Get("app.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             await ReloadAsync();
         }
@@ -158,7 +158,10 @@ public partial class BloatwareViewModel : ObservableObject
                 _app.RunActionAsync(_loc.Get("blo.onedrive"), action, false, token));
             if (!result.Success)
             {
-                MessageBox.Show(result.Message ?? _loc.Get("blo.onedriveFailed"), _loc.Get("app.title"),
+                var detail = string.IsNullOrWhiteSpace(result.Message)
+                    ? _loc.Get("blo.onedriveFailed")
+                    : _loc.Get(result.Message);
+                MessageBox.Show(detail, _loc.Get("app.title"),
                     MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
@@ -230,9 +233,9 @@ public partial class BloatwareViewModel : ObservableObject
 
             var op = await OperationHost.TrackAsync(_app.Operations, _loc.Get("blo.reinstall"), token =>
                 _app.RunActionsAsync(_loc.Get("blo.reinstall"), actions, _loc.Get("blo.reinstall"), token));
-            if (!op.Success && !string.IsNullOrWhiteSpace(op.Message))
+            if (!op.Success && !op.Cancelled && !string.IsNullOrWhiteSpace(op.Message))
             {
-                MessageBox.Show(op.Message, _loc.Get("app.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+                MessageBox.Show(_loc.Get(op.Message), _loc.Get("app.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
             }
             else
             {

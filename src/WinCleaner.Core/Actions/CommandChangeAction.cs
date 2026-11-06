@@ -88,6 +88,9 @@ public sealed class CommandChangeAction : IChangeAction
             if (_spec.RequiresAdmin && !PrivilegeHelper.IsAdministrator())
                 return Task.FromResult(ChangeResult.Fail(_localize("common.adminRequired")));
 
+            if (Id == "tweak-core-parking")
+                return ApplyCoreParking();
+
             if (!_spec.OneShot && HasDetectSpec() && IsApplied())
             {
                 if (!string.IsNullOrWhiteSpace(Constraints.RequiresFeature))
@@ -116,6 +119,9 @@ public sealed class CommandChangeAction : IChangeAction
     {
         if (_leaveEnabledFeature)
             return Task.FromResult(ChangeResult.Ok("applied", "applied", "feature.leftEnabled"));
+
+        if (Id == "tweak-core-parking")
+            return RevertCoreParking();
 
         try
         {
@@ -157,6 +163,67 @@ public sealed class CommandChangeAction : IChangeAction
     }
 
     public void AcceptIrreversible() => _irreversibleAccepted = true;
+
+    private Task<ChangeResult> ApplyCoreParking()
+    {
+        foreach (var alias in new[] { "CPMINCORES", "CPMINCORES1" })
+            ElevatedCommandRunner.Run("powercfg", $"-attributes SUB_PROCESSOR {alias} -ATTRIB_HIDE", 15000);
+
+        CaptureKnownState();
+        if (string.IsNullOrEmpty(_captured))
+            return Task.FromResult(ChangeResult.Fail(_localize("msg.coreParkingUnavailable")));
+
+        foreach (var args in CoreParking.ApplyValueArguments)
+        {
+            var run = ElevatedCommandRunner.Run("powercfg", args, 15000);
+            if (run.Success)
+                continue;
+            var detail = (run.StdErr + "\n" + run.StdOut + "\n" + run.ErrorMessage).Trim();
+            if (CoreParking.IsOptionalAlias(args) && CoreParking.IsSettingMissing(detail))
+                continue;
+            return Task.FromResult(ChangeResult.Fail(FormatFailure(run)));
+        }
+
+        var active = ElevatedCommandRunner.Run("powercfg", "-setactive scheme_current", 15000);
+        if (!active.Success)
+            return Task.FromResult(ChangeResult.Fail(FormatFailure(active)));
+
+        var verify = ElevatedCommandRunner.Run("powercfg", "/query SCHEME_CURRENT SUB_PROCESSOR CPMINCORES", 15000);
+        var ac = CommandStateProbe.ParsePowerCfgAcSettingIndex(verify.StdOut);
+        if (ac != 100)
+            return Task.FromResult(ChangeResult.Fail(_localize("msg.coreParkingUnavailable")));
+
+        return Task.FromResult(ChangeResult.Ok(_captured, "applied", "Command executed"));
+    }
+
+    private Task<ChangeResult> RevertCoreParking()
+    {
+        if (string.IsNullOrWhiteSpace(_captured) || !int.TryParse(_captured, NumberStyles.Integer, CultureInfo.InvariantCulture, out var previous))
+            return Task.FromResult(ChangeResult.Fail("No previous value in change journal."));
+
+        foreach (var args in new[]
+        {
+            $"-setacvalueindex scheme_current SUB_PROCESSOR CPMINCORES {previous}",
+            $"-setdcvalueindex scheme_current SUB_PROCESSOR CPMINCORES {previous}",
+            $"-setacvalueindex scheme_current SUB_PROCESSOR CPMINCORES1 {previous}",
+            $"-setdcvalueindex scheme_current SUB_PROCESSOR CPMINCORES1 {previous}"
+        })
+        {
+            var run = ElevatedCommandRunner.Run("powercfg", args, 15000);
+            if (run.Success)
+                continue;
+            var detail = (run.StdErr + "\n" + run.StdOut + "\n" + run.ErrorMessage).Trim();
+            if (args.Contains("CPMINCORES1", StringComparison.OrdinalIgnoreCase) && CoreParking.IsSettingMissing(detail))
+                continue;
+            return Task.FromResult(ChangeResult.Fail(FormatFailure(run)));
+        }
+
+        var active = ElevatedCommandRunner.Run("powercfg", "-setactive scheme_current", 15000);
+        if (!active.Success)
+            return Task.FromResult(ChangeResult.Fail(FormatFailure(active)));
+
+        return Task.FromResult(ChangeResult.Ok("applied", "not-applied", "Command reverted"));
+    }
 
     private void CaptureKnownState()
     {

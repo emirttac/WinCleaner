@@ -339,7 +339,8 @@ public sealed class ActionExecutor
         IChangeAction action,
         bool isRevert,
         GateSession session,
-        CancellationToken ct)
+        CancellationToken ct,
+        IProgress<string>? progress = null)
     {
         if (!isRevert
             && string.Equals(_settings.RestorePointPolicy, "BeforeIrreversible", StringComparison.OrdinalIgnoreCase)
@@ -347,14 +348,16 @@ public sealed class ActionExecutor
             && !await ConfirmMissingRestorePointAsync(ct).ConfigureAwait(false))
             return Journal(action, false, ChangeResult.FailCode(RestoreCode()));
 
-        var antiCheatOk = false;
+        if (action is AppxRemoveAction remove)
+            remove.Progress = progress;
+
         while (true)
         {
-            var decision = _gate.Decide(BuildContext(action, isRevert, session.Arm64Confirmed, antiCheatOk));
+            var decision = _gate.Decide(BuildContext(action, isRevert, session.Arm64Confirmed, session.AntiCheatConfirmed));
             if (decision.Kind == GateKind.Allow)
                 break;
             if (decision.Kind == GateKind.Deny)
-                return Journal(action, isRevert, ChangeResult.FailCode(decision.ErrorCode ?? GateCodes.Blocked));
+                return Journal(action, isRevert, Denied(decision.ErrorCode));
 
             var accepted = Confirmation is not null &&
                            await Confirmation.ConfirmAsync(decision.ErrorCode ?? "", ct).ConfigureAwait(false);
@@ -363,7 +366,7 @@ public sealed class ActionExecutor
             if (decision.ErrorCode == GateCodes.Arm64)
                 session.Arm64Confirmed = true;
             if (decision.ErrorCode == GateCodes.AntiCheat)
-                antiCheatOk = true;
+                session.AntiCheatConfirmed = true;
         }
 
         ChangeResult result;
@@ -411,6 +414,17 @@ public sealed class ActionExecutor
     private static string RestoreCode() =>
         RestorePointManager.LastOutcome == RestorePointOutcome.ProtectionDisabled ? "gate.protectionOff" : "gate.noNewPoint";
 
+    /// <summary>
+    /// Dangerous actions stay blocked until Settings allows them. The journal message is the
+    /// localized sentence key, not the raw gate code.
+    /// </summary>
+    private static ChangeResult Denied(string? code)
+    {
+        var error = code ?? GateCodes.Blocked;
+        var message = error == GateCodes.Dangerous ? "danger.needSettings" : error;
+        return ChangeResult.FailCode(error, message);
+    }
+
     private ChangeResult Journal(IChangeAction action, bool isRevert, ChangeResult result)
     {
         _log.Append(new ChangeLogEntry
@@ -452,13 +466,15 @@ public sealed class ActionExecutor
     private sealed class GateSession
     {
         public bool Arm64Confirmed { get; set; }
+        public bool AntiCheatConfirmed { get; set; }
     }
 
     internal async Task<IReadOnlyList<ChangeResult>> ExecuteManyAsync(
         IEnumerable<IChangeAction> actions,
         IProgress<string>? progress = null,
         CancellationToken ct = default,
-        string? snapshotName = null)
+        string? snapshotName = null,
+        bool antiCheatConfirmed = false)
     {
         var results = new List<ChangeResult>();
         var snapshotItems = new List<SnapshotItem>();
@@ -472,7 +488,11 @@ public sealed class ActionExecutor
             return results;
         }
 
-        var session = new GateSession { Arm64Confirmed = Arm64Lease.IsConfirmed };
+        var session = new GateSession
+        {
+            Arm64Confirmed = Arm64Lease.IsConfirmed,
+            AntiCheatConfirmed = antiCheatConfirmed
+        };
         if (list.Count > 0 && _system.OsArch == System.Runtime.InteropServices.Architecture.Arm64 && !session.Arm64Confirmed)
         {
             var accepted = Confirmation is not null &&
@@ -508,7 +528,7 @@ public sealed class ActionExecutor
             }
 
             progress?.Report(action.DisplayName);
-            var result = await ExecuteCoreAsync(action, false, session, ct).ConfigureAwait(false);
+            var result = await ExecuteCoreAsync(action, false, session, ct, progress).ConfigureAwait(false);
             results.Add(result);
             if (!result.Success)
                 continue;

@@ -76,8 +76,11 @@ public class CatalogLoaderTests
         Assert.Contains(tweaks, t => t.Id == "tweak-dark-mode" && t.Registries is { Count: 2 });
         Assert.Contains(tweaks, t => t.Id == "tweak-core-parking" && t.Type == "command"
             && t.Command!.DetectMode == "acIndexEquals" && t.Command.DetectValue == "100"
-            && t.Command.Arguments.Contains("CPMINCORES1", StringComparison.OrdinalIgnoreCase)
-            && t.Command.Arguments.Contains("setdcvalueindex", StringComparison.OrdinalIgnoreCase));
+            && t.Command.FileName == "powercfg"
+            && !t.Command.Arguments.Contains('&'));
+        Assert.Contains(CoreParking.ApplyValueArguments, a => a.Contains("CPMINCORES1", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(CoreParking.ApplyValueArguments, a => a.Contains("setdcvalueindex", StringComparison.OrdinalIgnoreCase));
+        Assert.Contains(CoreParking.ApplyValueArguments, a => a.Contains("setacvalueindex", StringComparison.OrdinalIgnoreCase) && a.Contains("CPMINCORES ", StringComparison.Ordinal));
         Assert.Contains(tweaks, t => t.Id == "tweak-nic-power-save" && t.Command!.DetectValue == "WC_NIC_POWER_OFF"
             && t.Command.Arguments.Contains("-Physical", StringComparison.Ordinal)
             && t.Command.DetectArguments!.Contains("WC_NIC_POWER_ON", StringComparison.Ordinal));

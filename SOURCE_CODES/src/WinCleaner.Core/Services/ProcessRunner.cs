@@ -1,5 +1,4 @@
 using System.Diagnostics;
-using System.Globalization;
 using System.Text;
 using WinCleaner.Core.Abstractions;
 using WinCleaner.Core.Compatibility;
@@ -18,7 +17,6 @@ public sealed class ProcessRunner : IProcessRunner
 
     public async Task<ProcessResult> RunAsync(ProcessRequest request, CancellationToken cancellationToken = default)
     {
-        var encoding = Encoding.GetEncoding(CultureInfo.CurrentCulture.TextInfo.OEMCodePage);
         var psi = new ProcessStartInfo
         {
             FileName = request.FileName,
@@ -27,18 +25,15 @@ public sealed class ProcessRunner : IProcessRunner
             CreateNoWindow = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
-            StandardOutputEncoding = encoding,
-            StandardErrorEncoding = encoding
+            WorkingDirectory = Environment.SystemDirectory
         };
 
         using var process = new Process { StartInfo = psi };
         if (!process.Start())
             throw new InvalidOperationException($"Failed to start '{request.FileName}'.");
 
-        var stdout = new StringBuilder();
-        var stderr = new StringBuilder();
-        var stdoutTask = ReadLinesAsync(process.StandardOutput, stdout, request.LineProgress);
-        var stderrTask = ReadLinesAsync(process.StandardError, stderr, request.LineProgress);
+        var stdoutTask = ReadPipeAsync(process.StandardOutput.BaseStream, request.LineProgress);
+        var stderrTask = ReadPipeAsync(process.StandardError.BaseStream, request.LineProgress);
 
         using var timeout = new CancellationTokenSource(request.Timeout);
         using var linked = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, timeout.Token);
@@ -49,31 +44,69 @@ public sealed class ProcessRunner : IProcessRunner
         catch (OperationCanceledException)
         {
             KillTree(process);
-            await DrainAsync(stdoutTask, stderrTask).ConfigureAwait(false);
+            var drained = await DrainAsync(stdoutTask, stderrTask).ConfigureAwait(false);
             var cancelled = cancellationToken.IsCancellationRequested;
-            return new ProcessResult(null, stdout.ToString(), stderr.ToString(), TimedOut: !cancelled, Cancelled: cancelled);
+            return new ProcessResult(null, drained.Stdout, drained.Stderr, TimedOut: !cancelled, Cancelled: cancelled);
         }
 
-        await DrainAsync(stdoutTask, stderrTask).ConfigureAwait(false);
+        var text = await DrainAsync(stdoutTask, stderrTask).ConfigureAwait(false);
         if (!process.HasExited)
-            return new ProcessResult(null, stdout.ToString(), stderr.ToString(), TimedOut: false, Cancelled: false);
+            return new ProcessResult(null, text.Stdout, text.Stderr, TimedOut: false, Cancelled: false);
 
-        return new ProcessResult(process.ExitCode, stdout.ToString(), stderr.ToString(), TimedOut: false, Cancelled: false);
+        return new ProcessResult(process.ExitCode, text.Stdout, text.Stderr, TimedOut: false, Cancelled: false);
     }
 
-    private static async Task ReadLinesAsync(StreamReader reader, StringBuilder buffer, IProgress<string>? progress)
+    private static async Task<string> ReadPipeAsync(Stream stream, IProgress<string>? progress)
     {
+        using var all = new MemoryStream();
+        using var line = new MemoryStream();
+        var buffer = new byte[1024];
         while (true)
         {
-            var line = await reader.ReadLineAsync().ConfigureAwait(false);
-            if (line is null)
-                return;
-            buffer.AppendLine(line);
-            progress?.Report(line);
+            int read;
+            try
+            {
+                read = await stream.ReadAsync(buffer.AsMemory(0, buffer.Length)).ConfigureAwait(false);
+            }
+            catch (IOException)
+            {
+                break;
+            }
+
+            if (read == 0)
+                break;
+
+            all.Write(buffer, 0, read);
+            for (var i = 0; i < read; i++)
+            {
+                var b = buffer[i];
+                if (b == (byte)'\n')
+                {
+                    ReportLine(line, progress);
+                    line.SetLength(0);
+                }
+                else
+                {
+                    line.WriteByte(b);
+                }
+            }
         }
+
+        if (line.Length > 0)
+            ReportLine(line, progress);
+
+        return ConsoleOutput.Decode(all.ToArray());
     }
 
-    private static async Task DrainAsync(Task stdout, Task stderr)
+    private static void ReportLine(MemoryStream line, IProgress<string>? progress)
+    {
+        var raw = line.ToArray();
+        if (raw.Length > 0 && raw[^1] == (byte)'\r')
+            raw = raw[..^1];
+        progress?.Report(ConsoleOutput.Decode(raw));
+    }
+
+    private static async Task<(string Stdout, string Stderr)> DrainAsync(Task<string> stdout, Task<string> stderr)
     {
         try
         {
@@ -83,6 +116,10 @@ public sealed class ProcessRunner : IProcessRunner
         {
             // A killed process closes the pipes. Captured text is still in the builders.
         }
+
+        var stdoutText = stdout.IsCompletedSuccessfully ? stdout.Result : "";
+        var stderrText = stderr.IsCompletedSuccessfully ? stderr.Result : "";
+        return (stdoutText, stderrText);
     }
 
     private static void KillTree(Process process)

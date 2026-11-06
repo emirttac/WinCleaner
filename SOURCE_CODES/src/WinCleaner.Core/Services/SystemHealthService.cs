@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Text;
 using Microsoft.Win32;
 using WinCleaner.Core.Abstractions;
 
@@ -219,23 +220,43 @@ public sealed class SystemHealthService
         progress?.Report("=== Windows Update reset completed ===");
     }
 
+    /// <summary>True when the last network reset succeeded but IP reset reported access denied.</summary>
+    public bool NetworkResetHadWarning { get; private set; }
+
     /// <summary>Winsock + IP stack reset. Caller should prompt for reboot.</summary>
     public async Task ResetNetworkStackAsync(IProgress<string>? progress, CancellationToken ct = default)
     {
+        NetworkResetHadWarning = false;
         progress?.Report("=== Network stack reset (Winsock / IP) ===");
         if (!PrivilegeHelper.IsAdministrator())
             throw new UnauthorizedAccessException("Administrator privileges are required for network reset.");
 
+        var captured = new StringBuilder();
+        IProgress<string> tap = new SyncProgress(line =>
+        {
+            captured.AppendLine(line);
+            progress?.Report(line);
+        });
+
         progress?.Report("> netsh winsock reset");
-        var code1 = await RunStreamingAsync("netsh.exe", "winsock reset", progress, ct).ConfigureAwait(false);
+        var code1 = await RunStreamingAsync("netsh.exe", "winsock reset", tap, ct).ConfigureAwait(false);
         progress?.Report($"<<< winsock reset (exit {code1})");
 
         progress?.Report("> netsh int ip reset");
-        var code2 = await RunStreamingAsync("netsh.exe", "int ip reset", progress, ct).ConfigureAwait(false);
+        var code2 = await RunStreamingAsync("netsh.exe", "int ip reset", tap, ct).ConfigureAwait(false);
         progress?.Report($"<<< ip reset (exit {code2})");
 
         if (code1 != 0 || code2 != 0)
+        {
+            if (code1 == 0 && IsBenignIpResetFailure(captured.ToString()))
+            {
+                NetworkResetHadWarning = true;
+                progress?.Report("=== Network reset completed with a warning — reboot recommended ===");
+                return;
+            }
+
             throw new InvalidOperationException($"Network reset finished with errors (winsock={code1}, ip={code2}).");
+        }
 
         progress?.Report("=== Network reset completed — reboot recommended ===");
     }
@@ -335,12 +356,63 @@ public sealed class SystemHealthService
         }
     }
 
-    private static long SafeDirSize(string path, CancellationToken ct)
+    internal static bool IsBenignIpResetFailure(string output)
+    {
+        if (string.IsNullOrWhiteSpace(output))
+            return false;
+
+        var reboot = output.Contains("restart", StringComparison.OrdinalIgnoreCase)
+                     || output.Contains("yeniden başlat", StringComparison.OrdinalIgnoreCase)
+                     || output.Contains("neu starten", StringComparison.OrdinalIgnoreCase)
+                     || output.Contains("redémar", StringComparison.OrdinalIgnoreCase)
+                     || output.Contains("reinici", StringComparison.OrdinalIgnoreCase)
+                     || output.Contains("перезагруз", StringComparison.OrdinalIgnoreCase)
+                     || output.Contains("重新启动", StringComparison.Ordinal)
+                     || output.Contains("reporni", StringComparison.OrdinalIgnoreCase);
+        if (!reboot)
+            return false;
+
+        var lines = output.Split(['\r', '\n'], StringSplitOptions.RemoveEmptyEntries);
+        var sawFailure = false;
+        for (var i = 0; i < lines.Length; i++)
+        {
+            if (!lines[i].Contains("failed", StringComparison.OrdinalIgnoreCase)
+                && !lines[i].Contains("başarısız", StringComparison.OrdinalIgnoreCase))
+                continue;
+
+            sawFailure = true;
+            var window = lines[i];
+            if (i + 1 < lines.Length)
+                window += "\n" + lines[i + 1];
+            if (!IsAccessDenied(window))
+                return false;
+        }
+
+        return sawFailure;
+    }
+
+    private static bool IsAccessDenied(string text) =>
+        text.Contains("access is denied", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("access denied", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("erişim engellendi", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("acceso denegado", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("accès refusé", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("zugriff verweigert", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("acces refuzat", StringComparison.OrdinalIgnoreCase)
+        || text.Contains("доступ запрещ", StringComparison.OrdinalIgnoreCase);
+
+    internal static long SafeDirSize(string path, CancellationToken ct)
     {
         long total = 0;
+        var options = new EnumerationOptions
+        {
+            RecurseSubdirectories = true,
+            IgnoreInaccessible = true,
+            AttributesToSkip = FileAttributes.ReparsePoint
+        };
         try
         {
-            foreach (var file in Directory.EnumerateFiles(path, "*", SearchOption.AllDirectories))
+            foreach (var file in Directory.EnumerateFiles(path, "*", options))
             {
                 ct.ThrowIfCancellationRequested();
                 try { total += new FileInfo(file).Length; } catch { }
@@ -398,5 +470,12 @@ public sealed class SystemHealthService
             : fileName + ".exe";
         var full = Path.Combine(Environment.SystemDirectory, leaf);
         return File.Exists(full) ? full : fileName;
+    }
+
+    private sealed class SyncProgress : IProgress<string>
+    {
+        private readonly Action<string> _report;
+        public SyncProgress(Action<string> report) => _report = report;
+        public void Report(string value) => _report(value);
     }
 }

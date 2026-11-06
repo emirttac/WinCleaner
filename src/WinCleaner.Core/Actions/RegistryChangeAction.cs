@@ -14,6 +14,9 @@ public sealed class RegistryChangeAction : IChangeAction
     private readonly RegistryTweakSpec _spec;
     private string? _previousValue;
     private readonly bool _isInterfaceWildcard;
+    private bool _seeded;
+    private bool _absent;
+    private bool _legacyUnknown;
 
     public RegistryChangeAction(
         TweakCatalogEntry entry,
@@ -91,6 +94,9 @@ public sealed class RegistryChangeAction : IChangeAction
             ? "per-interface"
             : _registry.GetValueAsString(_spec.Hive, _spec.Path, _spec.Name);
         _previousValue = previous;
+        _seeded = true;
+        _legacyUnknown = false;
+        _absent = previous is null && !_isInterfaceWildcard;
 
         if (_spec.DeleteValueOnEnable)
         {
@@ -100,7 +106,7 @@ public sealed class RegistryChangeAction : IChangeAction
                 _registry.DeleteValue(_spec.Hive, _spec.Path, _spec.Name);
 
             MaybeRestartExplorer();
-            return Task.FromResult(ChangeResult.Ok(previous, "(deleted)", "Registry value deleted"));
+            return Task.FromResult(ChangeResult.Ok(RecordedPrior(previous), "(deleted)", "Registry value deleted"));
         }
 
         var valueKind = RegistryManager.ParseKind(_spec.ValueKind);
@@ -117,10 +123,36 @@ public sealed class RegistryChangeAction : IChangeAction
             _registry.SetValue(_spec.Hive, _spec.Path, _spec.Name, enabled, valueKind);
 
         MaybeRestartExplorer();
-        return Task.FromResult(ChangeResult.Ok(previous, writtenValue, "Registry value set"));
+        return Task.FromResult(ChangeResult.Ok(RecordedPrior(previous), writtenValue, "Registry value set"));
     }
 
-    public void SeedPreviousState(string? oldValue) => _previousValue = oldValue;
+    /// <summary>Null priors are stored as a marker so a later revert can tell "absent" from "no journal".</summary>
+    private string? RecordedPrior(string? previous) =>
+        _isInterfaceWildcard ? previous : previous ?? "\u0000";
+
+    public void SeedPreviousState(string? oldValue)
+    {
+        _legacyUnknown = false;
+        _absent = false;
+        if (oldValue is null || oldValue == "\u0000")
+        {
+            _previousValue = null;
+            _seeded = true;
+            _absent = !_isInterfaceWildcard;
+            return;
+        }
+
+        if (oldValue is "not-applied" or "applied")
+        {
+            _previousValue = null;
+            _seeded = true;
+            _legacyUnknown = true;
+            return;
+        }
+
+        _previousValue = oldValue;
+        _seeded = true;
+    }
 
     public Task<ChangeResult> RevertAsync(CancellationToken cancellationToken = default)
     {
@@ -129,6 +161,32 @@ public sealed class RegistryChangeAction : IChangeAction
             _registry.DeleteKeyTree(_spec.Hive, KeyPathToDelete);
             MaybeRestartExplorer();
             return Task.FromResult(ChangeResult.Ok("key-present", "key-absent", "Registry key removed"));
+        }
+
+        if (!_seeded)
+            return Task.FromResult(ChangeResult.Fail("No previous value in change journal."));
+
+        if (_absent)
+        {
+            if (_isInterfaceWildcard)
+                _registry.DeleteValueOnAllSubkeys(_spec.Hive, _spec.Path, _spec.Name);
+            else
+                _registry.DeleteValue(_spec.Hive, _spec.Path, _spec.Name);
+            MaybeRestartExplorer();
+            return Task.FromResult(ChangeResult.Ok(_spec.EnabledValue, "(deleted)", "Registry value deleted"));
+        }
+
+        if (_legacyUnknown)
+        {
+            var kindLegacy = RegistryManager.ParseKind(_spec.ValueKind);
+            var fallback = _spec.ApplyMeansDisable ? _spec.EnabledValue : _spec.DisabledValue;
+            var legacyValue = RegistryManager.ParseValue(fallback, kindLegacy);
+            if (_isInterfaceWildcard)
+                _registry.SetValueOnAllSubkeys(_spec.Hive, _spec.Path, _spec.Name, legacyValue, kindLegacy);
+            else
+                _registry.SetValue(_spec.Hive, _spec.Path, _spec.Name, legacyValue, kindLegacy);
+            MaybeRestartExplorer();
+            return Task.FromResult(ChangeResult.Ok(_spec.EnabledValue, fallback, "Registry reverted"));
         }
 
         if (_spec.DeleteValueOnDisable || _spec.DeleteValueOnEnable)
