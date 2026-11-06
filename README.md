@@ -63,18 +63,18 @@ Most “cleaner” tools either hide what they do, or dump dozens of unsafe twea
 
 | Page | What you get |
 |------|----------------|
-| **Dashboard** | CPU / GPU / RAM / OS / disk overview, restore status, recent changes, quick actions (restore point, Gamer preset, flush DNS, clean temp) |
-| **Presets** | Gamer, Balanced, Minimal, Laptop, Privacy Max, Defaults — plus custom profile import / export (JSON schema v3, v2 still reads) with preview |
-| **Gaming** | Game Mode, Game Bar/DVR, HAGS, Ultimate Performance, MMCSS / latency options (anti-cheat confirm where relevant) |
-| **Telemetry** | Privacy / advertising ID / activity history / Cortana–Bing / CEIP-oriented tweaks |
-| **Bloatware** | AppX removal/reinstall (winget Store ID) with confirmations; system-critical packages cannot be removed; separate OneDrive uninstall path |
-| **Visual** | Animations, transparency, performance-oriented visual effects, startup apps |
-| **Win11** | Taskbar / Start / context menu / Copilot / Recall oriented tweaks (OS-gated) |
-| **Services** | Curated Windows services with start-mode toggles; critical ones are **Blocked** (`RpcSs`, `DcomLaunch`, `WinDefend`) |
-| **Network** | Network tweaks + DNS presets (DHCP, Cloudflare, Google, Quad9) + flush |
-| **Tools** | Maintenance grid (restore point, temp cleanup, Disk Cleanup, SFC/DISM, WinSxS, WU/network reset, memory diagnostic, disk analyze, God Mode), Take Ownership, NTP/autologon/winget repair, registry import/export, legacy Control Panel launchers, plus Tools-category tweak toggles |
-| **Installer** | Expanded winget catalog with silent install **and uninstall**, plus app icons |
-| **Settings** | Language, appearance (dark, light, or match Windows), auto restore point, allow dangerous actions, update-check toggle, logs, social links |
+| **Dashboard** | CPU / GPU / RAM / OS / disk overview, restore status, recent changes, quick actions (restore point, Gamer Mode preset, flush DNS, clean temp) |
+| **Presets** | Gamer Mode, Balanced Mode, Minimal / Server Mode, Laptop / Battery Mode, Maximum Privacy, Restore Defaults — plus custom profile import / export (JSON schema v3, v2 still reads) with preview |
+| **Gaming** | 20 catalog tweaks: Game Mode, Game Bar/DVR, HAGS, Ultimate Performance, FSO, MMCSS / latency, mouse accel, VBS/HPET (anti-cheat confirm where flagged), and related gaming options |
+| **Telemetry** | 15 privacy tweaks: advertising ID, activity history, Cortana–Bing, CEIP tasks, location, speech, Store suggestions, and related telemetry |
+| **Bloatware** | 46 AppX packages (31 with Store ID reinstall via winget); `systemCritical` rows (Microsoft Store, Calculator) cannot be removed; separate OneDrive uninstall path |
+| **Visual** | 20 visual tweaks (animations, transparency, dark mode, Explorer polish) plus startup-app toggles |
+| **Win11** | 12 OS-gated UI tweaks: taskbar / Start / classic context menu / Copilot / Recall / widgets / Chat |
+| **Services** | 28 curated Windows services with start-mode toggles; **Blocked** and never changeable: `RpcSs`, `DcomLaunch`, `WinDefend` |
+| **Network** | 9 network tweaks + DNS presets (DHCP, Cloudflare, Google, Quad9) + flush |
+| **Tools** | 16 Tools-category tweaks plus maintenance grid (restore point, temp cleanup, Disk Cleanup, SFC/DISM, WinSxS, WU/network reset, memory diagnostic, disk analyze, God Mode), Take Ownership, NTP/autologon/winget repair, registry import/export, legacy Control Panel launchers |
+| **Installer** | 158 winget apps with silent install **and uninstall**, grouped Browsers / Communication / Developer / Gaming / Media / Tools, plus app icons |
+| **Settings** | 8 languages, appearance (dark, light, or match Windows), auto restore point, allow dangerous actions, update-check toggle, logs, social links |
 
 Global **Undo** lives in the main chrome and reverts journaled session changes where possible. The top search box opens a **global search** across pages.
 
@@ -99,8 +99,47 @@ Global **Undo** lives in the main chrome and reverts journaled session changes w
 | Bloatware (AppX) | 46 | `Catalogs/apps.json` |
 | Winget installer apps | 158 | `Catalogs/apps_installer.json` |
 | Presets | 6 | `Catalogs/presets.json` |
+| Languages | 8 | `Resources/Strings.*.xaml` (`tr` default) |
 
-Roughly **5** tweaks require a separate anti-cheat confirmation dialog. AppX rows with a `storeId` support **Reinstall** via winget.
+**Tweak categories** (92 total — Safe 53 · Caution 37 · Dangerous 2)
+
+| Category | Count |
+|----------|------:|
+| Gaming | 20 |
+| Visual | 20 |
+| Tools | 16 |
+| Telemetry | 15 |
+| Windows11UI | 12 |
+| Network | 9 |
+
+**Services risk** (28 total): Safe 6 · Caution 17 · Dangerous 2 · Blocked 3 (`RpcSs`, `DcomLaunch`, `WinDefend`).
+
+**Winget categories**
+
+| Category | Count |
+|----------|------:|
+| Tools | 61 |
+| Developer | 48 |
+| Media | 23 |
+| Browsers | 9 |
+| Gaming | 9 |
+| Communication | 8 |
+| **Total** | **158** |
+
+**Built-in presets** (UI names → catalog id)
+
+| Preset | Tweaks | Services |
+|--------|-------:|---------:|
+| Gamer Mode (`preset-gamer`) | 16 | 3 |
+| Balanced Mode (`preset-balanced`) | 5 | 2 |
+| Minimal / Server Mode (`preset-minimal`) | 12 | 5 |
+| Laptop / Battery Mode (`preset-laptop`) | 7 | 3 |
+| Maximum Privacy (`preset-privacy-max`) | 13 | 5 |
+| Restore Defaults (`preset-defaults`) | 0 (session undo) | 0 |
+
+**Languages:** Türkçe (default), English, Deutsch, Español, 中文, Français, Română, Русский — 758 string keys each, parity enforced by tests.
+
+Exactly **5** tweaks require a separate anti-cheat confirmation dialog (`tweak-mmcss-gpu`, `tweak-mmcss-priority`, `tweak-mmcss-scheduling`, `tweak-disable-vbs`, `tweak-disable-hpet`). **31 / 46** AppX rows have a `storeId` and support **Reinstall** via winget.
 
 ---
 
