@@ -415,15 +415,6 @@ p {
   align-items: center;
 }
 
-.hero-eyebrow {
-  font-family: var(--font-mono);
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--accent);
-  margin-bottom: 1rem;
-}
-
 .hero-brand {
   font-size: clamp(2.75rem, 1rem + 7vw, 6.5rem);
   font-weight: 800;
