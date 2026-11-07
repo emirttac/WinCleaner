@@ -46,7 +46,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=31" />
+  <link rel="stylesheet" href="css/styles.css?v=36" />
   <link rel="icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="icon.png" />
 </head>
@@ -294,6 +294,18 @@
     </section>
 
     <section id="safety" class="section safety" aria-labelledby="safety-title">
+      <a
+        class="download-count"
+        data-reveal
+        data-download-count
+        href="https://github.com/emirttac/WinCleaner/releases"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-live="polite"
+      >
+        <span class="download-count-num">—</span>
+        <span class="download-count-label" data-i18n="safety.downloads">downloads</span>
+      </a>
       <div class="section-head">
         <h2 id="safety-title" data-reveal data-i18n="safety.title">Know the risk before you apply</h2>
         <p class="section-lead" data-reveal data-i18n="safety.lead">Many cleaners don’t tell you what they touch. In WinCleaner every item has a risk level, and Dangerous options stay locked until you enable them in Settings.</p>
@@ -369,6 +381,24 @@
       </div>
     </section>
 
+    <section id="video" class="section video" aria-labelledby="video-title">
+      <div class="section-head" data-reveal>
+        <p class="section-kicker" data-i18n="video.kicker">New</p>
+        <h2 id="video-title" data-i18n="video.title">See WinCleaner in action</h2>
+        <p class="section-lead" data-i18n="video.lead">A short walkthrough of the app — what it does, how risk levels work, and how to use it.</p>
+      </div>
+      <div class="video-frame" data-reveal>
+        <iframe
+          src="https://www.youtube.com/embed/97qRTdszzwM"
+          title="WinCleaner — YouTube"
+          loading="lazy"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          referrerpolicy="strict-origin-when-cross-origin"
+          allowfullscreen
+        ></iframe>
+      </div>
+    </section>
+
     <section class="section bridge" aria-labelledby="bridge-title">
       <div class="bridge-panel" data-reveal>
         <p class="section-kicker" data-i18n="bridge.kicker">For developers</p>
@@ -398,7 +428,7 @@
     <p class="footer-disclaimer" data-i18n="footer.disclaimer">WinCleaner can change system settings on your PC. Developers are not responsible for adverse outcomes; all responsibility rests with the user. The app already operates within safety limits such as risk levels, undo, and version filtering.</p>
   </footer>
 
-  <script src="js/i18n.js?v=19"></script>
-  <script src="js/main.js?v=9"></script>
+  <script src="js/i18n.js?v=23"></script>
+  <script src="js/main.js?v=10"></script>
 </body>
 </html>

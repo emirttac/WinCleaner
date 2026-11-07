@@ -277,4 +277,90 @@
     mock.addEventListener("focusin", () => setFocus(true));
     mock.addEventListener("focusout", () => setFocus(false));
   }
+
+  /* Live GitHub download count */
+  const downloadCountRoot = document.querySelector("[data-download-count]");
+  const downloadCountNum = downloadCountRoot
+    ? downloadCountRoot.querySelector(".download-count-num")
+    : null;
+
+  const formatCount = (n) => {
+    try {
+      return n.toLocaleString(document.documentElement.lang || "en");
+    } catch (_) {
+      return String(n);
+    }
+  };
+
+  const animateDownloadCount = (target) => {
+    if (!downloadCountNum) return;
+    if (reduceMotion || target <= 0) {
+      downloadCountNum.textContent = formatCount(target);
+      return;
+    }
+
+    const duration = Math.min(1800, 700 + target * 4);
+    const start = performance.now();
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      downloadCountNum.textContent = formatCount(Math.round(target * eased));
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+
+  const fetchGithubDownloads = async () => {
+    const res = await fetch(
+      "https://api.github.com/repos/emirttac/WinCleaner/releases?per_page=100"
+    );
+    if (!res.ok) throw new Error(`GitHub ${res.status}`);
+    const releases = await res.json();
+    if (!Array.isArray(releases)) return 0;
+    return releases.reduce(
+      (sum, release) =>
+        sum +
+        (release.assets || []).reduce(
+          (assetSum, asset) => assetSum + (asset.download_count || 0),
+          0
+        ),
+      0
+    );
+  };
+
+  if (downloadCountRoot && downloadCountNum) {
+    fetchGithubDownloads()
+      .then((total) => {
+        downloadCountRoot.dataset.total = String(total);
+        const startWhenVisible = () => {
+          if (downloadCountRoot.dataset.counted === "1") return;
+          downloadCountRoot.dataset.counted = "1";
+          animateDownloadCount(total);
+        };
+
+        if (
+          reduceMotion ||
+          downloadCountRoot.classList.contains("is-visible") ||
+          !("IntersectionObserver" in window)
+        ) {
+          startWhenVisible();
+          return;
+        }
+
+        const countObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              startWhenVisible();
+              countObserver.disconnect();
+            });
+          },
+          { threshold: 0.35 }
+        );
+        countObserver.observe(downloadCountRoot);
+      })
+      .catch(() => {
+        downloadCountNum.textContent = "—";
+      });
+  }
 })();
