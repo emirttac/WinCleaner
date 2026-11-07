@@ -283,12 +283,37 @@
   const downloadCountNum = downloadCountRoot
     ? downloadCountRoot.querySelector(".download-count-num")
     : null;
+  const DOWNLOAD_CACHE_KEY = "wincleaner-download-count";
+  const DOWNLOAD_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
 
   const formatCount = (n) => {
     try {
       return n.toLocaleString(document.documentElement.lang || "en");
     } catch (_) {
       return String(n);
+    }
+  };
+
+  const readCachedDownloads = () => {
+    try {
+      const raw = localStorage.getItem(DOWNLOAD_CACHE_KEY);
+      if (!raw) return null;
+      const parsed = JSON.parse(raw);
+      if (!parsed || typeof parsed.total !== "number" || parsed.total < 0) return null;
+      return parsed;
+    } catch (_) {
+      return null;
+    }
+  };
+
+  const writeCachedDownloads = (total) => {
+    try {
+      localStorage.setItem(
+        DOWNLOAD_CACHE_KEY,
+        JSON.stringify({ total, at: Date.now() })
+      );
+    } catch (_) {
+      /* ignore quota / private mode */
     }
   };
 
@@ -310,12 +335,7 @@
     requestAnimationFrame(tick);
   };
 
-  const fetchGithubDownloads = async () => {
-    const res = await fetch(
-      "https://api.github.com/repos/emirttac/WinCleaner/releases?per_page=100"
-    );
-    if (!res.ok) throw new Error(`GitHub ${res.status}`);
-    const releases = await res.json();
+  const sumReleaseDownloads = (releases) => {
     if (!Array.isArray(releases)) return 0;
     return releases.reduce(
       (sum, release) =>
@@ -328,39 +348,116 @@
     );
   };
 
-  if (downloadCountRoot && downloadCountNum) {
-    fetchGithubDownloads()
-      .then((total) => {
-        downloadCountRoot.dataset.total = String(total);
-        const startWhenVisible = () => {
-          if (downloadCountRoot.dataset.counted === "1") return;
-          downloadCountRoot.dataset.counted = "1";
-          animateDownloadCount(total);
-        };
+  const fetchGithubDownloadsOnce = async () => {
+    const res = await fetch(
+      "https://api.github.com/repos/emirttac/WinCleaner/releases?per_page=100",
+      {
+        headers: { Accept: "application/vnd.github+json" },
+        cache: "no-cache",
+      }
+    );
+    if (!res.ok) throw new Error(`GitHub ${res.status}`);
+    return sumReleaseDownloads(await res.json());
+  };
 
-        if (
-          reduceMotion ||
-          downloadCountRoot.classList.contains("is-visible") ||
-          !("IntersectionObserver" in window)
-        ) {
-          startWhenVisible();
-          return;
-        }
-
-        const countObserver = new IntersectionObserver(
-          (entries) => {
-            entries.forEach((entry) => {
-              if (!entry.isIntersecting) return;
-              startWhenVisible();
-              countObserver.disconnect();
-            });
-          },
-          { threshold: 0.35 }
+  const fetchGithubDownloads = async () => {
+    let lastError = null;
+    for (let attempt = 0; attempt < 3; attempt += 1) {
+      try {
+        const total = await fetchGithubDownloadsOnce();
+        if (typeof total === "number" && total >= 0) return total;
+      } catch (err) {
+        lastError = err;
+        await new Promise((resolve) =>
+          setTimeout(resolve, 350 * Math.pow(2, attempt))
         );
-        countObserver.observe(downloadCountRoot);
-      })
-      .catch(() => {
-        downloadCountNum.textContent = "—";
-      });
+      }
+    }
+    throw lastError || new Error("GitHub download count failed");
+  };
+
+  const isNearViewport = (el) => {
+    const rect = el.getBoundingClientRect();
+    const vh = window.innerHeight || 0;
+    return rect.bottom > 0 && rect.top < vh * 1.15;
+  };
+
+  const playDownloadCount = (total) => {
+    if (!downloadCountRoot || !downloadCountNum) return;
+    downloadCountRoot.dataset.total = String(total);
+
+    const startWhenVisible = () => {
+      if (downloadCountRoot.dataset.counted === "1") {
+        downloadCountNum.textContent = formatCount(total);
+        return;
+      }
+      downloadCountRoot.dataset.counted = "1";
+      animateDownloadCount(total);
+    };
+
+    if (
+      reduceMotion ||
+      downloadCountRoot.classList.contains("is-visible") ||
+      isNearViewport(downloadCountRoot) ||
+      !("IntersectionObserver" in window)
+    ) {
+      startWhenVisible();
+      return;
+    }
+
+    const countObserver = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          startWhenVisible();
+          countObserver.disconnect();
+        });
+      },
+      { rootMargin: "0px 0px -5% 0px", threshold: 0.05 }
+    );
+    countObserver.observe(downloadCountRoot);
+  };
+
+  if (downloadCountRoot && downloadCountNum) {
+    const cached = readCachedDownloads();
+    if (cached) {
+      // Show last known value immediately so the UI never sticks on "—"
+      downloadCountNum.textContent = formatCount(cached.total);
+      downloadCountRoot.dataset.total = String(cached.total);
+    }
+
+    const cacheIsFresh =
+      cached && typeof cached.at === "number" && Date.now() - cached.at < DOWNLOAD_CACHE_TTL;
+
+    const applyFresh = (total) => {
+      writeCachedDownloads(total);
+      playDownloadCount(total);
+    };
+
+    if (cacheIsFresh) {
+      playDownloadCount(cached.total);
+      // Quiet background refresh; keep showing cache if it fails
+      fetchGithubDownloads()
+        .then((total) => {
+          writeCachedDownloads(total);
+          if (downloadCountRoot.dataset.counted === "1") {
+            downloadCountNum.textContent = formatCount(total);
+            downloadCountRoot.dataset.total = String(total);
+          } else {
+            playDownloadCount(total);
+          }
+        })
+        .catch(() => {});
+    } else {
+      fetchGithubDownloads()
+        .then(applyFresh)
+        .catch(() => {
+          if (cached) {
+            playDownloadCount(cached.total);
+          } else {
+            downloadCountNum.textContent = "—";
+          }
+        });
+    }
   }
 })();
