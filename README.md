@@ -21,6 +21,11 @@ Catalog-driven tweaks · Risk levels · Restore points · Session undo · Headle
 
 > **Beta.** The app shows a startup notice that some settings may still be unstable. Please report broken functions via [GitHub Issues](https://github.com/emirttac/WinCleaner/issues).
 
+<img width="1200" height="740" alt="Screenshot 2026-11-07 101326" src="https://github.com/user-attachments/assets/9e8cfda0-2a6b-4311-99fb-fd27b617003b" />
+
+<img width="1686" height="681" alt="Screenshot 2026-11-07 101540" src="https://github.com/user-attachments/assets/84ba6785-2317-4707-909e-968b4338f600" />
+
+
 ---
 
 ## Table of contents
