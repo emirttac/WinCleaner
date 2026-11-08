@@ -1,5 +1,10 @@
 (() => {
-  const { supported, defaultLang, strings } = window.I18N;
+  const I18N = window.I18N;
+  if (!I18N || !Array.isArray(I18N.supported) || !I18N.strings) {
+    document.documentElement.classList.add("reveal-fallback");
+    return;
+  }
+  const { supported, defaultLang, strings } = I18N;
   const STORAGE_KEY = "wincleaner-lang";
   const THEME_KEY = "wincleaner-theme";
   const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -157,9 +162,16 @@
 
   /* Scroll reveal */
   const nodes = document.querySelectorAll("[data-reveal]");
+  const markRevealReady = () => {
+    document.documentElement.classList.add("reveal-ready");
+  };
+  const revealAll = () => {
+    nodes.forEach((el) => el.classList.add("is-visible"));
+    markRevealReady();
+  };
 
   if (reduceMotion || !("IntersectionObserver" in window)) {
-    nodes.forEach((el) => el.classList.add("is-visible"));
+    revealAll();
   } else {
     const observer = new IntersectionObserver(
       (entries) => {
@@ -169,13 +181,21 @@
           observer.unobserve(entry.target);
         });
       },
-      { rootMargin: "0px 0px -8% 0px", threshold: 0.12 }
+      { rootMargin: "0px", threshold: 0 }
     );
 
+    const vh = window.innerHeight || 0;
     nodes.forEach((el, i) => {
       el.style.transitionDelay = `${Math.min(i % 6, 4) * 60}ms`;
-      observer.observe(el);
+      const rect = el.getBoundingClientRect();
+      if (rect.top < vh && rect.bottom > 0) {
+        el.classList.add("is-visible");
+      } else {
+        observer.observe(el);
+      }
     });
+    markRevealReady();
+    window.setTimeout(revealAll, 1800);
   }
 
   /* Stats chrome — bars fill while scrolling through the section */
@@ -419,6 +439,45 @@
     );
     countObserver.observe(downloadCountRoot);
   };
+
+  /* Direct installer download — skip the GitHub Releases HTML page */
+  const SETUP_RE = /setup.*\.exe$/i;
+  const PORTABLE_RE = /^WinCleaner\.exe$/i;
+  const FALLBACK_SETUP =
+    "https://github.com/emirttac/WinCleaner/releases/download/v2.5.0/WinCleaner-Setup-2.5.0.exe";
+
+  const pickSetupAsset = (release) => {
+    const assets = (release && release.assets) || [];
+    return (
+      assets.find((asset) => SETUP_RE.test(asset.name || "")) ||
+      assets.find((asset) => PORTABLE_RE.test(asset.name || "")) ||
+      null
+    );
+  };
+
+  const applyDownloadHref = (url) => {
+    if (!url) return;
+    document.querySelectorAll("[data-download-latest]").forEach((el) => {
+      el.setAttribute("href", url);
+    });
+  };
+
+  applyDownloadHref(FALLBACK_SETUP);
+  fetch("https://api.github.com/repos/emirttac/WinCleaner/releases/latest", {
+    headers: { Accept: "application/vnd.github+json" },
+    cache: "no-cache",
+  })
+    .then((res) => {
+      if (!res.ok) throw new Error(`GitHub ${res.status}`);
+      return res.json();
+    })
+    .then((release) => {
+      const asset = pickSetupAsset(release);
+      if (asset && asset.browser_download_url) {
+        applyDownloadHref(asset.browser_download_url);
+      }
+    })
+    .catch(() => {});
 
   if (downloadCountRoot && downloadCountNum) {
     const cached = readCachedDownloads();

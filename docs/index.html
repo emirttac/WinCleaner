@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="no-js">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -26,6 +26,13 @@
       } catch (e) {
         document.documentElement.setAttribute("data-theme", "dark");
       }
+      document.documentElement.classList.remove("no-js");
+      document.documentElement.classList.add("js");
+      window.setTimeout(function () {
+        if (!document.documentElement.classList.contains("reveal-ready")) {
+          document.documentElement.classList.add("reveal-fallback");
+        }
+      }, 1500);
     })();
   </script>
   <script type="application/ld+json">
@@ -46,7 +53,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=36" />
+  <link rel="stylesheet" href="css/styles.css?v=37" />
   <link rel="icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="icon.png" />
 </head>
@@ -298,9 +305,7 @@
         class="download-count"
         data-reveal
         data-download-count
-        href="https://github.com/emirttac/WinCleaner/releases"
-        target="_blank"
-        rel="noopener noreferrer"
+        href="#download"
         aria-live="polite"
       >
         <span class="download-count-num">—</span>
@@ -375,7 +380,7 @@
           </ul>
         </div>
         <div class="download-actions">
-          <a class="btn btn-accent btn-lg" href="https://github.com/emirttac/WinCleaner/releases/latest" target="_blank" rel="noopener noreferrer" data-i18n="download.cta">Download the latest release</a>
+          <a class="btn btn-accent btn-lg" data-download-latest href="https://github.com/emirttac/WinCleaner/releases/download/v2.5.0/WinCleaner-Setup-2.5.0.exe" rel="noopener noreferrer" data-i18n="download.cta">Download the latest release</a>
           <a class="btn btn-ghost" href="https://github.com/emirttac/WinCleaner" target="_blank" rel="noopener noreferrer" data-i18n="download.source">View on GitHub</a>
         </div>
       </div>
@@ -429,6 +434,6 @@
   </footer>
 
   <script src="js/i18n.js?v=23"></script>
-  <script src="js/main.js?v=11"></script>
+  <script src="js/main.js?v=12"></script>
 </body>
 </html>
