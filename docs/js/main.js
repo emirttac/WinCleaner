@@ -187,14 +187,16 @@
   const paintStats = (progress) => {
     const p = reduceMotion ? 1 : easeOut(clamp01(progress));
     statRows.forEach((row, i) => {
+      // Remap so each staggered row still reaches local=1 when p=1
+      // (old denom used 1 - stagger*0.6, so later rows capped below 1 → counts off by -1)
       const stagger = reduceMotion ? 0 : i * 0.08;
-      const local = clamp01((p - stagger) / Math.max(0.001, 1 - stagger * 0.6));
+      const local = clamp01((p - stagger) / Math.max(0.001, 1 - stagger));
       const fill = Number(row.getAttribute("data-fill")) || 1;
       const target = Number(row.getAttribute("data-count")) || 0;
       const bar = row.querySelector(".stats-bar i");
       const count = row.querySelector(".count");
       if (bar) bar.style.setProperty("--p", String(fill * local));
-      if (count) count.textContent = String(Math.round(target * local));
+      if (count) count.textContent = String(local >= 1 ? target : Math.round(target * local));
     });
   };
 
