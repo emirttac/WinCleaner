@@ -256,7 +256,7 @@ window.I18N = {
       "release.item3": "Helium Browser Desteği: Kullanıcıların talebi üzerine yazılımın yazılım yükleyici/winget kısmına alternatif tarayıcı olarak Helium Browser eklendi.",
       "release.item4": "Yazılım Yükleyici Arama Kutusu: Yazılım Yükleyici sekmesinde yazılımları aramanıza olanak sağlayan özel Arama Çubuğu eklendi.",
       "release.item5": "Bloatware Listeleme: Kalkık olan Bloatware uygulamaları artık listede görünmüyor.",
-      "release.fixes": "Hata düzeltmeleri",
+      "release.fixes": "Hata Düzeltmeleri",
       "release.fix1": "Geri Dönme Noktası: Geri Dönme Noktası oluşturulsa bile Windows'un 24 saat zorunluluğu nedeniyle Yazılım Geri Yükleme Noktası oluşturulamadı uyarısı veren bir sorun giderildi.",
       "release.download": "Son Sürüm (v2.6.0) İndir",
       "release.close": "Kapat",
