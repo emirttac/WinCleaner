@@ -158,7 +158,13 @@ public partial class MainViewModel : ObservableObject
             }
         }).ConfigureAwait(true);
 
-        StatusText = ok ? _loc.Get("restore.created") : _loc.Get("restore.failed");
+        StatusText = RestorePointManager.LastOutcome switch
+        {
+            RestorePointOutcome.Created => _loc.Get("restore.created"),
+            RestorePointOutcome.AlreadyExists => _loc.Get("restore.existing"),
+            RestorePointOutcome.ProtectionDisabled => _loc.Get("restore.protectionOff"),
+            _ => _loc.Get("restore.failed")
+        };
         return ok;
     }
 

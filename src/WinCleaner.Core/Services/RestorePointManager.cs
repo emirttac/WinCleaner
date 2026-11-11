@@ -6,6 +6,11 @@ namespace WinCleaner.Core.Services;
 public enum RestorePointOutcome
 {
     Created,
+    /// <summary>
+    /// A WinCleaner point is already listed. Windows often returns success and then
+    /// skips a new point for about 24 hours, so this is not a failure and not "protection off".
+    /// </summary>
+    AlreadyExists,
     NotCreated,
     ProtectionDisabled
 }
@@ -59,7 +64,7 @@ public sealed class RestorePointManager
             return HasSessionCheckpoint;
 
         var outcome = CreateChecked(description);
-        return outcome == RestorePointOutcome.Created;
+        return outcome is RestorePointOutcome.Created or RestorePointOutcome.AlreadyExists;
     }
 
     public static RestorePointOutcome LastOutcome { get; private set; }
@@ -73,15 +78,23 @@ public sealed class RestorePointManager
         }
 
         var before = ReadPoints();
-        bool apiOk;
+        int? wmiCode = null;
+        var apiOk = false;
         try
         {
-            apiOk = CreateCoreOverride?.Invoke(description) ?? (TryWmi(description) || TryPowerShell(description));
+            if (CreateCoreOverride is not null)
+            {
+                apiOk = CreateCoreOverride(description);
+            }
+            else
+            {
+                wmiCode = TryWmi(description);
+                apiOk = wmiCode == 0 || TryPowerShell(description);
+            }
         }
         catch (Exception ex)
         {
             System.Diagnostics.Trace.WriteLine("Restore point create failed: " + ex.Message);
-            apiOk = false;
         }
 
         if (ListOverride is null && CreateCoreOverride is not null)
@@ -98,12 +111,22 @@ public sealed class RestorePointManager
             return LastOutcome;
         }
 
-        var after = ReadPoints();
-        var created = after.Any(point =>
-            point.Description == description &&
-            !before.Any(previous => previous.Sequence == point.Sequence));
-        if (!created)
+        var after = ReadAfter(before, description);
+        if (!HasNewPoint(before, after, description))
         {
+            if (HasLabel(before, description) || HasLabel(after, description))
+            {
+                MarkSessionCheckpoint();
+                LastOutcome = RestorePointOutcome.AlreadyExists;
+                return LastOutcome;
+            }
+
+            if (ListOverride is null && CreateCoreOverride is null && IsProtectionDisabled(wmiCode))
+            {
+                LastOutcome = RestorePointOutcome.ProtectionDisabled;
+                return LastOutcome;
+            }
+
             LastOutcome = RestorePointOutcome.NotCreated;
             return LastOutcome;
         }
@@ -113,6 +136,37 @@ public sealed class RestorePointManager
         MarkSessionCheckpoint();
         LastOutcome = RestorePointOutcome.Created;
         return LastOutcome;
+    }
+
+    private static bool HasLabel(IReadOnlyList<RestorePointRow> points, string description) =>
+        points.Any(point => point.Description == description);
+
+    private static bool HasNewPoint(IReadOnlyList<RestorePointRow> before, IReadOnlyList<RestorePointRow> after, string description) =>
+        after.Any(point =>
+            point.Description == description &&
+            !before.Any(previous => previous.Sequence == point.Sequence));
+
+    /// <summary>
+    /// The SystemRestore list can lag the create call. On a live PC, wait briefly for a new
+    /// WinCleaner row. Skip the wait when a WinCleaner row was already there: Windows did not
+    /// add one, and an 8 second poll would only delay the "existing point" result.
+    /// </summary>
+    private static IReadOnlyList<RestorePointRow> ReadAfter(IReadOnlyList<RestorePointRow> before, string description)
+    {
+        var after = ReadPoints();
+        if (ListOverride is not null || HasLabel(before, description) || HasNewPoint(before, after, description))
+            return after;
+
+        var deadline = DateTime.UtcNow.AddSeconds(8);
+        while (DateTime.UtcNow < deadline)
+        {
+            Thread.Sleep(500);
+            after = ReadPoints();
+            if (HasNewPoint(before, after, description))
+                break;
+        }
+
+        return after;
     }
 
     private static IReadOnlyList<RestorePointRow> ReadPoints() =>
@@ -212,22 +266,22 @@ public sealed class RestorePointManager
         MinInterval = TimeSpan.FromMinutes(10);
     }
 
-    private static bool TryWmi(string description)
+    private static int? TryWmi(string description)
     {
         try
         {
             var task = Task.Run(() => TryWmiCore(description));
             if (!task.Wait(TimeSpan.FromSeconds(45)))
-                return false;
-            return task.Status == TaskStatus.RanToCompletion && task.Result;
+                return null;
+            return task.Status == TaskStatus.RanToCompletion ? task.Result : null;
         }
         catch
         {
-            return false;
+            return null;
         }
     }
 
-    private static bool TryWmiCore(string description)
+    private static int? TryWmiCore(string description)
     {
         try
         {
@@ -241,7 +295,25 @@ public sealed class RestorePointManager
             parameters["EventType"] = 100; // BEGIN_SYSTEM_CHANGE
 
             using var result = managementClass.InvokeMethod("CreateRestorePoint", parameters, null);
-            return Convert.ToInt32(result["ReturnValue"]) == 0;
+            return Convert.ToInt32(result["ReturnValue"]);
+        }
+        catch
+        {
+            return null;
+        }
+    }
+
+    /// <summary>1058 is ERROR_SERVICE_DISABLED. DisableSR is the system-wide protection switch.</summary>
+    private static bool IsProtectionDisabled(int? wmiCode)
+    {
+        if (wmiCode == 1058)
+            return true;
+
+        try
+        {
+            using var key = Microsoft.Win32.Registry.LocalMachine.OpenSubKey(
+                @"SOFTWARE\Microsoft\Windows NT\CurrentVersion\SystemRestore");
+            return key?.GetValue("DisableSR") is int disabled && disabled != 0;
         }
         catch
         {
@@ -267,8 +339,9 @@ public sealed class RestorePointManager
             };
             using var proc = Process.Start(psi);
             if (proc is null) return false;
-            // Keep timeout short so a hung Checkpoint-Computer cannot freeze the app for minutes
-            if (!proc.WaitForExit(20_000))
+            // Dialog copy says this can take about a minute. 20s used to kill a point that
+            // still showed up afterwards in Windows Settings.
+            if (!proc.WaitForExit(90_000))
             {
                 try { proc.Kill(entireProcessTree: true); } catch { }
                 return false;

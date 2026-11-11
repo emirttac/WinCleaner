@@ -11,7 +11,7 @@
     <ApplicationIcon>app.ico</ApplicationIcon>
     <AssemblyName>WinCleaner</AssemblyName>
     <RootNamespace>WinCleaner</RootNamespace>
-    <Version>2.5.0</Version>
+    <Version>2.6.0</Version>
     <AssemblyTitle>WinCleaner</AssemblyTitle>
     <Product>WinCleaner</Product>
     <Company>emirttac</Company>

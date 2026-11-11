@@ -25,6 +25,7 @@ inst.docker.name
 inst.edge.name
 inst.epic.name
 inst.firefox.name
+inst.helium.name
 inst.heroic.name
 inst.powershell.name
 inst.procexp.name

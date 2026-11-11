@@ -9,7 +9,7 @@
 param(
     [string]$Configuration = "Release",
     [string]$Runtime = "win-x64",
-    [string]$Version = "2.5.0"
+    [string]$Version = "2.6.0"
 )
 
 $ErrorActionPreference = "Stop"
@@ -28,11 +28,15 @@ $IconDst = Join-Path $Root "installer\app.ico"
 
 $IsccCandidates = @(
     "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe",
-    "${env:ProgramFiles}\Inno Setup 6\ISCC.exe"
+    "${env:ProgramFiles}\Inno Setup 6\ISCC.exe",
+    "${env:ProgramFiles(x86)}\Inno Setup 7\ISCC.exe",
+    "${env:ProgramFiles}\Inno Setup 7\ISCC.exe",
+    "$env:LOCALAPPDATA\Programs\Inno Setup 6\ISCC.exe",
+    "$env:LOCALAPPDATA\Programs\Inno Setup 7\ISCC.exe"
 )
 $Iscc = $IsccCandidates | Where-Object { Test-Path $_ } | Select-Object -First 1
 if (-not $Iscc) {
-    throw "Inno Setup 6 not found. Install from https://jrsoftware.org/isinfo.php"
+    throw "Inno Setup 6/7 not found. Install from https://jrsoftware.org/isinfo.php"
 }
 
 if (-not (Test-Path $IconSrc)) {

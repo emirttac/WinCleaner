@@ -112,6 +112,19 @@ public class CatalogLoaderTests
     }
 
     [Fact]
+    public void LoadTweaks_SplitsFileExtensionsAndHiddenFiles()
+    {
+        var tweaks = CatalogLoader.LoadTweaks();
+        var ext = Assert.Single(tweaks, t => t.Id == "tweak-show-file-extensions");
+        Assert.Equal("HideFileExt", ext.Registry!.Name);
+        Assert.True(ext.Registries is null || ext.Registries.Count == 0);
+        var hidden = Assert.Single(tweaks, t => t.Id == "tweak-show-hidden-files");
+        Assert.Equal("Hidden", hidden.Registry!.Name);
+        Assert.Equal("1", hidden.Registry.EnabledValue);
+        Assert.Equal("2", hidden.Registry.DisabledValue);
+    }
+
+    [Fact]
     public void LoadTweaks_ContainsWinUtilParityEntries()
     {
         var tweaks = CatalogLoader.LoadTweaks();

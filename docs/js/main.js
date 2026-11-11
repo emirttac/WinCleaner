@@ -444,7 +444,7 @@
   const SETUP_RE = /setup.*\.exe$/i;
   const PORTABLE_RE = /^WinCleaner\.exe$/i;
   const FALLBACK_SETUP =
-    "https://github.com/emirttac/WinCleaner/releases/download/v2.5.0/WinCleaner-Setup-2.5.0.exe";
+    "https://github.com/emirttac/WinCleaner/releases/download/v2.6.0/WinCleaner-Setup-2.6.0.exe";
 
   const pickSetupAsset = (release) => {
     const assets = (release && release.assets) || [];

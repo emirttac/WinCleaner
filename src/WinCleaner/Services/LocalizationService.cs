@@ -146,6 +146,8 @@ public sealed class LocalizationService
         A("restore.warnBody", "You have not created a restore point in this session. A restore point will be created automatically before continuing.");
         A("restore.creating", "Creating restore point…");
         A("restore.created", "Restore point created.");
+        A("restore.existing", "A WinCleaner restore point is already on this PC. Windows did not create another one, so that existing point will be used.");
+        A("restore.protectionOff", "System Restore is turned off, so a restore point cannot be created.");
         A("restore.failed", "Could not create a restore point.");
         A("msg.unexpectedError", "Unexpected error (details in the log):");
         A("msg.logLabel", "Log:");

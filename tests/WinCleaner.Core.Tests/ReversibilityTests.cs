@@ -77,6 +77,26 @@ public class ReversibilityTests
     }
 
     [Fact]
+    public void RestorePoint_ExistingWinCleanerLabel_IsNotAFailure()
+    {
+        RestorePointManager.ResetForTests();
+        var row = new RestorePointRow(4, "WinCleaner");
+        RestorePointManager.ListOverride = () => [row];
+        RestorePointManager.CreateCoreOverride = _ => true;
+        try
+        {
+            var manager = new RestorePointManager();
+            var outcome = manager.CreateChecked("WinCleaner");
+            Assert.Equal(RestorePointOutcome.AlreadyExists, outcome);
+            Assert.True(manager.HasSessionCheckpoint);
+        }
+        finally
+        {
+            RestorePointManager.ResetForTests();
+        }
+    }
+
+    [Fact]
     public void RestorePoint_ProtectionOff_IsASeparateOutcome()
     {
         RestorePointManager.ResetForTests();

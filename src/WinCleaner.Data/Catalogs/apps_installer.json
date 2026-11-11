@@ -40,6 +40,16 @@
     "iconKey": "brave"
   },
   {
+    "id": "inst-helium",
+    "displayNameKey": "inst.helium.name",
+    "descriptionKey": "inst.helium.desc",
+    "category": "Browsers",
+    "categoryKey": "inst.cat.browsers",
+    "wingetId": "ImputNet.Helium",
+    "iconGlyph": "\ud83c\udf88",
+    "iconKey": "helium"
+  },
+  {
     "id": "inst-vscode",
     "displayNameKey": "inst.vscode.name",
     "descriptionKey": "inst.vscode.desc",

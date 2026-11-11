@@ -25,26 +25,32 @@ public sealed class OneDriveUninstallAction : IChangeAction
     public RiskLevel Risk => RiskLevel.Dangerous;
     public string Category => "Bloatware";
     public bool CanRevert => false;
+    public bool WritesMachine => true;
+    public bool IsApplied() => !_appx.IsOneDriveInstalled();
 
     public Task<string?> GetCurrentStateAsync(CancellationToken cancellationToken = default) =>
-        Task.FromResult<string?>("installed?");
+        Task.FromResult<string?>(_appx.IsOneDriveInstalled() ? "installed" : "uninstalled");
 
-    public ActionPreview BuildPreview() =>
-        ActionPreviewDefaults.FromAction(
+    public ActionPreview BuildPreview()
+    {
+        var current = _appx.IsOneDriveInstalled() ? "installed" : "uninstalled";
+        var unchanged = current == "uninstalled";
+        return ActionPreviewDefaults.FromAction(
             this,
-            "installed",
+            current,
             "uninstalled",
             PreviewDiffKind.Irreversible,
             [
                 new PreviewDiffRow
                 {
                     Target = "onedrive",
-                    Current = "installed",
+                    Current = current,
                     Proposed = "uninstalled",
                     Kind = PreviewDiffKind.Irreversible,
-                    Unchanged = false
+                    Unchanged = unchanged
                 }
             ]);
+    }
 
     public async Task<ChangeResult> ApplyAsync(CancellationToken cancellationToken = default)
     {
@@ -55,5 +61,5 @@ public sealed class OneDriveUninstallAction : IChangeAction
     }
 
     public Task<ChangeResult> RevertAsync(CancellationToken cancellationToken = default) =>
-        Task.FromResult(ChangeResult.Fail("OneDrive uninstall cannot be auto-reverted."));
+        Task.FromResult(ChangeResult.Fail(_localize("blo.onedriveNoRevert")));
 }

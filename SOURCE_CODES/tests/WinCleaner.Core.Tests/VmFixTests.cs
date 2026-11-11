@@ -145,6 +145,60 @@ public class VmFixTests
     }
 
     [Fact]
+    public async Task EdgeScript_UninstallsBrowserAndUpdater_AndSkipsWebView()
+    {
+        var runner = new CapturingRunner(new ProcessResult(0, "removed", "", false, false));
+        var appx = new AppxManager(runner);
+
+        var result = await appx.UninstallEdgeAsync();
+
+        Assert.True(result.Success);
+        Assert.Contains("-File", runner.Request!.Arguments, StringComparison.Ordinal);
+        Assert.Contains("--msedge", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("--channel=stable", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("--force-uninstall", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("--delete-profile", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("Ensure-EdgeUninstallArgs", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("Stop-EdgeBrowserTree", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("taskkill.exe", runner.Script, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("takeown.exe", runner.Script, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("UninstallString", runner.Script, StringComparison.Ordinal);
+        Assert.Contains(@"\Microsoft\Edge\Application", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("MicrosoftEdgeUpdate", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("/uninstall", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("edgeupdate", runner.Script, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("DoNotUpdateToEdgeWithChromium", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("EdgeWebView", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("Test-IsWebViewPath", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("EDGE_STILL_INSTALLED", runner.Script, StringComparison.Ordinal);
+        Assert.Contains("msedgewebview2.exe", runner.Script, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("-ne 'msedgewebview2.exe'", runner.Script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain("WebView2Runtime", runner.Script, StringComparison.OrdinalIgnoreCase);
+        Assert.DoesNotContain(@"\Microsoft\EdgeWebView\Application", runner.Script, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task EdgeAndOneDrive_ReportInstalledOrUninstalled()
+    {
+        var appx = new AppxManager();
+        var edge = new EdgeUninstallAction(appx);
+        var oneDrive = new OneDriveUninstallAction(appx);
+
+        var edgeState = await edge.GetCurrentStateAsync();
+        var oneDriveState = await oneDrive.GetCurrentStateAsync();
+
+        Assert.Contains(edgeState, ["installed", "uninstalled"]);
+        Assert.Contains(oneDriveState, ["installed", "uninstalled"]);
+        Assert.Equal(edgeState == "uninstalled", edge.IsApplied());
+        Assert.Equal(oneDriveState == "uninstalled", oneDrive.IsApplied());
+
+        var preview = edge.BuildPreview();
+        Assert.Equal(edgeState, preview.Diffs[0].Current);
+        Assert.Equal(edgeState == "uninstalled", preview.AlreadyApplied);
+        Assert.Equal(edgeState == "uninstalled", preview.Diffs[0].Unchanged);
+    }
+
+    [Fact]
     public async Task ProcessRunner_UsesSystem32AsTheWorkingDirectory()
     {
         var runner = new ProcessRunner();

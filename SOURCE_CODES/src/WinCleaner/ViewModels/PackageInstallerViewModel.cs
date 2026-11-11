@@ -28,8 +28,12 @@ public partial class PackageInstallerViewModel : ObservableObject
 
     public ObservableCollection<InstallerCategoryGroup> Categories { get; }
 
+    private string? _globalQuery;
+
     [ObservableProperty] private string _title = "";
     [ObservableProperty] private string _subtitle = "";
+    [ObservableProperty] private string _searchPlaceholder = "";
+    [ObservableProperty] private string _localQuery = "";
     [ObservableProperty] private string _installSelectedLabel = "";
     [ObservableProperty] private string _uninstallSelectedLabel = "";
     [ObservableProperty] private string _wingetStatusText = "";
@@ -50,6 +54,7 @@ public partial class PackageInstallerViewModel : ObservableObject
     {
         Title = _loc.Get("inst.title");
         Subtitle = _loc.Get("inst.subtitle");
+        SearchPlaceholder = _loc.Get("inst.search.placeholder");
         InstallSelectedLabel = _loc.Get("inst.installSelected");
         UninstallSelectedLabel = _loc.Get("inst.uninstallSelected");
         RemediateWingetLabel = _loc.Get("inst.wingetRemediate");
@@ -66,8 +71,16 @@ public partial class PackageInstallerViewModel : ObservableObject
 
     public void Filter(string? query)
     {
+        _globalQuery = query;
+        ApplyFilters();
+    }
+
+    partial void OnLocalQueryChanged(string value) => ApplyFilters();
+
+    private void ApplyFilters()
+    {
         foreach (var cat in Categories)
-            cat.ApplyFilter(query);
+            cat.ApplyFilter(_globalQuery, LocalQuery);
     }
 
     public IEnumerable<InstallerAppItemViewModel> SearchAll(string? query) =>
@@ -88,6 +101,7 @@ public partial class PackageInstallerViewModel : ObservableObject
                 cat.Apps.Add(new InstallerAppItemViewModel(entry, _loc, OnSelectionChanged));
             Categories.Add(cat);
         }
+        ApplyFilters();
     }
 
     private static int CategorySort(string category) => category switch
@@ -479,10 +493,23 @@ public sealed class InstallerCategoryGroup : ObservableObject
     public string Title { get; set; }
     public ObservableCollection<InstallerAppItemViewModel> Apps { get; }
 
-    public void ApplyFilter(string? query)
+    private bool _isVisible = true;
+    public bool IsVisible
     {
+        get => _isVisible;
+        set => SetProperty(ref _isVisible, value);
+    }
+
+    public void ApplyFilter(string? globalQuery, string? localQuery)
+    {
+        var any = false;
         foreach (var app in Apps)
-            app.IsVisible = app.MatchesSearch(query);
+        {
+            app.IsVisible = app.MatchesSearch(globalQuery) && app.MatchesSearch(localQuery);
+            if (app.IsVisible)
+                any = true;
+        }
+        IsVisible = any;
     }
 }
 

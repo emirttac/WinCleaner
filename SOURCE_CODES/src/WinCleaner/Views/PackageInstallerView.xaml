@@ -7,12 +7,23 @@
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
       <RowDefinition Height="Auto"/>
+      <RowDefinition Height="Auto"/>
       <RowDefinition Height="*"/>
     </Grid.RowDefinitions>
     <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
     <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
 
-    <ui:Card Grid.Row="2" Margin="0,0,0,10" Padding="16">
+    <ui:TextBox Grid.Row="2"
+                Margin="0,0,0,12"
+                MinHeight="32"
+                PlaceholderText="{Binding SearchPlaceholder}"
+                Text="{Binding LocalQuery, UpdateSourceTrigger=PropertyChanged}"
+                Icon="{ui:SymbolIcon Search24}"
+                ClearButtonEnabled="True"
+                AutomationProperties.Name="{Binding SearchPlaceholder}"
+                AutomationProperties.HelpText="{Binding SearchPlaceholder}"/>
+
+    <ui:Card Grid.Row="3" Margin="0,0,0,10" Padding="16">
         <Grid>
           <Grid.ColumnDefinitions>
             <ColumnDefinition Width="*"/>
@@ -51,10 +62,11 @@
         </Grid>
       </ui:Card>
 
-      <ItemsControl Grid.Row="3" ItemsSource="{Binding Categories}" Style="{StaticResource VirtualizingPixelListStyle}">
+      <ItemsControl Grid.Row="4" ItemsSource="{Binding Categories}" Style="{StaticResource VirtualizingPixelListStyle}">
         <ItemsControl.ItemTemplate>
           <DataTemplate>
-            <StackPanel Margin="0,4,0,12">
+            <StackPanel Margin="0,4,0,12"
+                        Visibility="{Binding IsVisible, Converter={StaticResource BoolToVis}}">
               <TextBlock Text="{Binding Title}" Style="{StaticResource SectionHeaderStyle}"/>
               <ItemsControl ItemsSource="{Binding Apps}">
                 <ItemsControl.ItemTemplate>

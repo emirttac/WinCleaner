@@ -24,6 +24,10 @@ public partial class BloatwareViewModel : ObservableObject
     private readonly Func<Task<bool>> _confirm;
     private readonly Func<IReadOnlyList<IChangeAction>, string, Task>? _previewApply;
     private List<AppRowViewModel> _all = new();
+    private string? _activeQuery;
+    private bool _suppressFilter;
+    private const string FilterInstalledId = "installed";
+    private const string FilterAllId = "all";
 
     public BloatwareViewModel(
         AppServices app,
@@ -43,18 +47,53 @@ public partial class BloatwareViewModel : ObservableObject
     [ObservableProperty] private string _subtitle = "";
     [ObservableProperty] private bool _isLoading;
     [ObservableProperty] private bool _isBusy;
+    [ObservableProperty] private string _selectedFilterId = FilterInstalledId;
+    [ObservableProperty] private string _emptyText = "";
     public ObservableCollection<AppRowViewModel> Items { get; } = new();
+    public ObservableCollection<BloatwareFilterOption> FilterOptions { get; } = new();
     public bool CanRunBloatware => !IsLoading && !IsBusy;
+    public bool ShowInstalledOnly => !string.Equals(SelectedFilterId, FilterAllId, StringComparison.Ordinal);
+    public bool HasNoVisibleItems => !IsLoading && Items.Count == 0;
 
-    partial void OnIsLoadingChanged(bool value) => OnPropertyChanged(nameof(CanRunBloatware));
+    partial void OnIsLoadingChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanRunBloatware));
+        OnPropertyChanged(nameof(HasNoVisibleItems));
+    }
+
     partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanRunBloatware));
+
+    partial void OnSelectedFilterIdChanged(string value)
+    {
+        if (_suppressFilter) return;
+        Filter(_activeQuery);
+    }
 
     public void RefreshLabels()
     {
         Title = _loc.Get("blo.title");
         Subtitle = _loc.Get("blo.subtitle");
+        RebuildFilterOptions();
         foreach (var item in _all)
             item.RefreshLabels(_loc);
+        Filter(_activeQuery);
+    }
+
+    private void RebuildFilterOptions()
+    {
+        var selected = string.IsNullOrWhiteSpace(SelectedFilterId) ? FilterInstalledId : SelectedFilterId;
+        _suppressFilter = true;
+        try
+        {
+            FilterOptions.Clear();
+            FilterOptions.Add(new BloatwareFilterOption(FilterInstalledId, _loc.Get("blo.filter.installed")));
+            FilterOptions.Add(new BloatwareFilterOption(FilterAllId, _loc.Get("common.all")));
+            SelectedFilterId = selected;
+        }
+        finally
+        {
+            _suppressFilter = false;
+        }
     }
 
     [RelayCommand]
@@ -75,7 +114,7 @@ public partial class BloatwareViewModel : ObservableObject
             await UiThread.RunAsync(() =>
             {
                 _all = rows;
-                Filter(null);
+                Filter(_activeQuery);
             }).ConfigureAwait(true);
 
             AppLog.Info($"Bloatware ReloadAsync done count={_all.Count}");
@@ -92,13 +131,26 @@ public partial class BloatwareViewModel : ObservableObject
 
     public void Filter(string? query)
     {
+        _activeQuery = query;
         Items.Clear();
-        foreach (var item in SearchAll(query))
+        IEnumerable<AppRowViewModel> rows = SearchAll(query);
+        if (ShowInstalledOnly)
+            rows = rows.Where(i => i.IsInstalled);
+        else
+            rows = rows.OrderByDescending(i => i.IsInstalled).ThenBy(i => i.Title, StringComparer.CurrentCultureIgnoreCase);
+        foreach (var item in rows)
             Items.Add(item);
+        UpdateEmptyText();
+        OnPropertyChanged(nameof(HasNoVisibleItems));
     }
 
     public IEnumerable<AppRowViewModel> SearchAll(string? query) =>
         _all.Where(i => i.MatchesQuery(query));
+
+    private void UpdateEmptyText()
+    {
+        EmptyText = ShowInstalledOnly ? _loc.Get("blo.emptyInstalled") : "";
+    }
 
     [RelayCommand]
     private async Task RemoveSelectedAsync()
@@ -137,9 +189,23 @@ public partial class BloatwareViewModel : ObservableObject
         }
     }
 
+    private bool EnsureDangerousAllowed()
+    {
+        if (_app.Settings.AllowDangerousActions)
+            return true;
+        MessageBox.Show(
+            _loc.Get("danger.needSettings"),
+            _loc.Get("danger.title"),
+            MessageBoxButton.OK,
+            MessageBoxImage.Warning);
+        return false;
+    }
+
     [RelayCommand]
     private async Task UninstallOneDriveAsync()
     {
+        if (!EnsureDangerousAllowed())
+            return;
         if (MessageBox.Show(_loc.Get("blo.onedriveConfirm"), _loc.Get("app.title"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
             return;
         if (!await _confirm()) return;
@@ -178,6 +244,73 @@ public partial class BloatwareViewModel : ObservableObject
         {
             IsBusy = false;
         }
+    }
+
+    [RelayCommand]
+    private async Task UninstallEdgeAsync()
+    {
+        if (!EnsureDangerousAllowed())
+            return;
+        if (MessageBox.Show(_loc.Get("blo.edgeConfirm"), _loc.Get("app.title"), MessageBoxButton.YesNo, MessageBoxImage.Warning) != MessageBoxResult.Yes)
+            return;
+        if (!await _confirm()) return;
+
+        IsBusy = true;
+        try
+        {
+            var action = _app.ActionFactory.CreateEdgeUninstall();
+            if (_previewApply is not null)
+            {
+                await _previewApply([action], _loc.Get("blo.edge")).ConfigureAwait(true);
+                return;
+            }
+
+            var result = await OperationHost.TrackAsync(_app.Operations, _loc.Get("blo.edge"), token =>
+                _app.RunActionAsync(_loc.Get("blo.edge"), action, false, token));
+            if (!result.Success)
+            {
+                MessageBox.Show(FormatEdgeFailure(result.Message), _loc.Get("app.title"),
+                    MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            else
+            {
+                MessageBox.Show(result.Message ?? _loc.Get("blo.edgeOk"), _loc.Get("app.title"),
+                    MessageBoxButton.OK, MessageBoxImage.Information);
+            }
+        }
+        catch (Exception ex)
+        {
+            MessageBox.Show(FormatEdgeFailure(ex.Message), _loc.Get("app.title"), MessageBoxButton.OK, MessageBoxImage.Warning);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    private string FormatEdgeFailure(string? message)
+    {
+        if (string.IsNullOrWhiteSpace(message))
+            return _loc.Get("blo.edgeFailed");
+        if (message.Contains("EDGE_STILL_INSTALLED", StringComparison.OrdinalIgnoreCase) ||
+            message.Contains("still installed after uninstall", StringComparison.OrdinalIgnoreCase) ||
+            message.Contains("blo.edgeStillInstalled", StringComparison.OrdinalIgnoreCase))
+            return _loc.Get("blo.edgeStillInstalled");
+
+        var localized = _loc.Get(message);
+        if (!string.Equals(localized, message, StringComparison.Ordinal))
+            return localized;
+
+        // Strip PowerShell exception wrappers from temp scripts.
+        var marker = "Microsoft Edge is still installed";
+        var idx = message.IndexOf(marker, StringComparison.OrdinalIgnoreCase);
+        if (idx >= 0)
+            return _loc.Get("blo.edgeStillInstalled");
+
+        return message.Contains("At C:\\", StringComparison.OrdinalIgnoreCase) ||
+               message.Contains("CategoryInfo", StringComparison.OrdinalIgnoreCase)
+            ? _loc.Get("blo.edgeFailed")
+            : message;
     }
 
     [RelayCommand]
@@ -251,3 +384,5 @@ public partial class BloatwareViewModel : ObservableObject
         }
     }
 }
+
+public sealed record BloatwareFilterOption(string Id, string Label);

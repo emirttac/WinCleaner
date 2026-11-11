@@ -13,20 +13,35 @@
     <TextBlock Grid.Row="0" Text="{Binding Title}" Style="{StaticResource PageTitleStyle}"/>
     <TextBlock Grid.Row="1" Text="{Binding Subtitle}" Style="{StaticResource PageSubtitleStyle}"/>
 
-    <StackPanel Grid.Row="2" Orientation="Horizontal" Margin="0,0,0,12">
-      <ui:Button Content="{DynamicResource common.refresh}" Command="{Binding ReloadCommand}"
-                 Appearance="Secondary" Icon="{ui:SymbolIcon ArrowSync24}" Margin="0,0,8,0"
-                 IsEnabled="{Binding CanRunBloatware}"/>
-      <ui:Button Content="{DynamicResource common.remove}" Command="{Binding RemoveSelectedCommand}"
-                 Appearance="Primary" Icon="{ui:SymbolIcon Delete24}" Margin="0,0,8,0"
-                 IsEnabled="{Binding CanRunBloatware}"/>
-      <ui:Button Content="{DynamicResource blo.reinstall}" Command="{Binding ReinstallSelectedCommand}"
-                 Appearance="Secondary" Icon="{ui:SymbolIcon ArrowDownload24}" Margin="0,0,8,0"
-                 IsEnabled="{Binding CanRunBloatware}"/>
-      <ui:Button Content="{DynamicResource blo.onedrive}" Command="{Binding UninstallOneDriveCommand}"
-                 Appearance="Danger" Icon="{ui:SymbolIcon CloudDismiss24}"
-                 IsEnabled="{Binding CanRunBloatware}"/>
-    </StackPanel>
+    <DockPanel Grid.Row="2" Margin="0,0,0,12">
+      <ComboBox DockPanel.Dock="Left"
+                Width="180"
+                MinHeight="32"
+                Margin="0,0,12,0"
+                VerticalAlignment="Center"
+                ItemsSource="{Binding FilterOptions}"
+                DisplayMemberPath="Label"
+                SelectedValuePath="Id"
+                SelectedValue="{Binding SelectedFilterId, Mode=TwoWay}"
+                AutomationProperties.Name="{DynamicResource blo.filter}"/>
+      <WrapPanel Orientation="Horizontal" VerticalAlignment="Center">
+        <ui:Button Content="{DynamicResource common.refresh}" Command="{Binding ReloadCommand}"
+                   Appearance="Secondary" Icon="{ui:SymbolIcon ArrowSync24}" Margin="0,0,8,4"
+                   IsEnabled="{Binding CanRunBloatware}"/>
+        <ui:Button Content="{DynamicResource common.remove}" Command="{Binding RemoveSelectedCommand}"
+                   Appearance="Primary" Icon="{ui:SymbolIcon Delete24}" Margin="0,0,8,4"
+                   IsEnabled="{Binding CanRunBloatware}"/>
+        <ui:Button Content="{DynamicResource blo.reinstall}" Command="{Binding ReinstallSelectedCommand}"
+                   Appearance="Secondary" Icon="{ui:SymbolIcon ArrowDownload24}" Margin="0,0,8,4"
+                   IsEnabled="{Binding CanRunBloatware}"/>
+        <ui:Button Content="{DynamicResource blo.onedrive}" Command="{Binding UninstallOneDriveCommand}"
+                   Appearance="Danger" Icon="{ui:SymbolIcon CloudDismiss24}" Margin="0,0,8,4"
+                   IsEnabled="{Binding CanRunBloatware}"/>
+        <ui:Button Content="{DynamicResource blo.edge}" Command="{Binding UninstallEdgeCommand}"
+                   Appearance="Danger" Icon="{ui:SymbolIcon Globe24}" Margin="0,0,8,4"
+                   IsEnabled="{Binding CanRunBloatware}"/>
+      </WrapPanel>
+    </DockPanel>
 
     <ui:InfoBar Grid.Row="3" Title="{DynamicResource common.loading}"
                 IsOpen="True"
@@ -35,52 +50,74 @@
                 Margin="0,0,0,10"
                 Visibility="{Binding IsLoading, Converter={StaticResource BoolToVis}}"/>
 
-    <ItemsControl Grid.Row="4" ItemsSource="{Binding Items}" Style="{StaticResource VirtualizingListStyle}">
-      <ItemsControl.ItemTemplate>
-        <DataTemplate>
-          <ui:Card Margin="0,0,0,10" Padding="16">
-            <Grid>
-              <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto"/>
-                <ColumnDefinition Width="*"/>
-              </Grid.ColumnDefinitions>
-              <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}"
-                        VerticalAlignment="Top" Margin="0,2,12,0"/>
-              <StackPanel Grid.Column="1">
-                <StackPanel Orientation="Horizontal">
-                  <TextBlock Text="{Binding Title}" Style="{StaticResource CardTitleStyle}"/>
-                  <Border Style="{StaticResource RiskBadgeStyle}"
-                          Background="{Binding Risk, Converter={StaticResource RiskToBrush}}">
-                    <TextBlock Text="{Binding RiskLabel}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding Risk, Converter={StaticResource RiskToBadgeText}}"/>
-                  </Border>
-                  <TextBlock Text="{Binding CriticalLabel}" Foreground="{DynamicResource WarningBrush}"
-                             Margin="10,0,0,0" FontSize="11" VerticalAlignment="Center"/>
+    <Grid Grid.Row="4">
+      <TextBlock Text="{Binding EmptyText}"
+                 Foreground="{DynamicResource TextMutedBrush}"
+                 FontSize="13"
+                 TextWrapping="Wrap"
+                 VerticalAlignment="Top"
+                 Margin="0,8,0,0"
+                 Visibility="{Binding HasNoVisibleItems, Converter={StaticResource BoolToVis}}"/>
+      <ItemsControl ItemsSource="{Binding Items}" Style="{StaticResource VirtualizingListStyle}"
+                    Visibility="{Binding HasNoVisibleItems, Converter={StaticResource BoolToVis}, ConverterParameter=Invert}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <ui:Card Margin="0,0,0,10" Padding="16">
+              <Grid>
+                <Grid.ColumnDefinitions>
+                  <ColumnDefinition Width="Auto"/>
+                  <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <CheckBox IsChecked="{Binding IsSelected}" IsEnabled="{Binding CanSelect}"
+                          VerticalAlignment="Top" Margin="0,2,12,0"/>
+                <StackPanel Grid.Column="1">
+                  <StackPanel Orientation="Horizontal">
+                    <TextBlock Text="{Binding Title}">
+                      <TextBlock.Style>
+                        <Style TargetType="TextBlock" BasedOn="{StaticResource CardTitleStyle}">
+                          <Style.Triggers>
+                            <DataTrigger Binding="{Binding IsInstalled}" Value="False">
+                              <Setter Property="TextDecorations" Value="Strikethrough"/>
+                              <Setter Property="Opacity" Value="0.55"/>
+                              <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+                            </DataTrigger>
+                          </Style.Triggers>
+                        </Style>
+                      </TextBlock.Style>
+                    </TextBlock>
+                    <Border Style="{StaticResource RiskBadgeStyle}"
+                            Background="{Binding Risk, Converter={StaticResource RiskToBrush}}">
+                      <TextBlock Text="{Binding RiskLabel}" FontSize="10" FontWeight="SemiBold" Foreground="{Binding Risk, Converter={StaticResource RiskToBadgeText}}"/>
+                    </Border>
+                    <TextBlock Text="{Binding CriticalLabel}" Foreground="{DynamicResource WarningBrush}"
+                               Margin="10,0,0,0" FontSize="11" VerticalAlignment="Center"/>
+                  </StackPanel>
+                  <TextBlock Text="{Binding PackageName}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
+                  <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"
+                             FontSize="12" LineHeight="18"
+                             ToolTip="{Binding Description}"/>
+                  <TextBlock FontSize="11" Margin="0,4,0,0">
+                    <TextBlock.Style>
+                      <Style TargetType="TextBlock">
+                        <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
+                        <Setter Property="Text" Value="{DynamicResource blo.notInstalled}"/>
+                        <Style.Triggers>
+                          <DataTrigger Binding="{Binding IsInstalled}" Value="True">
+                            <Setter Property="Text" Value="{DynamicResource blo.installed}"/>
+                            <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
+                          </DataTrigger>
+                        </Style.Triggers>
+                      </Style>
+                    </TextBlock.Style>
+                  </TextBlock>
+                  <TextBlock Text="{Binding ReinstallHint}" FontSize="11" Margin="0,2,0,0"
+                             Foreground="{DynamicResource TextMutedBrush}"/>
                 </StackPanel>
-                <TextBlock Text="{Binding PackageName}" FontSize="11" Foreground="{DynamicResource TextMutedBrush}"/>
-                <TextBlock Text="{Binding Description}" TextWrapping="Wrap" Foreground="{DynamicResource TextSecondaryBrush}" Margin="0,4,0,0"
-                           FontSize="12" LineHeight="18"
-                           ToolTip="{Binding Description}"/>
-                <TextBlock FontSize="11" Margin="0,4,0,0">
-                  <TextBlock.Style>
-                    <Style TargetType="TextBlock">
-                      <Setter Property="Foreground" Value="{DynamicResource TextMutedBrush}"/>
-                      <Setter Property="Text" Value="{DynamicResource blo.notInstalled}"/>
-                      <Style.Triggers>
-                        <DataTrigger Binding="{Binding IsInstalled}" Value="True">
-                          <Setter Property="Text" Value="{DynamicResource blo.installed}"/>
-                          <Setter Property="Foreground" Value="{DynamicResource SuccessBrush}"/>
-                        </DataTrigger>
-                      </Style.Triggers>
-                    </Style>
-                  </TextBlock.Style>
-                </TextBlock>
-                <TextBlock Text="{Binding ReinstallHint}" FontSize="11" Margin="0,2,0,0"
-                           Foreground="{DynamicResource TextMutedBrush}"/>
-              </StackPanel>
-            </Grid>
-          </ui:Card>
-        </DataTemplate>
-      </ItemsControl.ItemTemplate>
-    </ItemsControl>
+              </Grid>
+            </ui:Card>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </Grid>
   </Grid>
 </UserControl>

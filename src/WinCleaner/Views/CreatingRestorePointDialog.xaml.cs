@@ -83,13 +83,23 @@ public partial class CreatingRestorePointDialog : FluentWindow
         try
         {
             Succeeded = await _work(cancel.Token).ConfigureAwait(true);
-            MessageText.Text = Succeeded
-                ? (TryFindResource("restore.created") as string ?? "Restore point created.")
-                : RestorePointManager.LastOutcome == RestorePointOutcome.ProtectionDisabled
-                    ? (TryFindResource("gate.protectionOff") as string ?? "System Protection is turned off, so a restore point cannot be created.")
-                    : (TryFindResource("restore.failed") as string ?? "Could not create a restore point.");
+            var outcome = RestorePointManager.LastOutcome;
+            var (key, fallback) = outcome switch
+            {
+                RestorePointOutcome.Created => ("restore.created", "Restore point created."),
+                RestorePointOutcome.AlreadyExists => ("restore.existing", "A WinCleaner restore point is already on this PC. Windows did not create another one, so that existing point will be used."),
+                RestorePointOutcome.ProtectionDisabled => ("restore.protectionOff", "System Restore is turned off, so a restore point cannot be created."),
+                _ => ("restore.failed", "Could not create a restore point.")
+            };
+            MessageText.Text = TryFindResource(key) as string ?? fallback;
             HintText.Text = "";
-            await Task.Delay(Succeeded ? 700 : 1400).ConfigureAwait(true);
+            var delay = outcome switch
+            {
+                RestorePointOutcome.Created => 900,
+                RestorePointOutcome.AlreadyExists => 2200,
+                _ => 1600
+            };
+            await Task.Delay(delay).ConfigureAwait(true);
         }
         catch (Exception ex)
         {

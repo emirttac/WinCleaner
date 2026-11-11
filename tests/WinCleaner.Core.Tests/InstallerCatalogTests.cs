@@ -22,6 +22,7 @@ public class InstallerCatalogTests
         Assert.Contains(apps, a => a.WingetId == "Docker.DockerDesktop");
         Assert.Contains(apps, a => a.WingetId == "Playnite.Playnite");
         Assert.Contains(apps, a => a.WingetId == "Bitwarden.Bitwarden");
+        Assert.Contains(apps, a => a.WingetId == "ImputNet.Helium");
         Assert.True(apps.Count >= 50);
         Assert.All(apps, a =>
         {

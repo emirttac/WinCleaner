@@ -118,9 +118,11 @@ public partial class DashboardViewModel : ObservableObject
 
     public void RefreshRestoreStatus()
     {
-        RestoreStatusText = _app.RestorePoints.HasSessionCheckpoint
-            ? _loc.Get("restore.statusOk")
-            : _loc.Get("restore.statusNone");
+        RestoreStatusText = !_app.RestorePoints.HasSessionCheckpoint
+            ? _loc.Get("restore.statusNone")
+            : RestorePointManager.LastOutcome == RestorePointOutcome.AlreadyExists
+                ? _loc.Get("restore.existing")
+                : _loc.Get("restore.statusOk");
     }
 
     partial void OnIsBusyChanged(bool value) => OnPropertyChanged(nameof(CanRunQuickActions));

@@ -78,6 +78,15 @@
   <sys:String x:Key="blo.onedrive">Uninstall OneDrive</sys:String>
   <sys:String x:Key="blo.confirm">Selected apps will be permanently removed. WinCleaner cannot magically bring them back — you will need to reinstall from the Store. Continue?</sys:String>
   <sys:String x:Key="blo.onedriveConfirm">Uninstall OneDrive completely? Cloud folder sync will stop. You will need to confirm twice.</sys:String>
+  <sys:String x:Key="blo.edge">Uninstall Microsoft Edge</sys:String>
+  <sys:String x:Key="blo.edgeConfirm">Uninstall Microsoft Edge and Edge Update? WebView2 stays. Your default browser may break. You will need to confirm twice.</sys:String>
+  <sys:String x:Key="blo.edgeOk">Microsoft Edge and Edge Update were uninstalled. WebView2 was left installed.</sys:String>
+  <sys:String x:Key="blo.edgeFailed">Microsoft Edge uninstall failed.</sys:String>
+  <sys:String x:Key="blo.edgeStillInstalled">Microsoft Edge could not be fully removed. WinCleaner force-closes Edge tasks and must run as Administrator. Close any Edge windows and try again.</sys:String>
+  <sys:String x:Key="blo.edgeNoRevert">Edge uninstall cannot be auto-reverted.</sys:String>
+  <sys:String x:Key="blo.filter.installed">Installed</sys:String>
+  <sys:String x:Key="blo.filter">Filter apps</sys:String>
+  <sys:String x:Key="blo.emptyInstalled">No catalog apps are installed on this PC.</sys:String>
   <sys:String x:Key="gam.title">Gamer Optimizations</sys:String>
   <sys:String x:Key="gam.subtitle">Settings for FPS, latency, and background noise. Do not expect miracles — a good PC plus these tweaks means cleaner performance.</sys:String>
   <sys:String x:Key="gam.tips">Monitor &amp; V-Sync Tips</sys:String>
@@ -151,7 +160,9 @@
   <sys:String x:Key="restore.statusNone">No restore point was created for this session yet.</sys:String>
   <sys:String x:Key="restore.statusOk">Restore point is ready for this session.</sys:String>
   <sys:String x:Key="restore.created">Restore point created.</sys:String>
-  <sys:String x:Key="restore.failed">Could not create a restore point. System Restore may be turned off.</sys:String>
+  <sys:String x:Key="restore.failed">Could not create a restore point.</sys:String>
+  <sys:String x:Key="restore.existing">A WinCleaner restore point is already on this PC. Windows did not create another one, so that existing point will be used.</sys:String>
+  <sys:String x:Key="restore.protectionOff">System Restore is turned off, so a restore point cannot be created.</sys:String>
   <sys:String x:Key="restore.warnTitle">Creating restore point</sys:String>
   <sys:String x:Key="restore.warnBody">This can take about a minute. Please wait — WinCleaner will unlock when finished.</sys:String>
   <sys:String x:Key="restore.creating">Creating restore point…</sys:String>
@@ -380,8 +391,10 @@
   <sys:String x:Key="tweak.darkmode.desc">Turns on dark theme for apps and the system UI.</sys:String>
   <sys:String x:Key="tweak.lockscreenads.name">Disable Lock Screen Ads / Tips</sys:String>
   <sys:String x:Key="tweak.lockscreenads.desc">Turns off Windows Spotlight ads and tip overlays on the lock screen so you get a plain static image.</sys:String>
-  <sys:String x:Key="tweak.showext.name">Show File Extensions &amp; Hidden Files</sys:String>
-  <sys:String x:Key="tweak.showext.desc">Shows file extensions and hidden files in Explorer — easier to spot fake “photo.jpg.exe” files. Explorer restarts.</sys:String>
+  <sys:String x:Key="tweak.showext.name">Show File Extensions</sys:String>
+  <sys:String x:Key="tweak.showext.desc">Shows file extensions in Explorer — easier to spot fake “photo.jpg.exe” files. Explorer restarts.</sys:String>
+  <sys:String x:Key="tweak.showhidden.name">Show Hidden Files</sys:String>
+  <sys:String x:Key="tweak.showhidden.desc">Shows hidden files and folders in Explorer. Explorer restarts.</sys:String>
   <sys:String x:Key="tweak.taskbarleft.name">Align Taskbar Left</sys:String>
   <sys:String x:Key="tweak.taskbarleft.desc">Moves Windows 11 taskbar icons back to the classic left alignment. Explorer restarts.</sys:String>
   <sys:String x:Key="tweak.hidechat.name">Hide Taskbar Chat Icon</sys:String>
@@ -400,6 +413,7 @@
   <sys:String x:Key="tweak.nicpower.desc">Stops Windows from sleeping network adapters to save power. Can reduce random micro-disconnects and lag spikes in online games.</sys:String>
   <sys:String x:Key="inst.title">Package Installer</sys:String>
   <sys:String x:Key="inst.subtitle">Silently install popular apps with winget. Internet required; App Installer (winget) must be present.</sys:String>
+  <sys:String x:Key="inst.search.placeholder">Search apps in this list…</sys:String>
   <sys:String x:Key="inst.installSelected">Install Selected</sys:String>
   <sys:String x:Key="inst.wingetOk">winget ready — {0}</sys:String>
   <sys:String x:Key="inst.wingetMissing">winget was not found. Install &quot;App Installer&quot; from the Microsoft Store, then press Refresh.</sys:String>
@@ -434,6 +448,8 @@
   <sys:String x:Key="inst.edge.desc">Windows built-in Chromium browser.</sys:String>
   <sys:String x:Key="inst.brave.name">Brave</sys:String>
   <sys:String x:Key="inst.brave.desc">Chromium browser with ad blocking.</sys:String>
+  <sys:String x:Key="inst.helium.name">Helium</sys:String>
+  <sys:String x:Key="inst.helium.desc">Privacy-focused Chromium browser with built-in ad blocking.</sys:String>
   <sys:String x:Key="inst.vscode.name">Visual Studio Code</sys:String>
   <sys:String x:Key="inst.vscode.desc">Lightweight code editor.</sys:String>
   <sys:String x:Key="inst.git.name">Git</sys:String>
@@ -509,6 +525,7 @@
   <sys:String x:Key="dash.diskFreeOf">{0}: {1} free / {2}</sys:String>
   <sys:String x:Key="blo.onedriveFailed">OneDrive uninstall failed.</sys:String>
   <sys:String x:Key="blo.onedriveOk">OneDrive uninstalled.</sys:String>
+  <sys:String x:Key="blo.onedriveNoRevert">OneDrive uninstall cannot be auto-reverted.</sys:String>
   <sys:String x:Key="common.statusOk">OK</sys:String>
   <sys:String x:Key="common.statusFail">FAIL</sys:String>
   <sys:String x:Key="set.lang.tr">Türkçe</sys:String>
@@ -536,6 +553,7 @@
   <sys:String x:Key="preset.custom">Custom Profile</sys:String>
   <sys:String x:Key="tools.cleanTemp.confirm">Delete files in Windows and user Temp folders? Files in use are skipped. Continue?</sys:String>
   <sys:String x:Key="danger.needSettings">Turn on “Allow dangerous actions” in Settings before this operation.</sys:String>
+  <sys:String x:Key="precheck.vcredist.detail">No NuGet package references a Visual C++ library. The framework-dependent publish has no vcruntime DLL. The self-contained publish includes vcruntime140_cor3.dll from the .NET runtime. If the VC++ 2015-2022 x64 runtime key is missing, WinCleaner can still install it quietly.</sys:String>
   <sys:String x:Key="msg.oneShotOk">Command completed.</sys:String>
   <sys:String x:Key="tm.title">Time Machine</sys:String>
   <sys:String x:Key="tm.subtitle">Named checkpoints store the values captured before each apply. Revert restores those captured values, not catalog defaults.</sys:String>
@@ -760,7 +778,6 @@
   <sys:String x:Key="busy.working">Working…</sys:String>
   <sys:String x:Key="busy.pleaseWait">Do not close the app. This may take a moment.</sys:String>
   <sys:String x:Key="busy.finishing">Finishing…</sys:String>
-
   <sys:String x:Key="inst.extra.windirstatwindirstat.name">WinDirStat</sys:String>
   <sys:String x:Key="inst.extra.windirstatwindirstat.desc">Shows which folders use the most disk space.</sys:String>
   <sys:String x:Key="inst.extra.greenshotgreenshot.name">Greenshot</sys:String>

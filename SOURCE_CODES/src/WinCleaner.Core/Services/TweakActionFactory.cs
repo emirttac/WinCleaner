@@ -156,6 +156,8 @@ public sealed class TweakActionFactory
     }
 
     public OneDriveUninstallAction CreateOneDriveUninstall() => new(_appx, _localize);
+
+    public EdgeUninstallAction CreateEdgeUninstall() => new(_appx, _localize);
 }
 
 public sealed class PresetEngine

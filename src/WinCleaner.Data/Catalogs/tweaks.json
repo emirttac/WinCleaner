@@ -1308,26 +1308,33 @@
     "category": "Visual",
     "risk": "Safe",
     "type": "registry",
-    "registries": [
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "name": "HideFileExt",
-        "valueKind": "DWord",
-        "enabledValue": "0",
-        "disabledValue": "1",
-        "restartExplorer": true
-      },
-      {
-        "hive": "HKCU",
-        "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
-        "name": "Hidden",
-        "valueKind": "DWord",
-        "enabledValue": "1",
-        "disabledValue": "0",
-        "restartExplorer": true
-      }
-    ],
+    "registry": {
+      "hive": "HKCU",
+      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "name": "HideFileExt",
+      "valueKind": "DWord",
+      "enabledValue": "0",
+      "disabledValue": "1",
+      "restartExplorer": true
+    },
+    "reversibility": "Exact"
+  },
+  {
+    "id": "tweak-show-hidden-files",
+    "displayNameKey": "tweak.showhidden.name",
+    "descriptionKey": "tweak.showhidden.desc",
+    "category": "Visual",
+    "risk": "Safe",
+    "type": "registry",
+    "registry": {
+      "hive": "HKCU",
+      "path": "Software\\Microsoft\\Windows\\CurrentVersion\\Explorer\\Advanced",
+      "name": "Hidden",
+      "valueKind": "DWord",
+      "enabledValue": "1",
+      "disabledValue": "2",
+      "restartExplorer": true
+    },
     "reversibility": "Exact"
   },
   {

@@ -405,7 +405,7 @@ public sealed class ActionExecutor
     private async Task<bool> ConfirmMissingRestorePointAsync(CancellationToken ct)
     {
         var outcome = _restore.CreateChecked("WinCleaner");
-        if (outcome == RestorePointOutcome.Created)
+        if (outcome is RestorePointOutcome.Created or RestorePointOutcome.AlreadyExists)
             return true;
         var code = outcome == RestorePointOutcome.ProtectionDisabled ? "gate.protectionOff" : "gate.noNewPoint";
         return Confirmation is not null && await Confirmation.ConfirmAsync(code, ct).ConfigureAwait(false);

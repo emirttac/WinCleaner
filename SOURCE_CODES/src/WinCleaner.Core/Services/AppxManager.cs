@@ -1,3 +1,4 @@
+using System.IO;
 using System.Text;
 using System.Text.Json;
 using WinCleaner.Core.Abstractions;
@@ -33,6 +34,26 @@ public sealed class AppxManager
     public AppxManager(IProcessRunner? processes = null)
     {
         _processes = processes ?? ProcessRunner.Shared;
+    }
+
+    public bool IsEdgeBrowserInstalled()
+    {
+        var x86 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+            @"Microsoft\Edge\Application\msedge.exe");
+        var x64 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            @"Microsoft\Edge\Application\msedge.exe");
+        return File.Exists(x86) || File.Exists(x64);
+    }
+
+    public bool IsOneDriveInstalled()
+    {
+        var local = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            @"Microsoft\OneDrive\OneDrive.exe");
+        var pf = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles),
+            @"Microsoft OneDrive\OneDrive.exe");
+        var pf86 = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ProgramFilesX86),
+            @"Microsoft OneDrive\OneDrive.exe");
+        return File.Exists(local) || File.Exists(pf) || File.Exists(pf86);
     }
 
     public async Task<IReadOnlyList<InstalledAppInfo>> GetInstalledPackagesAsync(CancellationToken ct = default)
@@ -352,6 +373,246 @@ if ($leftover.Count -gt 0) {
 }
 ";
         return await RunPowerShellAsync(script, ct, timeoutMs: 180_000).ConfigureAwait(false);
+    }
+
+    public async Task<PowerShellResult> UninstallEdgeAsync(CancellationToken ct = default)
+    {
+        // Official Chromium Edge uninstall requires --msedge [--channel=...]. Without it,
+        // setup.exe exits without removing the browser. Prefer the registered UninstallString.
+        // Kill only Edge browser/updater trees — never WebView2.
+        var script = @"
+$ErrorActionPreference = 'Continue'
+
+function Test-IsWebViewPath([string]$p) {
+  if ([string]::IsNullOrWhiteSpace($p)) { return $true }
+  return $p -like '*EdgeWebView*'
+}
+
+function Stop-EdgeBrowserTree {
+  # Path-based kill: anything under Microsoft\Edge\ except EdgeWebView.
+  try {
+    Get-CimInstance Win32_Process -ErrorAction SilentlyContinue | Where-Object {
+      $_.ExecutablePath -and
+      $_.ExecutablePath -like '*\Microsoft\Edge\*' -and
+      $_.ExecutablePath -notlike '*EdgeWebView*' -and
+      $_.Name -ne 'msedgewebview2.exe'
+    } | ForEach-Object {
+      try { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue } catch {}
+    }
+  } catch {}
+
+  foreach ($n in @(
+    'msedge','msedge_proxy','identity_helper','elevation_service','notification_helper',
+    'browser_broker','MicrosoftEdgeUpdate','MicrosoftEdgeUpdateCore','MicrosoftEdgeUpdateBroker'
+  )) {
+    & taskkill.exe /F /IM ($n + '.exe') /T 2>$null | Out-Null
+    Get-Process -Name $n -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+  }
+}
+
+function Test-EdgeBrowserInstalled {
+  $exeProbes = @(
+    ""${env:ProgramFiles(x86)}\Microsoft\Edge\Application\msedge.exe"",
+    ""${env:ProgramFiles}\Microsoft\Edge\Application\msedge.exe""
+  )
+  foreach ($p in $exeProbes) { if (Test-Path -LiteralPath $p) { return $true } }
+  return $false
+}
+
+function Parse-UninstallCommand([string]$raw) {
+  if ([string]::IsNullOrWhiteSpace($raw)) { return $null }
+  $exe = $null
+  $argStr = ''
+  if ($raw -match '^\s*""([^""]+)""\s*(.*)$') {
+    $exe = $Matches[1]
+    $argStr = $Matches[2].Trim()
+  } else {
+    $idx = $raw.IndexOf('.exe', [StringComparison]::OrdinalIgnoreCase)
+    if ($idx -ge 0) {
+      $exe = $raw.Substring(0, $idx + 4).Trim('""')
+      $argStr = $raw.Substring($idx + 4).Trim()
+    } else {
+      $exe = $raw.Trim('""')
+    }
+  }
+  if (-not $exe -or -not (Test-Path -LiteralPath $exe)) { return $null }
+  if (Test-IsWebViewPath $exe) { return $null }
+  return [pscustomobject]@{ Exe = $exe; Args = $argStr }
+}
+
+function Ensure-EdgeUninstallArgs([string]$argStr) {
+  $parts = New-Object System.Collections.Generic.List[string]
+  if (-not [string]::IsNullOrWhiteSpace($argStr)) {
+    foreach ($tok in ($argStr -split '\s+')) {
+      if (-not [string]::IsNullOrWhiteSpace($tok)) { $parts.Add($tok) }
+    }
+  }
+  if (-not ($parts | Where-Object { $_ -ieq '--uninstall' })) { $parts.Insert(0, '--uninstall') }
+  if (-not ($parts | Where-Object { $_ -ieq '--msedge' })) { $parts.Add('--msedge') }
+  if (-not ($parts | Where-Object { $_ -like '--channel=*' })) { $parts.Add('--channel=stable') }
+  if (-not ($parts | Where-Object { $_ -ieq '--system-level' })) { $parts.Add('--system-level') }
+  if (-not ($parts | Where-Object { $_ -ieq '--verbose-logging' })) { $parts.Add('--verbose-logging') }
+  if (-not ($parts | Where-Object { $_ -ieq '--force-uninstall' })) { $parts.Add('--force-uninstall') }
+  if (-not ($parts | Where-Object { $_ -ieq '--delete-profile' })) { $parts.Add('--delete-profile') }
+  return ($parts -join ' ')
+}
+
+function Get-EdgeSetupCommands {
+  $cmds = New-Object System.Collections.Generic.List[object]
+  $seen = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+
+  $uninstallKeys = @(
+    'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge',
+    'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge',
+    'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge'
+  )
+  foreach ($k in $uninstallKeys) {
+    $v = Get-ItemProperty -Path $k -ErrorAction SilentlyContinue
+    if (-not $v) { continue }
+    foreach ($prop in @('QuietUninstallString','UninstallString')) {
+      $parsed = Parse-UninstallCommand ([string]$v.$prop)
+      if (-not $parsed) { continue }
+      $args = Ensure-EdgeUninstallArgs $parsed.Args
+      $key = ($parsed.Exe + '|' + $args)
+      if ($seen.Add($key)) {
+        $cmds.Add([pscustomobject]@{ Exe = $parsed.Exe; Args = $args })
+      }
+    }
+  }
+
+  $roots = @(
+    ""${env:ProgramFiles(x86)}\Microsoft\Edge\Application"",
+    ""${env:ProgramFiles}\Microsoft\Edge\Application""
+  )
+  foreach ($root in $roots) {
+    if (-not (Test-Path -LiteralPath $root)) { continue }
+    Get-ChildItem -LiteralPath $root -Filter 'setup.exe' -Recurse -ErrorAction SilentlyContinue |
+      Where-Object {
+        -not (Test-IsWebViewPath $_.FullName) -and
+        $_.DirectoryName -like '*\Installer'
+      } |
+      Sort-Object LastWriteTime -Descending |
+      Select-Object -First 2 |
+      ForEach-Object {
+        $args = Ensure-EdgeUninstallArgs ''
+        $key = ($_.FullName + '|' + $args)
+        if ($seen.Add($key)) {
+          $cmds.Add([pscustomobject]@{ Exe = $_.FullName; Args = $args })
+        }
+      }
+  }
+  return $cmds
+}
+
+function Invoke-EdgeCommand($cmd, [int]$timeoutMs) {
+  if (Test-IsWebViewPath $cmd.Exe) { return }
+  $work = Split-Path -Parent $cmd.Exe
+  # Single argument string keeps setup.exe flag parsing stable.
+  $p = Start-Process -FilePath $cmd.Exe -ArgumentList $cmd.Args -WorkingDirectory $work -PassThru -WindowStyle Hidden
+  if ($p -and -not $p.WaitForExit($timeoutMs)) {
+    try { Stop-Process -Id $p.Id -Force -ErrorAction SilentlyContinue } catch {}
+  }
+}
+
+function Force-RemoveEdgeTree([string]$folder) {
+  if (Test-IsWebViewPath $folder) { return }
+  if (-not (Test-Path -LiteralPath $folder)) { return }
+  try {
+    & takeown.exe /F $folder /R /D Y 2>$null | Out-Null
+    & icacls.exe $folder /grant ""*S-1-5-32-544:(OI)(CI)F"" /T /C /Q 2>$null | Out-Null
+  } catch {}
+  try { Remove-Item -LiteralPath $folder -Recurse -Force -ErrorAction SilentlyContinue } catch {}
+  if (Test-Path -LiteralPath $folder) {
+    & cmd.exe /c ""rmdir /s /q """"$folder"""""" 2>$null | Out-Null
+  }
+}
+
+# 1) Kill Edge browser tree hard (not WebView2)
+Stop-EdgeBrowserTree
+
+foreach ($svc in @('edgeupdate','edgeupdatem','MicrosoftEdgeElevationService')) {
+  try { Stop-Service -Name $svc -Force -ErrorAction SilentlyContinue } catch {}
+  try { Set-Service -Name $svc -StartupType Disabled -ErrorAction SilentlyContinue } catch {}
+}
+
+# 2) Official setup uninstall (registry first), twice if needed
+$cmds = @(Get-EdgeSetupCommands)
+for ($pass = 0; $pass -lt 2; $pass++) {
+  Stop-EdgeBrowserTree
+  foreach ($cmd in $cmds) {
+    if (-not (Test-EdgeBrowserInstalled)) { break }
+    Invoke-EdgeCommand $cmd 240000
+    Stop-EdgeBrowserTree
+  }
+  if (-not (Test-EdgeBrowserInstalled)) { break }
+  Start-Sleep -Seconds 2
+}
+
+# 3) AppX stub (browser only)
+try {
+  Get-AppxPackage -ErrorAction SilentlyContinue |
+    Where-Object { $_.Name -eq 'Microsoft.MicrosoftEdge.Stable' } |
+    ForEach-Object {
+      Remove-AppxPackage -Package $_.PackageFullName -ErrorAction SilentlyContinue
+    }
+} catch {}
+
+# 4) Updater uninstall + delete services/tasks
+Stop-EdgeBrowserTree
+foreach ($exe in @(
+  ""${env:ProgramFiles(x86)}\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe"",
+  ""${env:ProgramFiles}\Microsoft\EdgeUpdate\MicrosoftEdgeUpdate.exe""
+)) {
+  if (Test-IsWebViewPath $exe) { continue }
+  if (Test-Path -LiteralPath $exe) {
+    Invoke-EdgeCommand ([pscustomobject]@{ Exe = $exe; Args = '/uninstall' }) 120000
+  }
+}
+
+foreach ($svc in @('edgeupdate','edgeupdatem','MicrosoftEdgeElevationService')) {
+  try { Stop-Service -Name $svc -Force -ErrorAction SilentlyContinue } catch {}
+  try { & sc.exe delete $svc 2>$null | Out-Null } catch {}
+}
+
+Get-ScheduledTask -ErrorAction SilentlyContinue |
+  Where-Object { $_.TaskName -like 'MicrosoftEdgeUpdate*' } |
+  ForEach-Object { Unregister-ScheduledTask -TaskName $_.TaskName -Confirm:$false -ErrorAction SilentlyContinue }
+
+# 5) Force-delete leftover trees (Edge + EdgeUpdate only)
+Stop-EdgeBrowserTree
+foreach ($folder in @(
+  ""${env:ProgramFiles(x86)}\Microsoft\Edge"",
+  ""${env:ProgramFiles}\Microsoft\Edge"",
+  ""${env:ProgramFiles(x86)}\Microsoft\EdgeUpdate"",
+  ""${env:ProgramFiles}\Microsoft\EdgeUpdate""
+)) {
+  Force-RemoveEdgeTree $folder
+}
+
+# 6) Clear uninstall ARP entries so leftovers are not treated as installed
+foreach ($k in @(
+  'HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge',
+  'HKLM:\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge',
+  'HKCU:\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge'
+)) {
+  Remove-Item -Path $k -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+try {
+  if (-not (Test-Path 'HKLM:\SOFTWARE\Microsoft\EdgeUpdate')) {
+    New-Item -Path 'HKLM:\SOFTWARE\Microsoft\EdgeUpdate' -Force | Out-Null
+  }
+  New-ItemProperty -Path 'HKLM:\SOFTWARE\Microsoft\EdgeUpdate' -Name 'DoNotUpdateToEdgeWithChromium' -PropertyType DWord -Value 1 -Force | Out-Null
+} catch {}
+
+if (Test-EdgeBrowserInstalled) {
+  Write-Output 'EDGE_STILL_INSTALLED'
+  exit 2
+}
+
+Write-Output 'removed'
+";
+        return await RunPowerShellAsync(script, ct, timeoutMs: 420_000).ConfigureAwait(false);
     }
 
     private static InstalledAppInfo Parse(JsonElement el) => new()
