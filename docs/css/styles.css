@@ -2289,8 +2289,8 @@ html.js [data-reveal="right"].is-visible {
 
 .release-close {
   position: absolute;
-  top: 0.7rem;
-  right: 0.85rem;
+  top: 0.75rem;
+  right: 0.75rem;
   z-index: 2;
   width: 2.25rem;
   height: 2.25rem;
@@ -2309,8 +2309,7 @@ html.js [data-reveal="right"].is-visible {
 }
 
 .release-notes {
-  position: relative;
-  padding: 1.7rem 3.1rem 1.55rem 1.6rem;
+  padding: 1.7rem 1.6rem 1.55rem;
   overflow: auto;
 }
 
@@ -2362,12 +2361,11 @@ html.js [data-reveal="right"].is-visible {
 
 .release-side {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  align-self: stretch;
-  padding: 1.5rem 1.25rem;
-  background: color-mix(in srgb, var(--bg) 86%, var(--ink));
-  border-left: 1px solid var(--line);
+  align-self: start;
+  padding: 4rem 1.15rem 1.25rem;
+  background: transparent;
 }
 
 .release-side .btn {
@@ -2404,7 +2402,9 @@ body.release-open {
   .release-side {
     position: sticky;
     bottom: 0;
-    border-left: 0;
+    align-self: stretch;
+    padding: 1rem 1.15rem 1.15rem;
+    background: var(--bg);
     border-top: 1px solid var(--line);
   }
 
