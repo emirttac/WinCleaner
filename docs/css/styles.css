@@ -2322,7 +2322,6 @@ html.js [data-reveal="right"].is-visible {
 
 .release-title {
   margin: 0 0 1.15rem;
-  max-width: 18ch;
   font-family: var(--font-display);
   font-size: clamp(1.75rem, 3.2vw, 2.55rem);
   font-weight: 750;
@@ -2402,7 +2401,6 @@ body.release-open {
   }
 
   .release-title {
-    max-width: none;
     padding-right: 1.5rem;
   }
 }
