@@ -2275,11 +2275,12 @@ html.js [data-reveal="right"].is-visible {
   z-index: 1;
   display: grid;
   grid-template-columns: minmax(0, 1.75fr) minmax(13.5rem, 0.72fr);
+  align-items: stretch;
   width: min(58rem, 100%);
   max-height: min(42rem, calc(100vh - 2.5rem));
-  overflow: auto;
+  overflow: hidden;
   color: var(--ink);
-  background: var(--surface-strong);
+  background: var(--bg);
   border: 1px solid var(--line-strong);
   border-radius: 1.15rem;
   box-shadow: 0 28px 80px rgba(0, 0, 0, 0.45);
@@ -2289,7 +2290,7 @@ html.js [data-reveal="right"].is-visible {
 .release-close {
   position: absolute;
   top: 0.7rem;
-  right: 0.75rem;
+  right: 0.85rem;
   z-index: 2;
   width: 2.25rem;
   height: 2.25rem;
@@ -2308,7 +2309,9 @@ html.js [data-reveal="right"].is-visible {
 }
 
 .release-notes {
-  padding: 1.7rem 1.6rem 1.55rem;
+  position: relative;
+  padding: 1.7rem 3.1rem 1.55rem 1.6rem;
+  overflow: auto;
 }
 
 .release-kicker {
@@ -2347,23 +2350,23 @@ html.js [data-reveal="right"].is-visible {
 
 .release-fixes {
   margin: 1.35rem 0 0.7rem;
-}
-
-.release-notes > .release-fixes:first-of-type {
-  margin-top: 0;
-}
   font-family: var(--font-display);
   font-size: 1.2rem;
   font-weight: 700;
   letter-spacing: -0.02em;
 }
 
+.release-notes > .release-fixes:first-of-type {
+  margin-top: 0;
+}
+
 .release-side {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 1.6rem 1.35rem;
-  background: color-mix(in srgb, var(--ink) 5%, var(--surface-strong));
+  align-self: stretch;
+  padding: 1.5rem 1.25rem;
+  background: color-mix(in srgb, var(--bg) 86%, var(--ink));
   border-left: 1px solid var(--line);
 }
 
