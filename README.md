@@ -78,7 +78,7 @@ Most “cleaner” tools either hide what they do, or dump dozens of unsafe twea
 | **Services** | 28 curated Windows services with start-mode toggles; **Blocked** and never changeable: `RpcSs`, `DcomLaunch`, `WinDefend` |
 | **Network** | 9 network tweaks + DNS presets (DHCP, Cloudflare, Google, Quad9) + flush |
 | **Tools** | 16 Tools-category tweaks plus maintenance grid (restore point, temp cleanup, Disk Cleanup, SFC/DISM, WinSxS, WU/network reset, memory diagnostic, disk analyze, God Mode), Take Ownership, NTP/autologon/winget repair, registry import/export, legacy Control Panel launchers |
-| **Installer** | 158 winget apps with silent install **and uninstall**, grouped Browsers / Communication / Developer / Gaming / Media / Tools, plus app icons |
+| **Installer** | 159 winget apps with silent install **and uninstall**, grouped Browsers / Communication / Developer / Gaming / Media / Tools, plus app icons |
 | **Settings** | 8 languages, appearance (dark, light, or match Windows), auto restore point, allow dangerous actions, update-check toggle, logs, social links |
 
 Global **Undo** lives in the main chrome and reverts journaled session changes where possible. The top search box opens a **global search** across pages.
@@ -99,19 +99,19 @@ Global **Undo** lives in the main chrome and reverts journaled session changes w
 
 | Catalog | Entries | File |
 |---------|--------:|------|
-| Tweaks | 92 | `Catalogs/tweaks.json` |
+| Tweaks | 93 | `Catalogs/tweaks.json` |
 | Services | 28 | `Catalogs/services.json` |
 | Bloatware (AppX) | 46 | `Catalogs/apps.json` |
-| Winget installer apps | 158 | `Catalogs/apps_installer.json` |
+| Winget installer apps | 159 | `Catalogs/apps_installer.json` |
 | Presets | 6 | `Catalogs/presets.json` |
 | Languages | 8 | `Resources/Strings.*.xaml` (`tr` default) |
 
-**Tweak categories** (92 total — Safe 53 · Caution 37 · Dangerous 2)
+**Tweak categories** (93 total — Safe 54 · Caution 37 · Dangerous 2)
 
 | Category | Count |
 |----------|------:|
 | Gaming | 20 |
-| Visual | 20 |
+| Visual | 21 |
 | Tools | 16 |
 | Telemetry | 15 |
 | Windows11UI | 12 |
@@ -126,10 +126,10 @@ Global **Undo** lives in the main chrome and reverts journaled session changes w
 | Tools | 61 |
 | Developer | 48 |
 | Media | 23 |
-| Browsers | 9 |
+| Browsers | 10 |
 | Gaming | 9 |
 | Communication | 8 |
-| **Total** | **158** |
+| **Total** | **159** |
 
 **Built-in presets** (UI names → catalog id)
 
