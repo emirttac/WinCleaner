@@ -53,7 +53,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=Syne:wght@500;600;700;800&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/styles.css?v=37" />
+  <link rel="stylesheet" href="css/styles.css?v=38" />
   <link rel="icon" href="favicon.ico" />
   <link rel="apple-touch-icon" href="icon.png" />
 </head>
@@ -380,7 +380,7 @@
           </ul>
         </div>
         <div class="download-actions">
-          <a class="btn btn-accent btn-lg" data-download-latest href="https://github.com/emirttac/WinCleaner/releases/download/v2.6.0/WinCleaner-Setup-2.6.0.exe" rel="noopener noreferrer" data-i18n="download.cta">Download the latest release</a>
+          <button type="button" class="btn btn-accent btn-lg" data-open-release data-i18n="download.cta">Download the latest release</button>
           <a class="btn btn-ghost" href="https://github.com/emirttac/WinCleaner" target="_blank" rel="noopener noreferrer" data-i18n="download.source">View on GitHub</a>
         </div>
       </div>
@@ -433,7 +433,34 @@
     <p class="footer-disclaimer" data-i18n="footer.disclaimer">WinCleaner can change system settings on your PC. Developers are not responsible for adverse outcomes; all responsibility rests with the user. The app already operates within safety limits such as risk levels, undo, and version filtering.</p>
   </footer>
 
-  <script src="js/i18n.js?v=23"></script>
-  <script src="js/main.js?v=12"></script>
+  <div class="release-modal" data-release-modal hidden>
+    <div class="release-backdrop" data-release-dismiss></div>
+    <div class="release-dialog" role="dialog" aria-modal="true" aria-labelledby="release-notes-title" tabindex="-1">
+      <button type="button" class="release-close" data-release-dismiss data-i18n-aria="release.close" aria-label="Close">
+        <span aria-hidden="true">×</span>
+      </button>
+      <div class="release-notes">
+        <p class="release-kicker" data-i18n="release.kicker">New release</p>
+        <h2 id="release-notes-title" class="release-title" data-i18n="release.title">WinCleaner v2.6.0 release notes</h2>
+        <ul>
+          <li data-i18n="release.item1">Microsoft Edge removal: Added because of strong demand to fully remove Windows’ built-in browser, Microsoft Edge.</li>
+          <li data-i18n="release.item2">Separate file extensions and hidden files: Show or hide file extensions and show or hide hidden files are no longer one switch. They are now separate options, by request.</li>
+          <li data-i18n="release.item3">Helium Browser support: Helium Browser was added to the installer / winget list as an alternative browser, by request.</li>
+          <li data-i18n="release.item4">Installer search box: The Installer page now has a search bar so you can find apps.</li>
+          <li data-i18n="release.item5">Removed bloatware apps no longer appear in the list.</li>
+        </ul>
+        <h3 class="release-fixes" data-i18n="release.fixes">Bug fixes</h3>
+        <ul>
+          <li data-i18n="release.fix1">Restore point: Fixed a warning that said a restore point could not be created even when one existed, because Windows only allows a new point about once every 24 hours.</li>
+        </ul>
+      </div>
+      <div class="release-side">
+        <a class="btn btn-accent btn-lg" data-download-latest href="https://github.com/emirttac/WinCleaner/releases/download/v2.6.0/WinCleaner-Setup-2.6.0.exe" rel="noopener noreferrer" data-i18n="release.download">Download the latest release (v2.6.0)</a>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/i18n.js?v=24"></script>
+  <script src="js/main.js?v=13"></script>
 </body>
 </html>

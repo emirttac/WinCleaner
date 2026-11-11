@@ -521,4 +521,45 @@
         });
     }
   }
+
+  const releaseModal = document.querySelector("[data-release-modal]");
+  const releaseDialog = releaseModal ? releaseModal.querySelector(".release-dialog") : null;
+  let releaseReturnFocus = null;
+
+  const openRelease = () => {
+    if (!releaseModal) return;
+    releaseReturnFocus = document.activeElement;
+    releaseModal.hidden = false;
+    document.body.classList.add("release-open");
+    if (releaseDialog) releaseDialog.focus();
+  };
+
+  const closeRelease = () => {
+    if (!releaseModal || releaseModal.hidden) return;
+    releaseModal.hidden = true;
+    document.body.classList.remove("release-open");
+    if (releaseReturnFocus && typeof releaseReturnFocus.focus === "function") {
+      releaseReturnFocus.focus();
+    }
+  };
+
+  document.querySelectorAll("[data-open-release]").forEach((button) => {
+    button.addEventListener("click", (event) => {
+      event.preventDefault();
+      openRelease();
+    });
+  });
+
+  if (releaseModal) {
+    releaseModal.addEventListener("click", (event) => {
+      const target = event.target;
+      if (target instanceof Element && target.closest("[data-release-dismiss]")) {
+        closeRelease();
+      }
+    });
+  }
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") closeRelease();
+  });
 })();
