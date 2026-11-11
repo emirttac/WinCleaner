@@ -2361,10 +2361,10 @@ html.js [data-reveal="right"].is-visible {
 
 .release-side {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: center;
-  align-self: start;
-  padding: 4rem 1.15rem 1.25rem;
+  align-self: stretch;
+  padding: 1.25rem 1.15rem;
   background: transparent;
 }
 
