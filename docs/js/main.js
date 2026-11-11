@@ -307,6 +307,8 @@
     : null;
   const DOWNLOAD_CACHE_KEY = "wincleaner-download-count";
   let shownDownloads = null;
+  let displayedDownloads = null;
+  let countGeneration = 0;
 
   const formatCount = (n) => {
     try {
@@ -339,11 +341,41 @@
     }
   };
 
-  const paintDownloads = (total) => {
+  const paintDownloads = (total, animate) => {
     if (!downloadCountNum || typeof total !== "number" || total < 0) return;
+    const from = displayedDownloads === null ? 0 : displayedDownloads;
     shownDownloads = total;
     downloadCountRoot.dataset.total = String(total);
-    downloadCountNum.textContent = formatCount(total);
+    const generation = ++countGeneration;
+
+    const write = (value) => {
+      if (generation !== countGeneration) return;
+      displayedDownloads = value;
+      downloadCountNum.textContent = formatCount(value);
+    };
+
+    if (!animate || reduceMotion || from === total) {
+      write(total);
+      return;
+    }
+
+    const duration = Math.min(900, 400 + Math.abs(total - from) * 2);
+    const start = performance.now();
+    let settled = false;
+    const tick = (now) => {
+      if (generation !== countGeneration || settled) return;
+      const t = Math.min(1, (now - start) / duration);
+      const eased = 1 - Math.pow(1 - t, 3);
+      write(t >= 1 ? total : Math.round(from + (total - from) * eased));
+      if (t < 1) requestAnimationFrame(tick);
+    };
+    write(from);
+    requestAnimationFrame(tick);
+    window.setTimeout(() => {
+      if (generation !== countGeneration) return;
+      settled = true;
+      write(total);
+    }, duration + 40);
   };
 
   const sumReleaseDownloads = (releases) => {
@@ -428,12 +460,12 @@
 
   if (downloadCountRoot && downloadCountNum) {
     const cached = readCachedDownloads();
-    if (cached) paintDownloads(cached.total);
+    if (cached) paintDownloads(cached.total, true);
 
     fetchGithubDownloads()
       .then((total) => {
         writeCachedDownloads(total);
-        paintDownloads(total);
+        paintDownloads(total, true);
       })
       .catch(() => {
         if (shownDownloads === null) downloadCountNum.textContent = "—";
