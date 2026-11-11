@@ -306,7 +306,7 @@
     ? downloadCountRoot.querySelector(".download-count-num")
     : null;
   const DOWNLOAD_CACHE_KEY = "wincleaner-download-count";
-  const DOWNLOAD_CACHE_TTL = 6 * 60 * 60 * 1000; // 6 hours
+  let shownDownloads = null;
 
   const formatCount = (n) => {
     try {
@@ -339,22 +339,11 @@
     }
   };
 
-  const animateDownloadCount = (target) => {
-    if (!downloadCountNum) return;
-    if (reduceMotion || target <= 0) {
-      downloadCountNum.textContent = formatCount(target);
-      return;
-    }
-
-    const duration = Math.min(1800, 700 + target * 4);
-    const start = performance.now();
-    const tick = (now) => {
-      const t = Math.min(1, (now - start) / duration);
-      const eased = 1 - Math.pow(1 - t, 3);
-      downloadCountNum.textContent = formatCount(Math.round(target * eased));
-      if (t < 1) requestAnimationFrame(tick);
-    };
-    requestAnimationFrame(tick);
+  const paintDownloads = (total) => {
+    if (!downloadCountNum || typeof total !== "number" || total < 0) return;
+    shownDownloads = total;
+    downloadCountRoot.dataset.total = String(total);
+    downloadCountNum.textContent = formatCount(total);
   };
 
   const sumReleaseDownloads = (releases) => {
@@ -398,48 +387,6 @@
     throw lastError || new Error("GitHub download count failed");
   };
 
-  const isNearViewport = (el) => {
-    const rect = el.getBoundingClientRect();
-    const vh = window.innerHeight || 0;
-    return rect.bottom > 0 && rect.top < vh * 1.15;
-  };
-
-  const playDownloadCount = (total) => {
-    if (!downloadCountRoot || !downloadCountNum) return;
-    downloadCountRoot.dataset.total = String(total);
-
-    const startWhenVisible = () => {
-      if (downloadCountRoot.dataset.counted === "1") {
-        downloadCountNum.textContent = formatCount(total);
-        return;
-      }
-      downloadCountRoot.dataset.counted = "1";
-      animateDownloadCount(total);
-    };
-
-    if (
-      reduceMotion ||
-      downloadCountRoot.classList.contains("is-visible") ||
-      isNearViewport(downloadCountRoot) ||
-      !("IntersectionObserver" in window)
-    ) {
-      startWhenVisible();
-      return;
-    }
-
-    const countObserver = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (!entry.isIntersecting) return;
-          startWhenVisible();
-          countObserver.disconnect();
-        });
-      },
-      { rootMargin: "0px 0px -5% 0px", threshold: 0.05 }
-    );
-    countObserver.observe(downloadCountRoot);
-  };
-
   /* Direct installer download — skip the GitHub Releases HTML page */
   const SETUP_RE = /setup.*\.exe$/i;
   const PORTABLE_RE = /^WinCleaner\.exe$/i;
@@ -481,45 +428,16 @@
 
   if (downloadCountRoot && downloadCountNum) {
     const cached = readCachedDownloads();
-    if (cached) {
-      // Show last known value immediately so the UI never sticks on "—"
-      downloadCountNum.textContent = formatCount(cached.total);
-      downloadCountRoot.dataset.total = String(cached.total);
-    }
+    if (cached) paintDownloads(cached.total);
 
-    const cacheIsFresh =
-      cached && typeof cached.at === "number" && Date.now() - cached.at < DOWNLOAD_CACHE_TTL;
-
-    const applyFresh = (total) => {
-      writeCachedDownloads(total);
-      playDownloadCount(total);
-    };
-
-    if (cacheIsFresh) {
-      playDownloadCount(cached.total);
-      // Quiet background refresh; keep showing cache if it fails
-      fetchGithubDownloads()
-        .then((total) => {
-          writeCachedDownloads(total);
-          if (downloadCountRoot.dataset.counted === "1") {
-            downloadCountNum.textContent = formatCount(total);
-            downloadCountRoot.dataset.total = String(total);
-          } else {
-            playDownloadCount(total);
-          }
-        })
-        .catch(() => {});
-    } else {
-      fetchGithubDownloads()
-        .then(applyFresh)
-        .catch(() => {
-          if (cached) {
-            playDownloadCount(cached.total);
-          } else {
-            downloadCountNum.textContent = "—";
-          }
-        });
-    }
+    fetchGithubDownloads()
+      .then((total) => {
+        writeCachedDownloads(total);
+        paintDownloads(total);
+      })
+      .catch(() => {
+        if (shownDownloads === null) downloadCountNum.textContent = "—";
+      });
   }
 
   const releaseModal = document.querySelector("[data-release-modal]");

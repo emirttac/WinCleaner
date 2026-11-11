@@ -2095,10 +2095,12 @@ html.js [data-reveal="right"].is-visible {
     transition-duration: 0.55s !important;
   }
 
+  html.js [data-reveal],
   [data-reveal] {
     opacity: 1;
     transform: none;
     filter: none;
+    transition: none;
   }
 
   .app-chrome {
